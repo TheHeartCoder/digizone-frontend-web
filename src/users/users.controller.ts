@@ -1,6 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { userTypes } from 'src/shared/schema/users';
 
 @Controller('users')
 export class UsersController {
@@ -11,14 +20,22 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
+  @Post('/login')
+  async login(@Body() loginUserDto: any) {
+    return await this.usersService.login(
+      loginUserDto.email,
+      loginUserDto.password,
+    );
+  }
+
   @Get()
-  async findAll() {
-    return await this.usersService.findAll();
+  async findAll(@Query('type') type: userTypes) {
+    return await this.usersService.findAll(type);
   }
 
   @Get(':id')
   async afindOne(@Param('id') id: string) {
-    return await this.usersService.findOne(+id);
+    return await this.usersService.findOne(id);
   }
 
   @Patch('/update-password/:id')

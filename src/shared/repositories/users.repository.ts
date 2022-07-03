@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { Users } from '../schema/users';
+import { Users, userTypes } from '../schema/users';
 
 @Injectable()
 export class UserRepository {
@@ -18,7 +18,7 @@ export class UserRepository {
     return await this.userModel.findOne({ email });
   }
   // get user details by id
-  async getUserDetailsById(id: any): Promise<any> {
+  async getUserDetailsById(id: string): Promise<any> {
     return await this.userModel.findById(id);
   }
   // update user details
@@ -30,7 +30,9 @@ export class UserRepository {
     return await this.userModel.findByIdAndDelete(id);
   }
   // get all users
-  async getAllUsers(): Promise<any> {
-    return await this.userModel.find();
+  async getAllUsers(type: userTypes): Promise<any> {
+    return type
+      ? await this.userModel.find({ type })
+      : await this.userModel.find();
   }
 }

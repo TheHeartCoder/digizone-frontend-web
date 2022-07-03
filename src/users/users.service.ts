@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { UserRepository } from 'src/shared/repositories/users.repository';
+import { userTypes } from 'src/shared/schema/users';
 import {
   comaprePassword,
   generateHashPassword,
@@ -52,16 +53,16 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<any> {
+  async findAll(type: userTypes): Promise<any> {
     try {
-      const users = await this.userDB.getAllUsers();
+      const users = await this.userDB.getAllUsers(type);
       return users;
     } catch (error) {
       throw error;
     }
   }
 
-  async findOne(id: number): Promise<any> {
+  async findOne(id: string): Promise<any> {
     try {
       const user = await this.userDB.getUserDetailsById(id);
       return user;

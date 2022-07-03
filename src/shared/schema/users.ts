@@ -11,7 +11,6 @@ export enum userTypes {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
   },
-  _id: false,
 })
 export class Users extends Document {
   @Prop({ required: true })
