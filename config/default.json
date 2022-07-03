@@ -1,6 +1,6 @@
 {
   "port": 3100,
   "host": "localhost",
-  "dbUrl": "",
+  "mongoDbUrl": "mongodb+srv://arindam:arindam@test.g7xwc.mongodb.net/?retryWrites=true&w=majority",
   "tokenSecret": "ARI@TOKEN_123"
 }

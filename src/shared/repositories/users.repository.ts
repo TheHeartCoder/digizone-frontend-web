@@ -18,7 +18,7 @@ export class UserRepository {
     return await this.userModel.findOne({ email });
   }
   // get user details by id
-  async getUserDetailsById(id: string): Promise<any> {
+  async getUserDetailsById(id: any): Promise<any> {
     return await this.userModel.findById(id);
   }
   // update user details
