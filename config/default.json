@@ -1,0 +1,6 @@
+{
+  "port": 3100,
+  "host": "localhost",
+  "dbUrl": "",
+  "tokenSecret": "ARI@TOKEN_123"
+}
