@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { userTypes } from 'src/shared/schema/users';
+import { Roles } from 'src/shared/middleware/roles.decorators';
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +30,7 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(userTypes.admin)
   async findAll(@Query('type') type: userTypes) {
     return await this.usersService.findAll(type);
   }
