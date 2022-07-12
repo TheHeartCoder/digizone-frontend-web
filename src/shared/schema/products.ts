@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Decimal128, Document } from 'mongoose';
 
 export enum categoryType {
   operatingSystem = 'Operating System',
@@ -25,6 +25,24 @@ export enum baseType {
     updatedAt: 'updatedAt',
   },
 })
+export class Feebackers {
+  @Prop({ required: true })
+  customerId: string;
+
+  @Prop({ required: true })
+  rating: Decimal128;
+
+  @Prop({})
+  feedbackMsg: string;
+}
+export class FeedbackSchema {
+  @Prop({ required: true })
+  avgRating: string;
+
+  @Prop({ required: true })
+  info: [Feebackers];
+}
+
 export class Products extends Document {
   @Prop({ required: true })
   productName: string;
@@ -55,6 +73,18 @@ export class Products extends Document {
 
   @Prop({ required: true, enum: [baseType.computer, baseType.Mobile] })
   baseType: string;
+
+  @Prop({ required: true })
+  productUrl: string;
+
+  @Prop({ required: true })
+  downloadUrl: string;
+
+  @Prop({})
+  installationFileUrl: string;
+
+  @Prop({})
+  feedbackDetails: FeedbackSchema;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);
