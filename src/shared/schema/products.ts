@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Decimal128, Document } from 'mongoose';
+import { Decimal128, Document, Types } from 'mongoose';
 
 export enum categoryType {
   operatingSystem = 'Operating System',
@@ -19,6 +19,12 @@ export enum baseType {
   Mobile = 'Mobile',
 }
 
+export enum durationType {
+  day = 'Day',
+  month = 'Month',
+  year = 'Year',
+}
+
 @Schema({
   timestamps: {
     createdAt: 'createdAt',
@@ -26,21 +32,49 @@ export enum baseType {
   },
 })
 export class Feebackers {
-  @Prop({ required: true })
+  @Prop({})
   customerId: string;
 
-  @Prop({ required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Users' })
+  customer: Types.ObjectId;
+
+  @Prop({})
   rating: Decimal128;
 
   @Prop({})
   feedbackMsg: string;
 }
 export class FeedbackSchema {
-  @Prop({ required: true })
+  @Prop({})
   avgRating: string;
 
-  @Prop({ required: true })
+  @Prop({})
   info: [Feebackers];
+}
+
+export class SkuDetailsSchema {
+  @Prop({})
+  skuName: string; // name of the sku
+
+  @Prop({ required: true })
+  price: Decimal128;
+
+  @Prop({ required: true })
+  quantity: number;
+
+  @Prop({ required: true })
+  validityAmount: Int32Array;
+
+  @Prop({
+    default: '',
+    enum: [durationType.day, durationType.month, durationType.year],
+  })
+  durationType: string;
+
+  @Prop({ default: false })
+  lifetime: boolean;
+
+  licenceKeys: [string];
 }
 
 export class Products extends Document {
@@ -85,6 +119,9 @@ export class Products extends Document {
 
   @Prop({})
   feedbackDetails: FeedbackSchema;
+
+  @Prop({})
+  skuDetails: [SkuDetailsSchema];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);
