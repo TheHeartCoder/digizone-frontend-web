@@ -9,7 +9,6 @@ import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
-    UsersModule,
     MongooseModule.forRoot(config.get('mongoDbUrl'), {
       useNewUrlParser: true,
       keepAlive: true,
@@ -17,6 +16,7 @@ import { ProductsModule } from './products/products.module';
       w: 1,
     }),
     ProductsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

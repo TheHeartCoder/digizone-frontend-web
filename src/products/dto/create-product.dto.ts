@@ -3,7 +3,7 @@ import {
   baseType,
   categoryType,
   platformType,
-  SkuDetailsSchema,
+  SkuDetails,
 } from 'src/shared/schema/products';
 
 export class CreateProductDto {
@@ -45,5 +45,7 @@ export class CreateProductDto {
   @IsString()
   installationFileUrl: string;
 
-  skuDetatails: [SkuDetailsSchema];
+  skuDetatails: [SkuDetails];
 }
+
+

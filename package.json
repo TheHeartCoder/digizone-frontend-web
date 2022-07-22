@@ -30,6 +30,7 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/mongoose": "^5.11.97",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "config": "^3.3.7",
     "jsonwebtoken": "^8.5.1",

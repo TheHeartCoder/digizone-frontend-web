@@ -7,9 +7,11 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { skuDtoArrDto } from './dto/sku.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -17,6 +19,7 @@ export class ProductsController {
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
+    console.log(createProductDto);
     return this.productsService.create(createProductDto);
   }
 
@@ -50,12 +53,24 @@ export class ProductsController {
     return this.productsService.deleteProduct(id);
   }
 
-  @Post('/sku')
+  @Post('/sku/:id')
   updateProductSkuDetails(
     @Param('id') id: string,
-    @Body()
-    data: any,
+    @Body() skuDetails: skuDtoArrDto,
   ) {
-    return this.productsService.updateWithArrayOfSkuDetailsInDB(id, data);
+    return this.productsService.updateWithArrayOfSkuDetailsInDB(id, skuDetails);
+  }
+
+  @Put('/sku/:productId/:skuId')
+  updateProductIndividualSkuDetails(
+    @Param('productId') id: string,
+    @Param('skuId') skuId: string,
+    @Body() skuDetails: skuDtoArrDto,
+  ) {
+    return this.productsService.updateProductIndividualSkuDetails(
+      id,
+      skuId,
+      skuDetails,
+    );
   }
 }

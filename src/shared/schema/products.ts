@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Decimal128, Document, Types } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
+import { Users } from './users';
 
 export enum categoryType {
   operatingSystem = 'Operating System',
@@ -31,39 +32,47 @@ export enum durationType {
     updatedAt: 'updatedAt',
   },
 })
-export class Feebackers {
+export class Feebackers extends Document {
   @Prop({})
   customerId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Users' })
-  customer: Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Users' })
+  customer: Users; // User schema
 
   @Prop({})
-  rating: Decimal128;
+  rating: number;
 
   @Prop({})
   feedbackMsg: string;
 }
+export const FeebackersSchema = SchemaFactory.createForClass(Feebackers);
+
 export class FeedbackSchema {
   @Prop({})
   avgRating: string;
 
-  @Prop({})
-  info: [Feebackers];
+  @Prop([{ type: FeebackersSchema }])
+  info: Types.Array<Feebackers>;
 }
 
-export class SkuDetailsSchema {
+@Schema({
+  timestamps: {
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  },
+})
+export class SkuDetails extends Document {
   @Prop({})
   skuName: string; // name of the sku
 
   @Prop({ required: true })
-  price: Decimal128;
+  price: number;
 
   @Prop({ required: true })
   quantity: number;
 
   @Prop({ required: true })
-  validityAmount: Int32Array;
+  validityAmount: number;
 
   @Prop({
     default: '',
@@ -77,6 +86,14 @@ export class SkuDetailsSchema {
   licenceKeys: [string];
 }
 
+export const SkuDetailsSchema = SchemaFactory.createForClass(SkuDetails);
+
+@Schema({
+  timestamps: {
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  },
+})
 export class Products extends Document {
   @Prop({ required: true })
   productName: string;
@@ -120,8 +137,8 @@ export class Products extends Document {
   @Prop({})
   feedbackDetails: FeedbackSchema;
 
-  @Prop({})
-  skuDetails: [SkuDetailsSchema];
+  @Prop([{ type: SkuDetailsSchema }])
+  skuDetails: Types.Array<SkuDetails>;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);

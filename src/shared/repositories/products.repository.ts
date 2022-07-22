@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
+import { skuDtoArrDto } from 'src/products/dto/sku.dto';
 import { Products } from '../schema/products';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class ProductRepository {
     id: string,
     data: CreateProductDto,
   ): Promise<any> {
-    return await this.productModel.findByIdAndUpdate(id, data);
+    return await this.productModel.updateOne({ _id: id }, { $set: data });
   }
 
   // delete product details
@@ -51,10 +52,22 @@ export class ProductRepository {
   }
 
   // update with array of sku details in product
-  async updateWithArrayOfSkuDetailsInDB(id: string, data: [any]): Promise<any> {
+  async updateWithArrayOfSkuDetailsInDB(id: string, data: any): Promise<any> {
     return await this.productModel.updateOne(
       { _id: id },
       { $push: { skuDetails: { $each: data } } },
+    );
+  }
+
+  // update sku details  in product
+  async updateSkuDetailsInDB(
+    id: string,
+    skuId: string,
+    data: any,
+  ): Promise<any> {
+    return await this.productModel.updateOne(
+      { _id: id, 'skuDetails._id': skuId },
+      { $set: { 'skuDetails.$': data } },
     );
   }
 }
