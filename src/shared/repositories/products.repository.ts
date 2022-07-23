@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
-import { skuDtoArrDto } from 'src/products/dto/sku.dto';
-import { Products } from '../schema/products';
 
+import { Products } from '../schema/products';
+import { ParsedOptions } from 'qs-to-mongo/lib/query/options-to-mongo';
 @Injectable()
 export class ProductRepository {
   constructor(
@@ -37,18 +37,30 @@ export class ProductRepository {
   }
 
   // get all products with sorting and filtering
-  async getAllProducts(
-    sortBy: string,
-    sortOrder: string,
-    filterBy: string,
-    filterValue: any,
+  async getAllProductsFromDB(
+    criteria: Record<string, any>,
+    options: ParsedOptions,
   ): Promise<any> {
-    // aggregation
-    const pipeline: any = [
-      { $match: filterBy && filterValue ? { [filterBy]: filterValue } : {} },
-      { $sort: { [sortBy]: sortOrder } },
-    ];
-    return await this.productModel.aggregate(pipeline);
+    console.log('criteria', criteria, options);
+    options.sort = options.sort || { _id: -1 };
+    options.skip = options.skip || 0;
+    options.limit = options.limit || 10;
+
+    // aggregate products with citeria and options
+    const products = await this.productModel
+      .aggregate([
+        { $match: criteria },
+        { $sort: options.sort },
+        { $skip: options.skip },
+        { $limit: options.limit },
+      ])
+      .exec();
+    // get total products count
+    const total = await this.productModel.countDocuments(criteria);
+    return {
+      total,
+      result: products,
+    };
   }
 
   // update with array of sku details in product
@@ -63,11 +75,33 @@ export class ProductRepository {
   async updateSkuDetailsInDB(
     id: string,
     skuId: string,
-    data: any,
+    data: Record<string, any>,
   ): Promise<any> {
+    const dataForUpdate = {};
+    Object.keys(data).forEach((key) => {
+      dataForUpdate[`skuDetails.$.${key}`] = data[key];
+    });
     return await this.productModel.updateOne(
       { _id: id, 'skuDetails._id': skuId },
-      { $set: { 'skuDetails.$': data } },
+      { $set: dataForUpdate },
+    );
+  }
+
+  // delete a sku details  in product
+  async deleteSkuDetailsInDB(
+    id: string,
+    skuIds: [string],
+    allDelete = false,
+  ): Promise<any> {
+    if (allDelete) {
+      return await this.productModel.updateOne(
+        { _id: id },
+        { $set: { skuDetails: [] } },
+      );
+    }
+    return await this.productModel.updateOne(
+      { _id: id },
+      { $pull: { skuDetails: { _id: { $in: skuIds } } } },
     );
   }
 }

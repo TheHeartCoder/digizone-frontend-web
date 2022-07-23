@@ -8,34 +8,26 @@ import {
   Delete,
   Query,
   Put,
+  HttpCode,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { skuDtoArrDto } from './dto/sku.dto';
+import { skuDtoArrDto, skuDto } from './dto/sku.dto';
+import { GetProductQueryDto } from './dto/get-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @HttpCode(201)
   create(@Body() createProductDto: CreateProductDto) {
-    console.log(createProductDto);
     return this.productsService.create(createProductDto);
   }
 
   @Get()
-  findAll(
-    @Query('sortBy') sortBy: string,
-    @Query('sortOrder') sortOrder: any,
-    @Query('filterBy') filterBy: string,
-    @Query('filterValue') filterValue: any,
-  ) {
-    return this.productsService.getAllProducts(
-      sortBy,
-      sortOrder,
-      filterBy,
-      filterValue,
-    );
+  findAll(@Query() queryDetails: GetProductQueryDto) {
+    return this.productsService.getAllProducts(queryDetails);
   }
 
   @Get(':id')
@@ -65,12 +57,21 @@ export class ProductsController {
   updateProductIndividualSkuDetails(
     @Param('productId') id: string,
     @Param('skuId') skuId: string,
-    @Body() skuDetails: skuDtoArrDto,
+    @Body() skuDetails: skuDto,
   ) {
     return this.productsService.updateProductIndividualSkuDetails(
       id,
       skuId,
       skuDetails,
     );
+  }
+
+  @Delete('/sku/:productId')
+  deleteProductSkuDetails(
+    @Param('productId') id: string,
+    @Body('skuIds') skuIds: [string],
+    @Query('deleteAll') deleteAll: boolean,
+  ) {
+    return this.productsService.deleteProductSkuDetails(id, skuIds, deleteAll);
   }
 }

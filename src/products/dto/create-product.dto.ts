@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import {
   baseType,
   categoryType,
@@ -45,7 +51,7 @@ export class CreateProductDto {
   @IsString()
   installationFileUrl: string;
 
+  @IsOptional()
+  @IsArray()
   skuDetatails: [SkuDetails];
 }
-
-

@@ -35,6 +35,7 @@
     "config": "^3.3.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.2",
+    "qs-to-mongo": "^2.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

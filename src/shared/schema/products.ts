@@ -17,7 +17,7 @@ export enum platformType {
 
 export enum baseType {
   computer = 'Computer',
-  Mobile = 'Mobile',
+  mobile = 'Mobile',
 }
 
 export enum durationType {
@@ -83,6 +83,7 @@ export class SkuDetails extends Document {
   @Prop({ default: false })
   lifetime: boolean;
 
+  @Prop({ required: true })
   licenceKeys: [string];
 }
 
@@ -122,7 +123,7 @@ export class Products extends Document {
   })
   platformType: string;
 
-  @Prop({ required: true, enum: [baseType.computer, baseType.Mobile] })
+  @Prop({ required: true, enum: [baseType.computer, baseType.mobile] })
   baseType: string;
 
   @Prop({ required: true })

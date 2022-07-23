@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ProductRepository } from 'src/shared/repositories/products.repository';
 import { CreateProductDto } from './dto/create-product.dto';
-import { skuDtoArrDto } from './dto/sku.dto';
-
+import { skuDto, skuDtoArrDto } from './dto/sku.dto';
+import qs2m from 'qs-to-mongo';
+import { GetProductQueryDto } from './dto/get-product.dto';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -10,145 +11,127 @@ export class ProductsService {
   ) {}
   // create a new product
   async create(createProductDto: CreateProductDto) {
-    try {
-      const createdProduct = await this.productDB.createProductInDB(
-        createProductDto,
-      );
-      return {
-        message: 'Product created successfully',
-        data: createdProduct,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const createdProduct = await this.productDB.createProductInDB(
+      createProductDto,
+    );
+    return {
+      message: 'Product created successfully',
+      data: createdProduct,
+    };
   }
 
   // update a new product
   async updateProduct(id: string, updateProductDto: CreateProductDto) {
-    try {
-      const resOfUpdateProduct = await this.productDB.updateProductDetailsInDB(
+    await this.productDB.updateProductDetailsInDB(id, updateProductDto);
+    return {
+      message: 'Product updated successfully',
+      data: {
         id,
-        updateProductDto,
-      );
-      if (
-        resOfUpdateProduct.modifiedCount &&
-        resOfUpdateProduct.modifiedCount < 1
-      ) {
-        throw new Error('Nothing happened');
-      }
-      return {
-        message: 'Product updated successfully',
-        data: {
-          id,
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+      },
+    };
   }
   // get product details by id
   async getProductDetailsById(id: string): Promise<any> {
-    try {
-      const productDetails = await this.productDB.getProductDetailsById(id);
-      if (!productDetails) throw new Error('No product found');
-      return {
-        message: 'Product found',
-        data: productDetails,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const productDetails = await this.productDB.getProductDetailsById(id);
+    if (!productDetails) throw new BadRequestException('No product found');
+    return {
+      message: 'Product found',
+      data: productDetails,
+    };
   }
 
   // get all products with sorting and filtering
-  async getAllProducts(
-    sortBy = 'createdAt',
-    sortOrder: 'asc' | 'desc' = 'desc',
-    filterBy: any,
-    filterValue: any,
-  ): Promise<any> {
-    try {
-      return await this.productDB.getAllProducts(
-        sortBy,
-        sortOrder,
-        filterBy,
-        filterValue,
-      );
-    } catch (error) {
-      throw error;
-    }
+  async getAllProducts(queryDetails: GetProductQueryDto): Promise<{
+    message: string;
+    data: {
+      skip: number;
+      limit: number;
+      total: number;
+      pages: number;
+      links: any;
+      result: [];
+    };
+  }> {
+    const data = qs2m(queryDetails);
+    const { criteria, options, links } = data;
+    console.log('criteria :: ', data, criteria, options, links);
+    const { total, result } = await this.productDB.getAllProductsFromDB(
+      criteria,
+      options,
+    );
+    return {
+      message: 'Products found',
+      data: {
+        skip: options.skip || 0,
+        limit: options.limit,
+        total,
+        pages: options.limit ? Math.ceil(total / options.limit) : 1,
+        links: links(`/`, total),
+        result,
+      },
+    };
   }
 
   // Delete a product
   async deleteProduct(id: string): Promise<any> {
-    try {
-      if (!id) throw new Error('No product id to delete');
-      const deletedProduct = await this.productDB.deleteProductDetailsInDB(id);
-      if (!deletedProduct) throw new Error('No product found');
-      return {
-        message: 'Product deleted successfully',
-        data: {
-          id,
-          deletedProduct,
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+    const deletedProduct = await this.productDB.deleteProductDetailsInDB(id);
+    if (!deletedProduct) throw new BadRequestException('No product found');
+    return {
+      message: 'Product deleted successfully',
+      data: {
+        id,
+        deletedProduct,
+      },
+    };
   }
 
   // Update with array of sku details in product
   async updateWithArrayOfSkuDetailsInDB(id: string, data: skuDtoArrDto) {
-    try {
-      if (!data.skuDetails || (data.skuDetails && data.skuDetails.length < 1))
-        throw new Error('No sku details to update');
-      const result = await this.productDB.updateWithArrayOfSkuDetailsInDB(
-        id,
-        data.skuDetails,
-      );
+    const result = await this.productDB.updateWithArrayOfSkuDetailsInDB(
+      id,
+      data.skuDetails,
+    );
 
-      if (result.modifiedCount < 1) throw new Error('No product found');
-      return {
-        message: 'Product sku details successfully',
-        data: {
-          id,
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+    if (result.modifiedCount < 1) throw new Error('No product found');
+    return {
+      message: 'Product sku details successfully',
+      data: {
+        id,
+      },
+    };
   }
 
   // update individual product sku details
   async updateProductIndividualSkuDetails(
     id: string,
     skuId: string,
-    data: skuDtoArrDto,
+    data: skuDto,
   ): Promise<any> {
-    try {
-      if (
-        !data.skuDetails ||
-        !id ||
-        !skuId ||
-        (data.skuDetails && data.skuDetails.length < 1)
-      )
-        throw new Error('No sku details to update');
+    const result = await this.productDB.updateSkuDetailsInDB(id, skuId, data);
 
-      const result = await this.productDB.updateSkuDetailsInDB(
+    if (result.modifiedCount < 1) throw new Error('No product found');
+    return {
+      message: 'Product sku details updated successfully',
+      data: {
         id,
-        skuId,
-        data.skuDetails,
-      );
+      },
+    };
+  }
 
-      if (result.modifiedCount < 1) throw new Error('No product found');
-      return {
-        message: 'Product sku details updated successfully',
-        data: {
-          id,
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+  // Delete individual product sku details
+  async deleteProductSkuDetails(
+    id: string,
+    skuIds: [string],
+    allDelete = false,
+  ) {
+    if (!skuIds || !skuIds.length || (!allDelete && !skuIds))
+      throw new BadRequestException('No sku details to delete');
+    await this.productDB.deleteSkuDetailsInDB(id, skuIds, allDelete);
+    return {
+      message: 'Product sku details deleted successfully',
+      data: {
+        id,
+      },
+    };
   }
 }
