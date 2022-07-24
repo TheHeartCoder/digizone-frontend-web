@@ -1,7 +1,7 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { UserRepository } from '../repositories/users.repository';
 import { Request, Response, NextFunction } from 'express';
-import * as config from 'config';
+import config from 'config';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()

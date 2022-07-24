@@ -8,7 +8,8 @@ import { ParsedOptions } from 'qs-to-mongo/lib/query/options-to-mongo';
 @Injectable()
 export class ProductRepository {
   constructor(
-    @InjectModel(Products.name) private readonly productModel: Model<Products>,
+    @InjectModel(Products.name)
+    private readonly productModel: Model<Products>,
   ) {}
 
   // create product details
@@ -45,6 +46,9 @@ export class ProductRepository {
     options.sort = options.sort || { _id: -1 };
     options.skip = options.skip || 0;
     options.limit = options.limit || 10;
+    options.projection = {
+      skuDetails: 0,
+    };
 
     // aggregate products with citeria and options
     const products = await this.productModel

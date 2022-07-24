@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { Users } from './users';
 
 export enum categoryType {
@@ -32,7 +32,7 @@ export enum durationType {
     updatedAt: 'updatedAt',
   },
 })
-export class Feebackers extends Document {
+export class Feebackers {
   @Prop({})
   customerId: string;
 
@@ -52,7 +52,7 @@ export class FeedbackSchema {
   avgRating: string;
 
   @Prop([{ type: FeebackersSchema }])
-  info: Types.Array<Feebackers>;
+  info: Feebackers[];
 }
 
 @Schema({
@@ -61,7 +61,10 @@ export class FeedbackSchema {
     updatedAt: 'updatedAt',
   },
 })
-export class SkuDetails extends Document {
+export class SkuDetails {
+  @Prop({})
+  _id: string;
+
   @Prop({})
   skuName: string; // name of the sku
 
@@ -95,7 +98,7 @@ export const SkuDetailsSchema = SchemaFactory.createForClass(SkuDetails);
     updatedAt: 'updatedAt',
   },
 })
-export class Products extends Document {
+export class Products {
   @Prop({ required: true })
   productName: string;
 
@@ -139,7 +142,7 @@ export class Products extends Document {
   feedbackDetails: FeedbackSchema;
 
   @Prop([{ type: SkuDetailsSchema }])
-  skuDetails: Types.Array<SkuDetails>;
+  skuDetails: SkuDetails[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);

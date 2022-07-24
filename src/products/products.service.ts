@@ -3,6 +3,7 @@ import { ProductRepository } from 'src/shared/repositories/products.repository';
 import { CreateProductDto } from './dto/create-product.dto';
 import { skuDto, skuDtoArrDto } from './dto/sku.dto';
 import qs2m from 'qs-to-mongo';
+
 import { GetProductQueryDto } from './dto/get-product.dto';
 @Injectable()
 export class ProductsService {
@@ -53,8 +54,8 @@ export class ProductsService {
     };
   }> {
     const data = qs2m(queryDetails);
+
     const { criteria, options, links } = data;
-    console.log('criteria :: ', data, criteria, options, links);
     const { total, result } = await this.productDB.getAllProductsFromDB(
       criteria,
       options,
