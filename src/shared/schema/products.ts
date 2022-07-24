@@ -102,10 +102,10 @@ export class Products {
   @Prop({ required: true })
   productName: string;
 
-  @Prop({ required: true })
-  description: string;
+  @Prop({ required: true, type: {} })
+  description: Record<string, any>;
 
-  @Prop({ required: true })
+  @Prop({})
   image: string;
 
   @Prop({
@@ -143,6 +143,15 @@ export class Products {
 
   @Prop([{ type: SkuDetailsSchema }])
   skuDetails: SkuDetails[];
+
+  @Prop({ type: {} })
+  imageDetails: Record<string, any>;
+
+  @Prop({ type: {} })
+  requirmentSpecification: Record<string, any>;
+
+  @Prop({ type: {} })
+  highlights: Record<string, any>;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);

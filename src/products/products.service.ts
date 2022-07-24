@@ -3,15 +3,49 @@ import { ProductRepository } from 'src/shared/repositories/products.repository';
 import { CreateProductDto } from './dto/create-product.dto';
 import { skuDto, skuDtoArrDto } from './dto/sku.dto';
 import qs2m from 'qs-to-mongo';
-
+import cloudinary from 'cloudinary';
 import { GetProductQueryDto } from './dto/get-product.dto';
+import config from 'config';
+import fs from 'fs';
+
 @Injectable()
 export class ProductsService {
   constructor(
     @Inject(ProductRepository) private readonly productDB: ProductRepository,
-  ) {}
+  ) {
+    cloudinary.v2.config({
+      cloud_name: config.get('cloudinary.cloud_name'),
+      api_key: config.get('cloudinary.api_key'),
+      api_secret: config.get('cloudinary.api_secret'),
+    });
+  }
   // create a new product
-  async create(createProductDto: CreateProductDto) {
+  async create(
+    createProductDto: CreateProductDto,
+    file: any,
+  ): Promise<{
+    message: string;
+    data: Record<string, any>;
+  }> {
+    // upload file [image] to cloudinary
+    const resOfCludinary = await cloudinary.v2.uploader.upload(file.path, {
+      folder: config.get('cloudinary.folderPath'),
+      public_id: `${config.get('cloudinary.publicId_prefix')}` + Date.now(),
+      transformation: [
+        {
+          width: config.get('cloudinary.bigSize').toString().split('X')[0],
+          height: config.get('cloudinary.bigSize').toString().split('X')[1],
+          crop: 'fill',
+        },
+        { quality: 'auto' },
+      ],
+    });
+    createProductDto.image = resOfCludinary.secure_url;
+    createProductDto.imageDetails = resOfCludinary;
+
+    // remove the file from local
+    fs.unlinkSync(file.path);
+
     const createdProduct = await this.productDB.createProductInDB(
       createProductDto,
     );
@@ -22,7 +56,15 @@ export class ProductsService {
   }
 
   // update a new product
-  async updateProduct(id: string, updateProductDto: CreateProductDto) {
+  async updateProduct(
+    id: string,
+    updateProductDto: CreateProductDto,
+  ): Promise<{
+    message: string;
+    data: {
+      id: string;
+    };
+  }> {
     await this.productDB.updateProductDetailsInDB(id, updateProductDto);
     return {
       message: 'Product updated successfully',
@@ -54,8 +96,8 @@ export class ProductsService {
     };
   }> {
     const data = qs2m(queryDetails);
-
     const { criteria, options, links } = data;
+
     const { total, result } = await this.productDB.getAllProductsFromDB(
       criteria,
       options,
@@ -77,6 +119,14 @@ export class ProductsService {
   async deleteProduct(id: string): Promise<any> {
     const deletedProduct = await this.productDB.deleteProductDetailsInDB(id);
     if (!deletedProduct) throw new BadRequestException('No product found');
+    // delete image from cloudinary server
+    await cloudinary.v2.uploader.destroy(
+      deletedProduct.imageDetails.public_id,
+      {
+        invalidate: true,
+      },
+    );
+
     return {
       message: 'Product deleted successfully',
       data: {

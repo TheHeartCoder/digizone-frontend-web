@@ -2,5 +2,14 @@
   "port": 3100,
   "host": "localhost",
   "mongoDbUrl": "mongodb+srv://arindam:arindam@test.g7xwc.mongodb.net/digizone?retryWrites=true&w=majority",
-  "tokenSecret": "ARI@TOKEN_123"
+  "tokenSecret": "ARI@TOKEN_123",
+  "fileStoragePath": "../uploads/",
+  "cloudinary": {
+    "cloud_name": "df2uufrnc",
+    "api_key": "315812872785858",
+    "api_secret": "5QEv4lqlmwFKvjVoGCfQzWCnbKg",
+    "folderPath": "digizone/products/",
+    "publicId_prefix": "digi_prods_",
+    "bigSize": "400X400"
+  }
 }

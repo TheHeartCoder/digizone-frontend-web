@@ -2,6 +2,7 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -17,13 +18,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   productName: string;
 
-  @IsString()
   @IsNotEmpty()
-  description: string;
-
-  @IsString()
-  @IsNotEmpty()
-  image: string;
+  @IsObject()
+  description: any;
 
   @IsString()
   @IsNotEmpty()
@@ -48,10 +45,19 @@ export class CreateProductDto {
   @IsNotEmpty()
   downloadUrl: string;
 
-  @IsString()
-  installationFileUrl: string;
+  @IsObject()
+  @IsOptional()
+  requirmentSpecification: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
+  highlights: Record<string, any>;
 
   @IsOptional()
   @IsArray()
   skuDetatails: [SkuDetails];
+
+  image?: string;
+
+  imageDetails?: any;
 }

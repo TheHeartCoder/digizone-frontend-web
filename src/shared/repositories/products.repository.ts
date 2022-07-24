@@ -42,13 +42,22 @@ export class ProductRepository {
     criteria: Record<string, any>,
     options: ParsedOptions,
   ): Promise<any> {
-    console.log('criteria', criteria, options);
     options.sort = options.sort || { _id: -1 };
     options.skip = options.skip || 0;
     options.limit = options.limit || 10;
-    options.projection = {
+    let defaultProjection = {
       skuDetails: 0,
+      'feedbackDetails.info': 0,
     };
+
+    if (options.projection && options.projection.skuDetails) {
+      defaultProjection = { ...defaultProjection, ...options.projection };
+    }
+
+    if (criteria.search) {
+      criteria.productName = { $regex: new RegExp(criteria.search, 'i') };
+      delete criteria.search;
+    }
 
     // aggregate products with citeria and options
     const products = await this.productModel
@@ -57,6 +66,7 @@ export class ProductRepository {
         { $sort: options.sort },
         { $skip: options.skip },
         { $limit: options.limit },
+        { $project: defaultProjection },
       ])
       .exec();
     // get total products count

@@ -9,11 +9,15 @@ import {
   Query,
   Put,
   HttpCode,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { skuDtoArrDto, skuDto } from './dto/sku.dto';
 import { GetProductQueryDto } from './dto/get-product.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import config from 'config';
 
 @Controller('products')
 export class ProductsController {
@@ -21,8 +25,20 @@ export class ProductsController {
 
   @Post()
   @HttpCode(201)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @UseInterceptors(
+    FileInterceptor('productImage', {
+      dest: config.get('fileStoragePath'),
+      limits: {
+        fileSize: 3000000, // 3MB
+      },
+    }),
+  )
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @UploadedFile() file: ParameterDecorator,
+  ) {
+    console.log(createProductDto, file);
+    return this.productsService.create(createProductDto, file);
   }
 
   @Get()
