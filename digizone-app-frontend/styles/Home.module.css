@@ -1,0 +1,29 @@
+.personIcon {
+	cursor: pointer;
+	margin-left: 10px;
+	float: right;
+}
+
+.logoHeading {
+	font-size: 2.5rem;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #4c575f;
+}
+
+.navBar {
+	background-color: #4c575f;
+}
+.cartItems {
+	color: #4c575f;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: unset;
+}
+.productCats {
+	text-align: center;
+	margin-top: 20px;
+	color: #4c575f;
+	font-size: 1.6rem;
+	font-weight: bold;
+}

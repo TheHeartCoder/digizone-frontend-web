@@ -1,0 +1,29 @@
+{
+  "name": "digizone-app-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "bootstrap": "^5.2.0",
+    "next": "12.2.3",
+    "react": "18.2.0",
+    "react-bootstrap": "^2.4.0",
+    "react-bootstrap-icons": "^1.8.4",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.0",
+    "@types/node": "18.0.6",
+    "@types/react": "^18.0.15",
+    "@types/react-bootstrap": "^0.32.30",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.20.0",
+    "eslint-config-next": "12.2.3",
+    "typescript": "4.7.4"
+  }
+}
