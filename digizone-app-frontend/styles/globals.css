@@ -24,3 +24,43 @@ a {
 		background: black;
 	}
 }
+
+button#input-group-dropdown-1 {
+	min-width: 100%;
+}
+
+button#input-group-dropdown-2 {
+	float: right;
+	margin: 10px 0px 10px 0px;
+}
+
+.footerText {
+	color: #ca9a3a;
+	font-size: 1rem;
+	margin-top: 10px;
+	margin-bottom: 25px;
+	float: right;
+}
+
+.productCard:hover {
+	box-shadow: 0 30px 55px rgba(12, 56, 49, 0.4);
+	transform: scale(1.05);
+	cursor: pointer;
+}
+
+.cardCartButton {
+	float: right;
+	border-color: #4c575f !important;
+}
+
+.cardCartButton:hover {
+	background-color: #4c575f !important;
+	color: white;
+	cursor: pointer;
+}
+
+.priceText {
+	color: #0491dc;
+	font-size: 1.0rem;
+	font-weight: bold;
+}

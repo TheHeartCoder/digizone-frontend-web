@@ -24,6 +24,23 @@
 	text-align: center;
 	margin-top: 20px;
 	color: #4c575f;
-	font-size: 1.6rem;
+	font-size: 1.4rem;
 	font-weight: bold;
+	/* border: 1px solid #4c575f */
+	-webkit-text-stroke: 1px #4c575f;
+	margin-bottom: 20px;
+
+}
+
+.viewMoreBtn {
+	background-color: #4c575f;
+	color: #fff;
+	font-size: 1rem;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	border: none;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	float: right;
 }

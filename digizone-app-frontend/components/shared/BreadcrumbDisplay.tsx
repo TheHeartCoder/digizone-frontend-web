@@ -1,0 +1,14 @@
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
+const BreadcrumbDisplay = () => {
+	return (
+		<Breadcrumb style={{ 'marginTop': '10px' }}>
+			<Breadcrumb.Item href='#'>Home</Breadcrumb.Item>
+			<Breadcrumb.Item href='https://getbootstrap.com/docs/4.0/components/breadcrumb/'>
+				Library
+			</Breadcrumb.Item>
+			<Breadcrumb.Item active>Data</Breadcrumb.Item>
+		</Breadcrumb>
+	);
+};
+
+export default BreadcrumbDisplay;
