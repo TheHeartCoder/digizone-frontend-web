@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/react-star-rating-component": "^1.4.1",
+    "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
     "next": "12.2.3",
     "react": "18.2.0",
@@ -20,6 +21,7 @@
     "react-object-input": "^0.2.1",
     "react-star-rating-component": "^1.4.1",
     "react-tag-input": "^6.8.0",
+    "react-toast-notifications": "^2.5.1",
     "uninstall": "^0.0.0"
   },
   "devDependencies": {

@@ -6,15 +6,19 @@ import { Container, SSRProvider } from 'react-bootstrap';
 import TopHead from '../components/shared/TopHead';
 import Heading from '../components/shared/Heading';
 import Footer from '../components/shared/Footer';
+import { ToastProvider } from 'react-toast-notifications';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<SSRProvider>
 			<Heading />
+
 			<Container>
-				<TopHead />
-				<Component {...pageProps} />
-				<Footer />
+				<ToastProvider>
+					<TopHead />
+					<Component {...pageProps} />
+					<Footer />
+				</ToastProvider>
 			</Container>
 		</SSRProvider>
 	);
