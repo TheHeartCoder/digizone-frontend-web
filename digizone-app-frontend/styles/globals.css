@@ -61,6 +61,127 @@ button#input-group-dropdown-2 {
 
 .priceText {
 	color: #0491dc;
-	font-size: 1.0rem;
+	font-size: 1rem;
 	font-weight: bold;
+}
+.firstRow {
+	margin-top: 20px !important;
+}
+
+.productImgCard:hover {
+	box-shadow: 0 30px 55px rgba(12, 56, 49, 0.4);
+	transform: scale(1.05);
+	cursor: pointer;
+}
+
+.divStar {
+	display: inline-flex;
+}
+
+.react-numeric-input input {
+	height: 40px;
+}
+
+.cartBtn {
+	margin-left: 10px;
+	height: 40px;
+}
+
+.cartBtn:hover {
+	background-color: #4c575f !important;
+	color: white;
+	cursor: pointer;
+}
+
+.cartIcon {
+	vertical-align: initial !important;
+	margin-right: 5px;
+}
+
+.personReview {
+	margin-right: 5px;
+	margin-top: 4px;
+}
+
+.reviewHeader.card-header {
+	display: flex;
+	white-space: break-spaces;
+}
+
+.reviewZone {
+	max-height: min-content;
+	width: 100%;
+	height: 550px;
+	overflow: auto;
+	border: none;
+	padding: 5px;
+}
+
+.reviewDt {
+	font-size: 0.8rem;
+	margin-bottom: 0px;
+	margin-top: -10px;
+	border-radius: 10px;
+	max-width: fit-content;
+	color: #020202b5;
+}
+
+.reviewInputZone {
+	border: 1px solid #c7c7c7;
+	padding: 5px;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.separator {
+	display: flex;
+	align-items: center;
+	text-align: center;
+}
+
+.separator::before,
+.separator::after {
+	content: '';
+	flex: 1;
+	border-bottom: 1px solid #000;
+}
+
+.separator:not(:empty)::before {
+	margin-right: 0.25em;
+}
+
+.separator:not(:empty)::after {
+	margin-left: 0.25em;
+}
+
+.cartItems {
+	display: flex;
+	border: 1px solid #e0dcdc;
+	margin-top: 2px;
+}
+button.btn-close.deleteCartItem {
+	padding: 8px;
+}
+
+.cartBody {
+	overflow: auto;
+}
+
+.cartTotal {
+	font-weight: bold;
+	font-size: 20px;
+	float: right;
+	color: rgb(28, 21, 21);
+}
+
+.itemTitle {
+	display: flex;
+	padding: 5px;
+}
+
+.productPrice {
+	font-size: 1.2rem;
+	font-weight: bold;
+	margin-top: -5px;
+	color: #0491dc
 }

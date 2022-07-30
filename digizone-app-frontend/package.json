@@ -16,6 +16,7 @@
     "react-bootstrap": "^2.4.0",
     "react-bootstrap-icons": "^1.8.4",
     "react-dom": "18.2.0",
+    "react-numeric-input": "^2.2.3",
     "react-star-rating-component": "^1.4.1"
   },
   "devDependencies": {
@@ -24,6 +25,7 @@
     "@types/react": "^18.0.15",
     "@types/react-bootstrap": "^0.32.30",
     "@types/react-dom": "18.0.6",
+    "@types/react-numeric-input": "^2.2.4",
     "@types/react-star-ratings": "^2.3.0",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.3",

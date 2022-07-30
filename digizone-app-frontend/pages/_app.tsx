@@ -8,16 +8,14 @@ import Footer from '../components/shared/Footer';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		// <SSRProvider>
-		<>
+		<SSRProvider>
 			<Heading />
 			<Container>
 				<TopHead />
 				<Component {...pageProps} />
 				<Footer />
 			</Container>
-		</>
-		// </SSRProvider>
+		</SSRProvider>
 	);
 }
 
