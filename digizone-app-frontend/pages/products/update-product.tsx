@@ -15,7 +15,7 @@ import { Table } from 'react-bootstrap';
 
 const UpdateProduct: NextPage = () => {
 	return (
-		<Card className='updateProductCard' style={{ padding: '15px' }}>
+		<Card className='updateProductCard' style={{ padding: '15px', marginTop: '20px' }}>
 			<Row>
 				<Col>
 					<Form>
