@@ -1,26 +1,30 @@
 import styles from '../../styles/Product.module.css';
 import type { NextPage } from 'next';
 import {
+	Badge,
 	Button,
 	Card,
 	Col,
 	Dropdown,
 	DropdownButton,
+	Form,
 	ListGroup,
+	Modal,
 	Row,
 } from 'react-bootstrap';
 import BreadcrumbDisplay from '../../components/shared/BreadcrumbDisplay';
 import PaginationDisplay from '../../components/shared/PaginationDisplay';
 import StarRatingComponent from 'react-star-rating-component';
+import { PlusCircle } from 'react-bootstrap-icons';
 
-const index: NextPage = () => {
+const Products: NextPage = () => {
 	return (
 		<>
 			<Row>
-				<Col sm={10}>
+				<Col md={8}>
 					<BreadcrumbDisplay />
 				</Col>
-				<Col sm={2}>
+				<Col md={4}>
 					<DropdownButton
 						variant='outline-secondary'
 						title='Sort By'
@@ -33,6 +37,10 @@ const index: NextPage = () => {
 						<Dropdown.Divider />
 						<Dropdown.Item href='#'>Separated link</Dropdown.Item>
 					</DropdownButton>
+					<Button variant='primary' className='btnAddProduct'>
+						<PlusCircle className='btnAddProductIcon' />
+						Add Product
+					</Button>
 				</Col>
 			</Row>
 			<Row>
@@ -90,11 +98,22 @@ const index: NextPage = () => {
 											value={3}
 										/>
 										<Card.Text>
-											<span className='priceText'>₹949.00</span>
+											<span className='priceText'>
+												<span className='priceText'>₹949.00 - ₹1699.00</span>
+											</span>
 										</Card.Text>
-
-										<Button variant='outline-dark' className='cardCartButton'>
-											Add to cart
+										<Badge bg='warning' text='dark'>
+											2 Years
+										</Badge>{' '}
+										<Badge bg='warning' text='dark'>
+											2 Years
+										</Badge>{' '}
+										<Badge bg='warning' text='dark'>
+											2 Years
+										</Badge>{' '}
+										<br />
+										<Button variant='outline-dark' className='viewProdBtn'>
+											View Details
 										</Button>
 									</Card.Body>
 								</Card>
@@ -112,4 +131,4 @@ const index: NextPage = () => {
 	);
 };
 
-export default index;
+export default Products;

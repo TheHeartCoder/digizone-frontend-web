@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Button, Card, Container } from 'react-bootstrap';
+import { Badge, Button, Card, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
 import StarRatingComponent from 'react-star-rating-component';
 
@@ -28,11 +28,21 @@ const Home: NextPage = () => {
 									value={4}
 								/>
 								<Card.Text>
-									<span className='priceText'>₹949.00</span>
+									<span className='priceText'>₹949.00 - ₹1699.00</span>
 								</Card.Text>
 
-								<Button variant='outline-dark' className='cardCartButton'>
-									Add to cart
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<br />
+								<Button variant='outline-dark' className='viewProdBtn'>
+									View Details
 								</Button>
 							</Card.Body>
 						</Card>
@@ -59,11 +69,23 @@ const Home: NextPage = () => {
 									value={4}
 								/>
 								<Card.Text>
-									<span className='priceText'>₹949.00</span>
+									<span className='priceText'>
+									<span className='priceText'>₹949.00 - ₹1699.00</span>
+									</span>
 								</Card.Text>
 
-								<Button variant='outline-dark' className='cardCartButton'>
-									Add to cart
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<br />
+								<Button variant='outline-dark' className='viewProdBtn'>
+									View Details
 								</Button>
 							</Card.Body>
 						</Card>

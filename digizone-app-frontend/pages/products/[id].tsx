@@ -1,18 +1,29 @@
 import type { NextPage } from 'next';
 import {
+	Badge,
 	Button,
 	Card,
 	Col,
 	Dropdown,
 	DropdownButton,
 	Form,
+	InputGroup,
+	ListGroup,
 	Nav,
+	SplitButton,
 	Tabs,
 } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
 import StarRatingComponent from 'react-star-rating-component';
 import NumericInput from 'react-numeric-input';
-import { BagCheckFill, PersonFill } from 'react-bootstrap-icons';
+import {
+	Archive,
+	BagCheckFill,
+	Check2Circle,
+	Eye,
+	Pen,
+	PersonFill,
+} from 'react-bootstrap-icons';
 import { Tab } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
 import { useState } from 'react';
@@ -43,7 +54,12 @@ const Product: NextPage = () => {
 						/>
 						(507)
 					</div>
-					<p className='productPrice'>₹949.00</p>
+					<p className='productPrice'>
+						₹949.00{' '}
+						<Badge bg='warning' text='dark'>
+							2 Years
+						</Badge>
+					</p>
 					<ul>
 						<li>
 							The sale includes a license key which will be sent to your email
@@ -55,8 +71,17 @@ const Product: NextPage = () => {
 							You will get all official updates and support from Microsoft.{' '}
 						</li>
 					</ul>
-					<div>
+					<div className='productSkuZone'>
 						<NumericInput min={1} max={5} value={1} size={5} />
+						<Form.Select
+							aria-label='Default select example'
+							className='selectValidity'
+						>
+							<option>Select validity</option>
+							<option value='1'>One</option>
+							<option value='2'>Two</option>
+							<option value='3'>Three</option>
+						</Form.Select>
 						<Button variant='primary' className='cartBtn' onClick={handleShow}>
 							<BagCheckFill className='cartIcon' />
 							Add to cart
@@ -86,6 +111,11 @@ const Product: NextPage = () => {
 										Reviews
 									</Nav.Link>
 								</Nav.Item>
+								<Nav.Item>
+									<Nav.Link eventKey='fourth' href='#'>
+										Product SKUs
+									</Nav.Link>
+								</Nav.Item>
 							</Nav>
 						</Col>
 						<Col sm={9}>
@@ -104,28 +134,26 @@ const Product: NextPage = () => {
 									Home without a problem.
 								</Tab.Pane>
 								<Tab.Pane eventKey='second'>
-									<div>
-										<Table responsive>
-											<tbody>
-												<tr>
-													<td width='30%'>Table cell </td>
-													<td width='70%'>Table cell </td>
-												</tr>
-												<tr>
-													<td>Table cell </td>
-													<td>Table cell </td>
-												</tr>
-												<tr>
-													<td>Table cell </td>
-													<td>Table cell </td>
-												</tr>
-												<tr>
-													<td>Table cell </td>
-													<td>Table cell </td>
-												</tr>
-											</tbody>
-										</Table>
-									</div>
+									<Table responsive>
+										<tbody>
+											<tr>
+												<td width='30%'>Table cell </td>
+												<td width='70%'>Table cell </td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+										</tbody>
+									</Table>
 								</Tab.Pane>
 								<Tab.Pane eventKey='third'>
 									<div>
@@ -247,6 +275,205 @@ const Product: NextPage = () => {
 										</div>
 									</div>
 								</Tab.Pane>
+								<Tab.Pane eventKey='fourth'>
+									<Button variant='secondary'>Add SKU Details</Button>
+									<Table responsive>
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Price</th>
+												<th>Quantity</th>
+												<th>License Keys</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<tr>
+												<td>Lucky 001</td>
+												<td>
+													₹949.00{' '}
+													<Badge bg='warning' text='dark'>
+														2 Years
+													</Badge>
+												</td>
+												<td>8</td>
+												<td>
+													<Button
+														variant='outline-dark'
+														style={{ width: '100%' }}
+													>
+														<Eye /> View
+													</Button>
+												</td>
+												<td>
+													<Button variant='outline-dark'>
+														<Pen />
+													</Button>{' '}
+													<Button variant='outline-dark'>
+														<Archive />
+													</Button>
+												</td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+											<tr>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+												<td>Table cell </td>
+											</tr>
+										</tbody>
+									</Table>
+									<Card style={{ padding: '10px' }}>
+										<Form>
+											<Form.Group controlId='formBasicEmail'>
+												<Form.Label>SKU Name</Form.Label>
+												<Form.Control
+													type='text'
+													placeholder='Enter SKU Name'
+												/>
+											</Form.Group>
+											<Form.Group controlId='formBasicPassword'>
+												<Form.Label>SKU Price For Each License</Form.Label>
+												<Form.Control
+													type='text'
+													placeholder='Enter SKU Price'
+												/>
+											</Form.Group>
+											<Form.Group controlId='formBasicPassword'>
+												<Form.Label>SKU Validity</Form.Label>{' '}
+												<small style={{ color: 'grey' }}>
+													(If validity is lifetime then check the box)
+													<Form.Check type='switch' id='custom-switch' />
+												</small>
+												<InputGroup className='mb-3'>
+													<Form.Control aria-label='Text input with checkbox' />
+													<DropdownButton
+														variant='outline-secondary'
+														title='Dropdown'
+														id='input-group-dropdown-9'
+														align='end'
+													>
+														<Dropdown.Item href='#'>Action</Dropdown.Item>
+														<Dropdown.Item href='#'>
+															Another action
+														</Dropdown.Item>
+														<Dropdown.Item href='#'>
+															Something else here
+														</Dropdown.Item>
+														<Dropdown.Divider />
+														<Dropdown.Item href='#'>
+															Separated link
+														</Dropdown.Item>
+													</DropdownButton>
+												</InputGroup>
+											</Form.Group>
+
+											<Form.Group controlId='formBasicPassword'>
+												<Form.Label>SKU License Keys</Form.Label>
+												<InputGroup className='mb-3'>
+													<Form.Control
+														type='text'
+														placeholder='Enter Product Highlight'
+													/>
+													<Button variant='secondary'>
+														<Check2Circle />
+													</Button>
+												</InputGroup>
+											</Form.Group>
+											<div>License Keys are listed below:</div>
+											<ListGroup className='licenceLists'>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+												<ListGroup.Item>
+													<Badge bg='info'>
+														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
+													</Badge>{' '}
+													<span>
+														<Pen /> <Archive />
+													</span>
+												</ListGroup.Item>
+											</ListGroup>
+											<div style={{ marginTop: '10px' }}>
+												<Button variant='outline-info'>Cancel</Button>{' '}
+												<Button variant='outline-primary' type='submit'>
+													Submit
+												</Button>
+											</div>
+										</Form>
+									</Card>
+								</Tab.Pane>
 							</Tab.Content>
 						</Col>
 					</Row>
@@ -273,11 +500,22 @@ const Product: NextPage = () => {
 									value={3}
 								/>
 								<Card.Text>
-									<span className='priceText'>₹949.00</span>
+									<span className='priceText'>
+										<span className='priceText'>₹949.00 - ₹1699.00</span>
+									</span>
 								</Card.Text>
-
-								<Button variant='outline-dark' className='cardCartButton'>
-									Add to cart
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<Badge bg='warning' text='dark'>
+									2 Years
+								</Badge>{' '}
+								<br />
+								<Button variant='outline-dark' className='viewProdBtn'>
+									View Details
 								</Button>
 							</Card.Body>
 						</Card>

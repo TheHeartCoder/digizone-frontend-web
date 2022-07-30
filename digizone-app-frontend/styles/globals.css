@@ -48,12 +48,13 @@ button#input-group-dropdown-2 {
 	cursor: pointer;
 }
 
-.cardCartButton {
+.viewProdBtn {
 	float: right;
 	border-color: #4c575f !important;
+	margin-top: 15px;
 }
 
-.cardCartButton:hover {
+.viewProdBtn:hover {
 	background-color: #4c575f !important;
 	color: white;
 	cursor: pointer;
@@ -80,6 +81,8 @@ button#input-group-dropdown-2 {
 
 .react-numeric-input input {
 	height: 40px;
+	background: white;
+	color: black;
 }
 
 .cartBtn {
@@ -183,5 +186,43 @@ button.btn-close.deleteCartItem {
 	font-size: 1.2rem;
 	font-weight: bold;
 	margin-top: -5px;
-	color: #0491dc
+	color: #0491dc;
+}
+
+.btnAuth {
+	width: 100%;
+	color: rgb(255, 255, 255) !important;
+	font-weight: bold !important;
+	font-size: 1.1rem !important;
+	background-color: #4c575f !important;
+	border-color: #4c575f !important;
+}
+
+.btnAuth:hover {
+	background-color: #3e4d58 !important;
+	color: rgb(227, 164, 164) !important;
+	cursor: pointer;
+}
+
+.btnAddProduct {
+	float: right;
+	margin: 10px 5px 10px 0px;
+}
+svg.btnAddProductIcon {
+	margin-right: 5px;
+}
+
+button.btnAddHighlight.btn.btn-outline-dark {
+	border: none;
+	padding-top: 0px;
+}
+
+.licenceLists {
+	overflow: auto;
+	height: 255px;
+	position: relative;
+}
+select.selectValidity.form-select {
+	width: fit-content;
+	margin-left: 5px;
 }
