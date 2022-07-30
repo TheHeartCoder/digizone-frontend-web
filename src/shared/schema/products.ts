@@ -136,9 +136,6 @@ export class Products {
   downloadUrl: string;
 
   @Prop({})
-  installationFileUrl: string;
-
-  @Prop({})
   feedbackDetails: FeedbackSchema;
 
   @Prop([{ type: SkuDetailsSchema }])
@@ -150,8 +147,8 @@ export class Products {
   @Prop({ type: {} })
   requirmentSpecification: Record<string, any>;
 
-  @Prop({ type: {} })
-  highlights: Record<string, any>;
+  @Prop({ type: [] })
+  highlights: string[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);

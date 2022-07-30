@@ -12,6 +12,7 @@ import { Users, UserSchema } from 'src/shared/schema/users';
 import { AuthMiddleware } from 'src/shared/middleware/auth';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'src/shared/middleware/roles.guard';
+import config from 'config';
 
 @Module({
   controllers: [UsersController],
@@ -32,8 +33,14 @@ export class UsersModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .exclude(
-        { path: 'users/login', method: RequestMethod.POST },
-        { path: 'users', method: RequestMethod.POST },
+        {
+          path: `${config.get('appPrefix')}/users/login`,
+          method: RequestMethod.POST,
+        },
+        {
+          path: `${config.get('appPrefix')}/users`,
+          method: RequestMethod.POST,
+        },
       )
       .forRoutes(UsersController);
   }

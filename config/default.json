@@ -4,6 +4,7 @@
   "mongoDbUrl": "mongodb+srv://arindam:arindam@test.g7xwc.mongodb.net/digizone?retryWrites=true&w=majority",
   "tokenSecret": "ARI@TOKEN_123",
   "fileStoragePath": "../uploads/",
+  "appPrefix": "api/v1",
   "cloudinary": {
     "cloud_name": "df2uufrnc",
     "api_key": "315812872785858",

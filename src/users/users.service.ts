@@ -24,6 +24,8 @@ export class UsersService {
       const newUser = await this.userDB.createNewUserInDB(_createUserDto);
       return {
         email: newUser.email,
+        success: true,
+        message: 'User registered successfully',
       };
     } catch (error) {
       throw error;
