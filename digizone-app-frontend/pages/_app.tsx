@@ -12,7 +12,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<SSRProvider>
 			<Heading />
-
 			<Container>
 				<ToastProvider>
 					<TopHead />
