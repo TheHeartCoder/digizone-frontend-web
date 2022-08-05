@@ -10,7 +10,6 @@ import { tap, catchError } from 'rxjs/operators';
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('Before...');
     const userAgent = context.switchToHttp().getRequest().headers['user-agent'];
 
     const now = Date.now();

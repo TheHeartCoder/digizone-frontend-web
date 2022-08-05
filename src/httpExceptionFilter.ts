@@ -33,12 +33,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getResponse()
         : String(exception);
 
+    console.log('exceptionResponse ==> ', exceptionResponse);
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
       message:
         (exceptionResponse as HttpExceptionResponse).error ||
+        exceptionResponse ||
         'Something went wrong',
     };
 
