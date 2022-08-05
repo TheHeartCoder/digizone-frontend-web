@@ -13,9 +13,12 @@ export const Users = {
 		return getUsersRes;
 	},
 	// save user details or register an user
-	saveUser: async (user: {}): Promise<resposnePayload> => {
-		const saveUserRes = await requests.post('/users', user);
-		return saveUserRes;
+	registerNewUser: async (user: {}): Promise<resposnePayload> => {
+		const registerNewUserRes = await requests.post('/users', {
+			...user,
+			type: 'customer',
+		});
+		return registerNewUserRes;
 	},
 	// login an user
 	loginUser: async (user: {}): Promise<resposnePayload> => {

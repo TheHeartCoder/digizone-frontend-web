@@ -8,28 +8,18 @@ interface IRegisterLoginProps {
 	isResgisterForm?: boolean;
 }
 
+const initalForm = {
+	email: '',
+	password: '',
+	confirmPassword: '',
+	name: '',
+};
+
 const RegisterLogin: FC<IRegisterLoginProps> = ({
 	isResgisterForm = false,
 }) => {
 	const { addToast } = useToasts();
-	const [authForm, setAuthForm] = React.useState({
-		email: '',
-		password: '',
-		confirmPassword: '',
-		name: '',
-	});
-	// handle login form
-	const handleLogin = () => {
-		try {
-			const payload = {
-				email: authForm.email,
-				password: authForm.password,
-			};
-			const res = Users.loginUser(payload);
-		} catch (error: any) {
-			addToast(error.message, { appearance: 'error', autoDismiss: true });
-		}
-	};
+	const [authForm, setAuthForm] = React.useState(initalForm);
 
 	// handle register form
 	const handleRegister = async (e: any) => {
@@ -46,8 +36,8 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				console.error('Invalid password', password, confirmPassword);
 				throw new Error('Password does not match');
 			}
-			if (password.length < 6 || !validator.isStrongPassword(password)) {
-				throw new Error('Password is too short or weak');
+			if (password.length < 6) {
+				throw new Error('Password is too short. Minimum 6 characters');
 			}
 
 			const payload = {
@@ -56,15 +46,59 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				name: authForm.name,
 			};
 
-			const { success, message }: resposnePayload = await Users.saveUser(
+			const { success, message }: resposnePayload = await Users.registerNewUser(
 				payload
 			);
 			if (!success) throw new Error(message);
+			setAuthForm(initalForm);
 			addToast(message, { appearance: 'success', autoDismiss: true });
 		} catch (error: any) {
+			if (error.response) {
+				return addToast(error.response.data.message, {
+					appearance: 'error',
+					autoDismiss: true,
+				});
+			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
 		}
 	};
+
+	// handle login form
+	const handleLogin = async (e: any) => {
+		e.preventDefault();
+		try {
+			const { email, password } = authForm;
+			if (!email || !password) {
+				throw new Error('Invalid email or password');
+			}
+			if (!validator.isEmail(email)) {
+				throw new Error('Invalid email');
+			}
+			if (password.length < 6) {
+				throw new Error('Password is too short. Minimum 6 characters');
+			}
+			const payload = {
+				email: authForm.email,
+				password: authForm.password,
+			};
+			const { success, message }: resposnePayload = await Users.loginUser(
+				payload
+			);
+			if (!success) throw new Error(message);
+			setAuthForm(initalForm);
+			addToast(message, { appearance: 'success', autoDismiss: true });
+		} catch (error: any) {
+			console.log(error);
+			if (error.response) {
+				return addToast(error.response.data.message, {
+					appearance: 'error',
+					autoDismiss: true,
+				});
+			}
+			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		}
+	};
+
 	return (
 		<Card>
 			<Card.Header>{isResgisterForm ? 'Register' : 'Login'}</Card.Header>
@@ -77,7 +111,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 								type='text'
 								name='name'
 								placeholder='Enter your full name'
-								value={authForm.name}
+								value={authForm.name || ''}
 								onChange={(e) =>
 									setAuthForm({ ...authForm, name: e.target.value })
 								}
@@ -90,6 +124,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 							type='email'
 							placeholder='name@example.com'
 							name='email'
+							value={authForm.email || ''}
 							onChange={(e) =>
 								setAuthForm({ ...authForm, email: e.target.value })
 							}
@@ -101,6 +136,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 							type='password'
 							name='password'
 							placeholder='Enter your password'
+							value={authForm.password || ''}
 							onChange={(e) =>
 								setAuthForm({ ...authForm, password: e.target.value })
 							}
@@ -113,6 +149,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 								type='password'
 								name='repassword'
 								placeholder='Re-type your password'
+								value={authForm.confirmPassword || ''}
 								onChange={(e) =>
 									setAuthForm({
 										...authForm,
