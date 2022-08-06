@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
+import config from 'config';
 import { UserRepository } from 'src/shared/repositories/users.repository';
 import { userTypes } from 'src/shared/schema/users';
 import {
@@ -21,6 +22,21 @@ export class UsersService {
       _createUserDto.password = await generateHashPassword(
         _createUserDto.password,
       );
+
+      if (
+        _createUserDto.type === 'admin' &&
+        _createUserDto.secretToken !== config.get('adminCreateToken')
+      ) {
+        throw new Error('You are not authorized to create admin user');
+      }
+
+      // check if the user already exists
+      const userExist = await this.userDB.getUserDetailsByEmail(
+        _createUserDto.email,
+      );
+      if (userExist) {
+        throw new Error('You already have an account with us. Please login.');
+      }
       const newUser = await this.userDB.createNewUserInDB(_createUserDto);
       return {
         email: newUser.email,
@@ -47,8 +63,13 @@ export class UsersService {
       }
 
       return {
-        email,
-        token: generateToken(userExist._id),
+        result: {
+          email,
+          token: generateToken(userExist._id),
+          type: userExist.type,
+        },
+        success: true,
+        message: 'User logged in successfully',
       };
     } catch (error) {
       throw error;

@@ -3,10 +3,12 @@ import { AppModule } from './app.module';
 import config from 'config';
 import { LoggerInterceptor } from './loggerInterceptor';
 import { TransformationInterceptor } from './responseInterceptor';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+  app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('/api/v1');
   app.useGlobalInterceptors(new LoggerInterceptor());
   app.useGlobalInterceptors(new TransformationInterceptor());

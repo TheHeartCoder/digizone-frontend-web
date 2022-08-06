@@ -29,7 +29,7 @@ export class ProductsController {
     FileInterceptor('productImage', {
       dest: config.get('fileStoragePath'),
       limits: {
-        fileSize: 3000000, // 3MB
+        fileSize: 3145728, // 3MB
       },
     }),
   )
