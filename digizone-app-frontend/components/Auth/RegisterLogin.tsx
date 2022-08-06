@@ -4,6 +4,8 @@ import { Users } from '../../pages/services/user.service';
 import { useToasts } from 'react-toast-notifications';
 import { resposnePayload } from '../../pages/services/api';
 import validator from 'validator';
+import { setToken } from '../../helper/token-helper';
+import Router from 'next/router';
 interface IRegisterLoginProps {
 	isResgisterForm?: boolean;
 }
@@ -20,6 +22,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 }) => {
 	const { addToast } = useToasts();
 	const [authForm, setAuthForm] = React.useState(initalForm);
+	const [isLoading, setIsLoading] = React.useState(false);
 
 	// handle register form
 	const handleRegister = async (e: any) => {
@@ -39,7 +42,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 			if (password.length < 6) {
 				throw new Error('Password is too short. Minimum 6 characters');
 			}
-
+			setIsLoading(true);
 			const payload = {
 				email: authForm.email,
 				password: authForm.password,
@@ -60,6 +63,8 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				});
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -77,16 +82,20 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 			if (password.length < 6) {
 				throw new Error('Password is too short. Minimum 6 characters');
 			}
+			setIsLoading(true);
 			const payload = {
 				email: authForm.email,
 				password: authForm.password,
 			};
-			const { success, message }: resposnePayload = await Users.loginUser(
-				payload
-			);
+			const { success, message, result }: resposnePayload =
+				await Users.loginUser(payload);
 			if (!success) throw new Error(message);
 			setAuthForm(initalForm);
+			// set token
+			setToken(result.token, result.type);
 			addToast(message, { appearance: 'success', autoDismiss: true });
+			// redirect to home page
+			Router.push('/');
 		} catch (error: any) {
 			console.log(error);
 			if (error.response) {
@@ -96,6 +105,8 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				});
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -164,6 +175,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 							variant='info'
 							type='submit'
 							className='btnAuth'
+							disabled={isLoading}
 							onClick={isResgisterForm ? handleRegister : handleLogin}
 						>
 							{isResgisterForm ? 'Register' : 'Login'}
