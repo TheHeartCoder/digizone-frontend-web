@@ -45,4 +45,3 @@ export class UsersModule implements NestModule {
       .forRoutes(UsersController);
   }
 }
-9;

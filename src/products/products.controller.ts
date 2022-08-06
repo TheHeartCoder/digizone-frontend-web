@@ -18,13 +18,15 @@ import { skuDtoArrDto, skuDto } from './dto/sku.dto';
 import { GetProductQueryDto } from './dto/get-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import config from 'config';
+import { Roles } from 'src/shared/middleware/roles.decorators';
+import { userTypes } from 'src/shared/schema/users';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
-  @HttpCode(201)
+  @Post('/:id/image')
+  @Roles(userTypes.admin)
   @UseInterceptors(
     FileInterceptor('productImage', {
       dest: config.get('fileStoragePath'),
@@ -33,12 +35,20 @@ export class ProductsController {
       },
     }),
   )
-  create(
-    @Body() createProductDto: CreateProductDto,
+  @HttpCode(200)
+  @Roles(userTypes.admin)
+  uploadProductImage(
+    @Param('id') id: string,
     @UploadedFile() file: ParameterDecorator,
   ) {
-    console.log(createProductDto, file);
-    return this.productsService.create(createProductDto, file);
+    return this.productsService.uploadProductImage(id, file);
+  }
+
+  @Post()
+  @Roles(userTypes.admin)
+  @HttpCode(201)
+  create(@Body() createProductDto: CreateProductDto) {
+    return this.productsService.create(createProductDto);
   }
 
   @Get()
@@ -48,20 +58,29 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productsService.getProductDetailsById(id);
+    return this.productsService.getProductDetailsById(id, false);
+  }
+
+  @Get('/:id/admin')
+  @Roles(userTypes.admin)
+  getProductDetailsById(@Param('id') id: string) {
+    return this.productsService.getProductDetailsById(id, true);
   }
 
   @Patch(':id')
+  @Roles(userTypes.admin)
   update(@Param('id') id: string, @Body() updateProductDto: CreateProductDto) {
     return this.productsService.updateProduct(id, updateProductDto);
   }
 
   @Delete(':id')
+  @Roles(userTypes.admin)
   remove(@Param('id') id: string) {
     return this.productsService.deleteProduct(id);
   }
 
   @Post('/sku/:id')
+  @Roles(userTypes.admin)
   updateProductSkuDetails(
     @Param('id') id: string,
     @Body() skuDetails: skuDtoArrDto,
@@ -83,6 +102,7 @@ export class ProductsController {
   }
 
   @Delete('/sku/:productId')
+  @Roles(userTypes.admin)
   deleteProductSkuDetails(
     @Param('productId') id: string,
     @Body('skuIds') skuIds: [string],

@@ -20,7 +20,7 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsObject()
-  description: any;
+  description: string;
 
   @IsString()
   @IsNotEmpty()
@@ -47,11 +47,11 @@ export class CreateProductDto {
 
   @IsObject()
   @IsOptional()
-  requirmentSpecification: Record<string, any>;
+  requirmentSpecification: [Record<string, any>];
 
   @IsObject()
   @IsOptional()
-  highlights: Record<string, any>;
+  highlights: [string];
 
   @IsOptional()
   @IsArray()

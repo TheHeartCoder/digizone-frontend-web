@@ -19,14 +19,9 @@ export class ProductsService {
       api_secret: config.get('cloudinary.api_secret'),
     });
   }
-  // create a new product
-  async create(
-    createProductDto: CreateProductDto,
-    file: any,
-  ): Promise<{
-    message: string;
-    data: Record<string, any>;
-  }> {
+
+  // product image upload
+  async uploadProductImage(id: string, file: any): Promise<any> {
     // upload file [image] to cloudinary
     const resOfCludinary = await cloudinary.v2.uploader.upload(file.path, {
       folder: config.get('cloudinary.folderPath'),
@@ -40,18 +35,34 @@ export class ProductsService {
         { quality: 'auto' },
       ],
     });
-    createProductDto.image = resOfCludinary.secure_url;
-    createProductDto.imageDetails = resOfCludinary;
 
     // remove the file from local
     fs.unlinkSync(file.path);
+    // update product image details in db
+    await this.productDB.updateProductImageDetailsInDB(id, {
+      image: resOfCludinary.secure_url,
+      imageDetails: resOfCludinary,
+    });
 
+    return {
+      message: 'Product image uploaded successfully',
+      result: {
+        image: resOfCludinary.secure_url,
+      },
+    };
+  }
+
+  // create a new product
+  async create(createProductDto: CreateProductDto): Promise<{
+    message: string;
+    result: Record<string, any>;
+  }> {
     const createdProduct = await this.productDB.createProductInDB(
       createProductDto,
     );
     return {
       message: 'Product created successfully',
-      data: createdProduct,
+      result: createdProduct,
     };
   }
 
@@ -74,8 +85,11 @@ export class ProductsService {
     };
   }
   // get product details by id
-  async getProductDetailsById(id: string): Promise<any> {
-    const productDetails = await this.productDB.getProductDetailsById(id);
+  async getProductDetailsById(id: string, isAdmin: boolean): Promise<any> {
+    const productDetails = await this.productDB.getProductDetailsById(
+      id,
+      isAdmin,
+    );
     if (!productDetails) throw new BadRequestException('No product found');
     return {
       message: 'Product found',
@@ -86,13 +100,13 @@ export class ProductsService {
   // get all products with sorting and filtering
   async getAllProducts(queryDetails: GetProductQueryDto): Promise<{
     message: string;
-    data: {
+    result: {
       skip: number;
       limit: number;
       total: number;
       pages: number;
       links: any;
-      result: [];
+      products: [];
     };
   }> {
     const data = qs2m(queryDetails);
@@ -104,13 +118,13 @@ export class ProductsService {
     );
     return {
       message: 'Products found',
-      data: {
+      result: {
         skip: options.skip || 0,
         limit: options.limit,
         total,
         pages: options.limit ? Math.ceil(total / options.limit) : 1,
         links: links(`/`, total),
-        result,
+        products: result,
       },
     };
   }

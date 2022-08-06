@@ -18,9 +18,41 @@ export class ProductRepository {
     return await product.save();
   }
 
+  // upadte image for product
+  async updateProductImageDetailsInDB(
+    id: string,
+    imageDetails: Record<string, any>,
+  ): Promise<any> {
+    return await this.productModel.updateOne(
+      { _id: id },
+      { $set: { ...imageDetails } },
+    );
+  }
+
   // get product details by id
-  async getProductDetailsById(id: string): Promise<any> {
-    const product = await this.productModel.findById(id);
+  async getProductDetailsById(id: string, isAdmin: boolean): Promise<any> {
+    let projection = {};
+    if (!isAdmin) {
+      projection = {
+        skuDetails: 0,
+        allSkuDetails: {
+          $map: {
+            input: '$skuDetails',
+            as: 'skuDetailsVal',
+            in: {
+              _id: '$$skuDetailsVal._id',
+              skuName: '$$skuDetailsVal.skuName',
+              price: '$$skuDetailsVal.price',
+              quantity: '$$skuDetailsVal.quantity',
+              validityAmount: '$$skuDetailsVal.shortDescription',
+              durationType: '$$skuDetailsVal.longDescription',
+              lifetime: '$$skuDetailsVal.lifetime',
+            },
+          },
+        },
+      };
+    }
+    const product = await this.productModel.findById(id).projection(projection);
     return product;
   }
 
@@ -45,14 +77,25 @@ export class ProductRepository {
     options.sort = options.sort || { _id: -1 };
     options.skip = options.skip || 0;
     options.limit = options.limit || 10;
-    let defaultProjection = {
+    const defaultProjection = {
       skuDetails: 0,
+      allSkuDetails: {
+        $map: {
+          input: '$skuDetails',
+          as: 'skuDetailsVal',
+          in: {
+            _id: '$$skuDetailsVal._id',
+            skuName: '$$skuDetailsVal.skuName',
+            price: '$$skuDetailsVal.price',
+            quantity: '$$skuDetailsVal.quantity',
+            validityAmount: '$$skuDetailsVal.shortDescription',
+            durationType: '$$skuDetailsVal.longDescription',
+            lifetime: '$$skuDetailsVal.lifetime',
+          },
+        },
+      },
       'feedbackDetails.info': 0,
     };
-
-    if (options.projection && options.projection.skuDetails) {
-      defaultProjection = { ...defaultProjection, ...options.projection };
-    }
 
     if (criteria.search) {
       criteria.productName = { $regex: new RegExp(criteria.search, 'i') };
