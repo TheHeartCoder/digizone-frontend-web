@@ -1,10 +1,23 @@
 import requests, { resposnePayload } from './api';
+import queryString from 'query-string';
 
 // create product service
 export const Products = {
-	// get product details
-	getProducts: async (filter: string): Promise<resposnePayload> => {
-		const getProductRes = await requests.get('/products' + filter);
+	// get products for admin
+	getProductsForAdmin: async (
+		filter: Record<string, any>
+	): Promise<resposnePayload> => {
+		const url = queryString.stringifyUrl({ url: '/products/admin', query: filter });
+		const getProductRes = await requests.get(url);
+		return getProductRes;
+	},
+
+	// get products for customer
+	getProductsForCustomer: async (
+		filter: Record<string, any>
+	): Promise<resposnePayload> => {
+		const url = queryString.stringifyUrl({ url: '/products', query: filter });
+		const getProductRes = await requests.get(url);
 		return getProductRes;
 	},
 	// get product details
@@ -20,8 +33,23 @@ export const Products = {
 		return saveProductRes;
 	},
 	// update product details
-	updateProduct: async (id: string, product: Record<string, any>): Promise<resposnePayload> => {
+	updateProduct: async (
+		id: string,
+		product: Record<string, any>
+	): Promise<resposnePayload> => {
 		const updateProductRes = await requests.patch('/products/' + id, product);
 		return updateProductRes;
+	},
+
+	// upload product image
+	uploadProductImage: async (
+		id: string,
+		image: any
+	): Promise<resposnePayload> => {
+		const uploadProductImageRes = await requests.put(
+			'/products/' + id + '/image',
+			image
+		);
+		return uploadProductImageRes;
 	},
 };

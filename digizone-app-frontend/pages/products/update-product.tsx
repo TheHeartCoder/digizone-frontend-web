@@ -25,8 +25,6 @@ const initialForm = {
 	requirmentSpecification: [] as Record<string, string>[],
 	highlights: [] as string[],
 	downloadUrl: '' as string,
-	productImage: {} as File,
-	image: '' as string,
 };
 
 const UpdateProduct: NextPage = () => {
@@ -96,18 +94,14 @@ const UpdateProduct: NextPage = () => {
 		setUpdateRequirementIndex(-1);
 	};
 
-	const handlerSubmitForm = (
+	const handlerSubmitForm = async (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-	): void => {
+	) => {
 		e.preventDefault();
-		const formData = new FormData();
-		Object.keys(productForm).forEach((key) => {
-			formData.append(key, productForm[key]);
-		});
 
 		productId
-			? Products.updateProduct(productId, formData)
-			: Products.saveProduct(formData);
+			? await Products.updateProduct(productId, productForm)
+			: await Products.saveProduct(productForm);
 		addToast('Product saved successfully', {
 			type: 'success',
 			autoDismiss: true,
@@ -156,37 +150,6 @@ const UpdateProduct: NextPage = () => {
 										description: e.target.value,
 									})
 								}
-							/>
-						</Form.Group>
-						<Form.Group controlId='formFile' className='mb-3'>
-							<Form.Label>Product Image</Form.Label>
-							<Form.Control
-								type='file'
-								value={productForm.image}
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-									const target = event.target as HTMLInputElement;
-									const file = (target.files as FileList)[0];
-									console.log(file, file.size);
-									if (file && file.size > 3 * 1024 * 1024) {
-										target.value = '';
-										return addToast('Image size should be less than 3kb', {
-											appearance: 'error',
-											autoDismiss: true,
-										});
-									}
-									if (file && file.type.split('.')[0] !== 'image') {
-										target.value = '';
-										return addToast('Image type should be jpeg, png, or gif', {
-											appearance: 'error',
-											autoDismiss: true,
-										});
-									}
-
-									setProductForm({
-										...initialForm,
-										productImage: file,
-									});
-								}}
 							/>
 						</Form.Group>
 						<Form.Group controlId='formFile' className='mb-3'>

@@ -1,4 +1,5 @@
 import styles from '../../styles/Product.module.css';
+import { GetServerSideProps } from 'next';
 import type { NextPage } from 'next';
 import {
 	Badge,
@@ -15,8 +16,52 @@ import BreadcrumbDisplay from '../../components/shared/BreadcrumbDisplay';
 import PaginationDisplay from '../../components/shared/PaginationDisplay';
 import StarRatingComponent from 'react-star-rating-component';
 import { PlusCircle } from 'react-bootstrap-icons';
+import { useEffect } from 'react';
+import { getUserType } from '../../helper/token-helper';
+import { useState } from 'react';
+import ProductItem from '../../components/Products/ProductItem';
+import Link from 'next/link';
+import { Products } from '../../pages/services/product.service';
+import { useToasts } from 'react-toast-notifications';
 
-const Products: NextPage = () => {
+const AllProducts: NextPage = () => {
+	const { addToast } = useToasts();
+	const [userType, setUserType] = useState('customer');
+	const [products, setProducts] = useState([]);
+	useEffect(() => {
+		const userRole = getUserType();
+		setUserType(userRole === 'admin' ? 'admin' : 'customer');
+		fetchProducts({ limit: 12 }, userRole ? userRole : '');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const fetchProducts = async (
+		query: Record<string, any>,
+		userRole: string
+	) => {
+		try {
+			if (!userRole) {
+				return false;
+			}
+			const { success, message, result } =
+				userRole === 'admin'
+					? await Products.getProductsForAdmin(query)
+					: await Products.getProductsForCustomer(query);
+			if (!success) console.log(message);
+			setProducts(result.products);
+		} catch (error: any) {
+			if (error.response) {
+				return addToast(error.response.data.message, {
+					appearance: 'error',
+					autoDismiss: true,
+				});
+			}
+			addToast(error.message, {
+				appearance: 'error',
+				autoDismiss: true,
+			});
+		}
+	};
 	return (
 		<>
 			<Row>
@@ -36,10 +81,14 @@ const Products: NextPage = () => {
 						<Dropdown.Divider />
 						<Dropdown.Item href='#'>Separated link</Dropdown.Item>
 					</DropdownButton>
-					<Button variant='primary' className='btnAddProduct'>
-						<PlusCircle className='btnAddProductIcon' />
-						Add Product
-					</Button>
+					{userType === 'admin' && (
+						<Link href='/products/update-product'>
+							<a className='btn btn-primary btnAddProduct'>
+								<PlusCircle className='btnAddProductIcon' />
+								Add Product
+							</a>
+						</Link>
+					)}
 				</Col>
 			</Row>
 			<Row>
@@ -80,44 +129,17 @@ const Products: NextPage = () => {
 				</Col>
 				<Col sm={10}>
 					<Row xs={1} md={3} className='g-3'>
-						{Array.from({ length: 15 }).map((_, idx) => (
-							// eslint-disable-next-line react/jsx-key
-							<Col>
-								<Card className='productCard'>
-									<Card.Img
-										variant='top'
-										src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-									/>
-									<Card.Body>
-										<Card.Title>Microsoft Window 10</Card.Title>
-										<StarRatingComponent
-											name='rate2'
-											editing={false}
-											starCount={5}
-											value={3}
-										/>
-										<Card.Text>
-											<span className='priceText'>
-												<span className='priceText'>₹949.00 - ₹1699.00</span>
-											</span>
-										</Card.Text>
-										<Badge bg='warning' text='dark'>
-											2 Years
-										</Badge>{' '}
-										<Badge bg='warning' text='dark'>
-											2 Years
-										</Badge>{' '}
-										<Badge bg='warning' text='dark'>
-											2 Years
-										</Badge>{' '}
-										<br />
-										<Button variant='outline-dark' className='viewProdBtn'>
-											View Details
-										</Button>
-									</Card.Body>
-								</Card>
-							</Col>
-						))}
+						{products.length > 0 ? (
+							products.map((product: Record<string, any>) => (
+								<ProductItem
+									key={product._id as string}
+									userType={userType}
+									product={product}
+								/>
+							))
+						) : (
+							<h1>No Products</h1>
+						)}
 					</Row>
 				</Col>
 			</Row>
@@ -130,4 +152,14 @@ const Products: NextPage = () => {
 	);
 };
 
-export default Products;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+// 	const query = context.query as unknown as string;
+// 	const productsRes = await Products.getProducts(query);
+// 	console.log(productsRes)
+
+// 	return {
+// 		props: productsRes, // will be passed to the page component as props
+// 	};
+// };
+
+export default AllProducts;

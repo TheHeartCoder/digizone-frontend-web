@@ -230,3 +230,23 @@ select.selectValidity.form-select {
 .pointer {
 	cursor: pointer;
 }
+
+.fileInputDiv {
+	margin-top: 15px;
+  position: relative;
+  overflow: hidden;
+	cursor: pointer;
+}
+.fileInput {
+  position: absolute;
+  font-size: 50px;
+  opacity: 0;
+  right: 0;
+  top: 0;
+	cursor: pointer;
+}
+
+.btnGrpForProduct {
+	display: flex;
+	justify-content: space-between;
+}
