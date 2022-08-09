@@ -7,19 +7,22 @@ import TopHead from '../components/shared/TopHead';
 import Heading from '../components/shared/Heading';
 import Footer from '../components/shared/Footer';
 import { ToastProvider } from 'react-toast-notifications';
+import { Provider } from '../context';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<SSRProvider>
-			<Heading />
-			<Container>
-				<ToastProvider>
-					<TopHead />
-					<Component {...pageProps} />
-					<Footer />
-				</ToastProvider>
-			</Container>
-		</SSRProvider>
+		<Provider>
+			<SSRProvider>
+				<Heading />
+				<Container>
+					<ToastProvider>
+						<TopHead />
+						<Component {...pageProps} />
+						<Footer />
+					</ToastProvider>
+				</Container>
+			</SSRProvider>
+		</Provider>
 	);
 }
 
