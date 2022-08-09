@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Query,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { userTypes } from 'src/shared/schema/users';
 import { Roles } from 'src/shared/middleware/roles.decorators';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -22,11 +24,23 @@ export class UsersController {
   }
 
   @Post('/login')
-  async login(@Body() loginUserDto: any) {
-    return await this.usersService.login(
+  async login(
+    @Body() loginUserDto: any,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const loginRes = await this.usersService.login(
       loginUserDto.email,
       loginUserDto.password,
     );
+    if (loginRes.success) {
+      // add token to response cookies
+      response.cookie('_digi_auth_token', loginRes.token, {
+        httpOnly: true,
+        // secure: true, // only works on https
+      });
+    }
+    delete loginRes.token; //delete token from response body
+    return loginRes;
   }
 
   @Get()

@@ -15,7 +15,7 @@ export class UsersService {
     @Inject(UserRepository) private readonly userDB: UserRepository,
   ) {}
 
-  // create a new user
+  // create / register a new user
   async create(_createUserDto: CreateUserDto) {
     try {
       // hash the user password and update the payload of body
@@ -62,9 +62,12 @@ export class UsersService {
         throw new Error(`Wrong email or password`);
       }
 
+      delete userExist.password; // delete password from response body
+      delete userExist._id; // delete id from response body
+
       return {
         result: {
-          email,
+          user: userExist,
           token: generateToken(userExist._id),
           type: userExist.type,
         },

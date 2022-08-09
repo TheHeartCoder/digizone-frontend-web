@@ -1,4 +1,9 @@
-import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/users.repository';
 import { Request, Response, NextFunction } from 'express';
 import config from 'config';
@@ -11,21 +16,21 @@ export class AuthMiddleware implements NestMiddleware {
   ) {}
   async use(req: Request | any, res: Response, next: NextFunction) {
     try {
-      const authHeaders = req.headers.authorization;
-      const token = (authHeaders as string).split(' ')[1];
-      if (!authHeaders || !token) {
-        throw new Error('Un authorized - 01');
+      const token = req.cookies._digi_auth_token;
+      // const token = (authHeaders as string).split(' ')[1];
+      if (!token) {
+        throw new UnauthorizedException('Unauthorized');
       }
       const decoded: any = jwt.verify(token, config.get('tokenSecret'));
       const user: any = await this.userDB.getUserDetailsById(decoded.id);
       if (!user) {
-        throw new Error('Un authorized - 02');
+        throw new UnauthorizedException('Unauthorized');
       }
       user.password = undefined;
       req.user = user;
       next();
     } catch (error) {
-      throw new Error('Un authorized - 03');
+      throw new UnauthorizedException('Unauthorized');
     }
   }
 }
