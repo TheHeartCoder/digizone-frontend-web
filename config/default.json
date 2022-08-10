@@ -13,5 +13,17 @@
     "publicId_prefix": "digi_prods_",
     "bigSize": "400X400"
   },
-  "adminCreateToken" : "sadeSd@#s4fv$sd"
+  "adminCreateToken": "sadeSd@#s4fv$sd",
+  "emailService": {
+    "testDomain": "sandbox4ea7cfe84fde4fbcb3bf6b9157156213.mailgun.org",
+    "testEmail": "arindampaul411@gmail.com",
+    "privateApiKey": "6dcc23eca0b183f2cb1bffccd2f07821-2bab6b06-cbb75d6e",
+    "publicApiKey": "pubkey-2839820e8d7f1ca0940ec4a5cd464204",
+    "emailTemplates": {
+      "forgotPassword": "forgot-password-template",
+      "verifyEmail": "verify-email-template"
+    }
+  },
+  "loginLink": "http://localhost:3000/auth",
+  "verifyEmailLink": "http://localhost:3000/auth?verifyToken="
 }

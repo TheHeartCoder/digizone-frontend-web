@@ -41,6 +41,10 @@ export class UsersModule implements NestModule {
           path: `${config.get('appPrefix')}/users`,
           method: RequestMethod.POST,
         },
+        {
+          path: `${config.get('appPrefix')}/users/forgot-password`,
+          method: RequestMethod.GET,
+        },
       )
       .forRoutes(UsersController);
   }

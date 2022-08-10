@@ -58,4 +58,14 @@ export class UsersController {
   async updatePassword(@Param('id') id: string, @Body() updateUserDto: any) {
     return await this.usersService.updatePassword(id, updateUserDto);
   }
+
+  @Get('/verify')
+  async verifyEmail(@Query('token') token: string) {
+    return await this.usersService.verifyEmail(token);
+  }
+
+  @Get('/forgot-password')
+  async forgotPassword(@Query('email') email: string) {
+    return await this.usersService.forgotPassword(email);
+  }
 }
