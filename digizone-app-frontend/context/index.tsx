@@ -1,6 +1,9 @@
 import { useReducer, createContext, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+interface CommonHeaderProperties {
+	'X-CSRF-Token': string;
+}
 
 type Props = {
 	children: React.ReactNode;
@@ -52,9 +55,7 @@ const Provider = ({ children }: Props) => {
 	useEffect(() => {
 		return dispatch({
 			type: 'LOGIN',
-			payload: window.localStorage.getItem('user')
-				? JSON.parse(window.localStorage.getItem('user'))
-				: null,
+			payload: JSON.parse(window.localStorage.getItem('user') || ''),
 		});
 	}, []);
 
@@ -95,7 +96,12 @@ const Provider = ({ children }: Props) => {
 		const getCsrfToken = async () => {
 			const { data } = await axios.get('/api/csrf-token');
 			// console.log("CSRF", data);
-			axios.defaults.headers['X-CSRF-Token'] = data.getCsrfToken;
+			(
+				axios.defaults.headers! as unknown as Record<
+					string,
+					CommonHeaderProperties
+				>
+			).common['X-CSRF-Token'] = data.csrfToken;
 		};
 		getCsrfToken();
 	}, []);
