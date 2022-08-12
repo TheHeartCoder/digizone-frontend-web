@@ -13,7 +13,7 @@ import { Archive, Check2Circle, Pen } from 'react-bootstrap-icons';
 import { Table } from 'react-bootstrap';
 import { useToasts } from 'react-toast-notifications';
 import { useRouter } from 'next/router';
-import { Products } from '../services/product.service';
+import { Products } from '../../services/product.service';
 
 const initialForm = {
 	productName: '' as string,

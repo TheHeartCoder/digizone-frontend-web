@@ -55,7 +55,7 @@ const Provider = ({ children }: Props) => {
 	useEffect(() => {
 		return dispatch({
 			type: 'LOGIN',
-			payload: JSON.parse(window.localStorage.getItem('user') || ''),
+			payload: JSON.parse(window.localStorage.getItem('user') || '{}'),
 		});
 	}, []);
 
@@ -94,14 +94,16 @@ const Provider = ({ children }: Props) => {
 
 	useEffect(() => {
 		const getCsrfToken = async () => {
-			const { data } = await axios.get('/api/csrf-token');
-			// console.log("CSRF", data);
-			(
-				axios.defaults.headers! as unknown as Record<
-					string,
-					CommonHeaderProperties
-				>
-			).common['X-CSRF-Token'] = data.csrfToken;
+			const { data } = await axios.get(
+				process.env.NEXT_PUBLIC_BASE_API_PREFIX + '/csrf-token'
+			);
+			const csrfToken = data.result;
+			if (!csrfToken) {
+				throw new Error('CSRF Token not found');
+			}
+			// csrf token to axios header
+			axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+			console.log('CSRF Token', csrfToken, axios.defaults.headers);
 		};
 		getCsrfToken();
 	}, []);

@@ -11,6 +11,7 @@ app
 	.then(() => {
 		const server = express();
 		// apply proxy in dev mode
+		console.log('DEV ;;;; ', dev);
 		if (dev) {
 			server.use('/api', () =>
 				createProxyMiddleware({

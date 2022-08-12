@@ -31,11 +31,24 @@ export const Users = {
 		return updateUserRes;
 	},
 	// forgot user's password
-	forgotUserPassword: async (user: {}): Promise<resposnePayload> => {
-		const forgotUserPasswordRes = await requests.post(
-			'/users/forgot-password',
-			user
+	forgotUserPassword: async (email: string): Promise<resposnePayload> => {
+		const forgotUserPasswordRes = await requests.get(
+			'/users/forgot-password/ ' + email
 		);
 		return forgotUserPasswordRes;
+	},
+
+	// resend otp
+	resendOTP: async (email: string): Promise<resposnePayload> => {
+		const resendOTPRes = await requests.get('/users/send-otp-mail/' + email);
+		return resendOTPRes;
+	},
+
+	// verify OTP
+	verifyOTP: async (otp: string, email: string): Promise<resposnePayload> => {
+		const verifyOTPRes = await requests.get(
+			`/users/verify-email/${otp}/${email}`
+		);
+		return verifyOTPRes;
 	},
 };

@@ -21,7 +21,7 @@ import { getUserType } from '../../helper/token-helper';
 import { useState } from 'react';
 import ProductItem from '../../components/Products/ProductItem';
 import Link from 'next/link';
-import { Products } from '../../pages/services/product.service';
+import { Products } from '../../services/product.service';
 import { useToasts } from 'react-toast-notifications';
 
 const AllProducts: NextPage = () => {
