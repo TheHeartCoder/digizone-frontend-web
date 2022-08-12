@@ -40,6 +40,8 @@ const rootReducer = (
 			return { ...state, user: action.payload };
 		case 'LOGOUT':
 			return { ...state, user: null };
+		case 'UPDATE_USER':
+			return { ...state, user: action.payload };
 		default:
 			return state;
 	}
@@ -55,7 +57,7 @@ const Provider = ({ children }: Props) => {
 	useEffect(() => {
 		return dispatch({
 			type: 'LOGIN',
-			payload: JSON.parse(window.localStorage.getItem('user') || '{}'),
+			payload: JSON.parse(window.localStorage.getItem('_digi_user') || '{}'),
 		});
 	}, []);
 

@@ -1,4 +1,3 @@
-
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import { Badge } from 'react-bootstrap';
@@ -7,6 +6,7 @@ import { CartFill, PersonSquare, Search } from 'react-bootstrap-icons';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../../styles/Home.module.css';
+import Router from 'next/router';
 
 const TopHead = () => {
 	return (
@@ -40,6 +40,9 @@ const TopHead = () => {
 						width='40'
 						color='#4c575f'
 						className={styles.personIcon}
+						onClick={() => {
+							Router.push('/my-account');
+						}}
 					/>
 				</Col>
 			</Row>

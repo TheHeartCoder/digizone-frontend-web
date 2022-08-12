@@ -1,11 +1,11 @@
-import React, { FC, useRef } from 'react';
+import React, { FC, useContext, useEffect, useRef } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { Users } from '../../services/user.service';
 import { useToasts } from 'react-toast-notifications';
 import { resposnePayload } from '../../services/api';
 import validator from 'validator';
-import { setToken } from '../../helper/token-helper';
-import Router from 'next/router';
+import Router from 'next/Router';
+import { Context } from '../../context';
 interface IRegisterLoginProps {
 	isResgisterForm?: boolean;
 }
@@ -24,7 +24,18 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 	const [authForm, setAuthForm] = React.useState(initalForm);
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [otpTime, setOtpTime] = React.useState(false);
-	const [otpValue, setOtpValue] = React.useState('');
+	const [otpForm, setOtpForm] = React.useState({ email: '', otp: '' });
+
+	const {
+		state: { user },
+		dispatch,
+	} = useContext(Context);
+
+	useEffect(() => {
+		if (user && user.email) {
+			Router.push('/my-account'); // if user already logged in redirect to my account
+		}
+	}, [user]);
 
 	// handle register form
 	const handleRegister = async (e: any) => {
@@ -55,8 +66,9 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				payload
 			);
 			if (!success) throw new Error(message);
-			setAuthForm(initalForm);
+			setOtpForm({ ...otpForm, email: email });
 			setOtpTime(true);
+			setAuthForm(initalForm);
 			addToast(message, { appearance: 'success', autoDismiss: true });
 		} catch (error: any) {
 			if (error.response) {
@@ -87,15 +99,17 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 			}
 			setIsLoading(true);
 			const payload = {
-				email: authForm.email,
-				password: authForm.password,
+				email,
+				password,
 			};
 			const { success, message, result }: resposnePayload =
 				await Users.loginUser(payload);
 			if (!success) throw new Error(message);
-			setAuthForm(initalForm);
-			// set token
-			setToken(result.token, result.type);
+
+			dispatch({
+				type: 'LOGIN',
+				payload: result?.user,
+			});
 			addToast(message, { appearance: 'success', autoDismiss: true });
 			// redirect to home page
 			Router.push('/');
@@ -116,7 +130,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 	// handle resend otp
 	const otpResend = async () => {
 		try {
-			const { email } = authForm;
+			const { email } = otpForm;
 			if (!validator.isEmail(email)) {
 				throw new Error('Invalid email');
 			}
@@ -143,18 +157,18 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 	const verifyUser = async (e: any) => {
 		e.preventDefault();
 		try {
-			const { email } = authForm;
-			if (!validator.isEmail(email)) {
+			if (!validator.isEmail(otpForm.email)) {
 				throw new Error('Invalid email');
 			}
 			setIsLoading(true);
 			const { success, message }: resposnePayload = await Users.verifyOTP(
-				otpValue,
-				email
+				otpForm.otp,
+				otpForm.email
 			);
 			if (!success) throw new Error(message);
 			addToast(message, { appearance: 'success', autoDismiss: true });
 			setOtpTime(false);
+			setAuthForm(initalForm);
 		} catch (error: any) {
 			if (error.response) {
 				return addToast(error.response.data.message, {
@@ -178,9 +192,8 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 				);
 			}
 			setIsLoading(true);
-			const { success, message }: resposnePayload = await Users.forgotUserPassword(
-				email
-			);
+			const { success, message }: resposnePayload =
+				await Users.forgotUserPassword(email);
 			if (!success) throw new Error(message);
 			addToast(message, { appearance: 'success', autoDismiss: true });
 		} catch (error: any) {
@@ -267,10 +280,16 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 										type='text'
 										name='otp'
 										placeholder='OTP'
-										onChange={(e) => setOtpValue(e.target.value)}
+										onChange={(e) =>
+											setOtpForm({ ...otpForm, otp: e.target.value })
+										}
 									/>
 
-									<Button variant='primary' onClick={otpResend}>
+									<Button
+										variant='link'
+										className='resendOtpBtn'
+										onClick={otpResend}
+									>
 										Resend OTP
 									</Button>
 								</Form.Group>

@@ -1,4 +1,5 @@
-import React from 'react';
+import Router from 'next/router';
+import React, { useContext, useEffect } from 'react';
 import {
 	Button,
 	Card,
@@ -11,8 +12,44 @@ import {
 } from 'react-bootstrap';
 import { Col, Row } from 'react-bootstrap';
 import StarRatingComponent from 'react-star-rating-component';
+import { useToasts } from 'react-toast-notifications';
+import AccountDetails from '../components/MyAccount/AccountDetails';
+import { Context } from '../context';
+import { Users } from '../services/user.service';
 
 const MyAccount = () => {
+	const { addToast } = useToasts();
+	const {
+		state: { user },
+		dispatch,
+	} = useContext(Context);
+	useEffect(() => {
+		if (!user || !user.email) {
+			Router.push('/auth'); // if user already logged in redirect to my account
+		}
+	}, [user]);
+
+	const logoutHandler = async () => {
+		try {
+			dispatch({
+				type: 'LOGOUT',
+				payload: undefined,
+			});
+			await Users.logoutUser();
+			localStorage.removeItem('_digi_user');
+			addToast('Logout Successful', {
+				appearance: 'success',
+				autoDismiss: true,
+			});
+			Router.push('/auth');
+		} catch (error: any) {
+			addToast(error.message, {
+				appearance: 'error',
+				autoDismiss: true,
+			});
+		}
+	};
+
 	return (
 		<Tab.Container id='left-tabs-example' defaultActiveKey='first'>
 			<Row>
@@ -34,7 +71,7 @@ const MyAccount = () => {
 							</Nav.Link>
 						</Nav.Item>
 						<Nav.Item>
-							<Nav.Link eventKey='third' href='#'>
+							<Nav.Link eventKey='third' href='#' onClick={logoutHandler}>
 								Logout
 							</Nav.Link>
 						</Nav.Item>
@@ -43,69 +80,11 @@ const MyAccount = () => {
 				<Col sm={9}>
 					<Tab.Content>
 						<Tab.Pane eventKey='first'>
-							{' '}
-							<Card>
-								<Card.Header>Register</Card.Header>
-								<Card.Body>
-									<Form>
-										<Form.Group
-											className='mb-3'
-											controlId='exampleForm.ControlInput1'
-										>
-											<Form.Label>Full name</Form.Label>
-											<Form.Control
-												type='text'
-												placeholder='Enter your full name'
-											/>
-										</Form.Group>
-										<Form.Group
-											className='mb-3'
-											controlId='exampleForm.ControlInput1'
-										>
-											<Form.Label>Email address</Form.Label>
-											<Form.Control
-												type='email'
-												placeholder='name@example.com'
-											/>
-										</Form.Group>
-										<Form.Group
-											className='mb-3'
-											controlId='exampleForm.ControlInput1'
-										>
-											<Form.Label>Current Password</Form.Label>
-											<Form.Control
-												type='password'
-												placeholder='Enter your password'
-											/>
-										</Form.Group>
-										<Form.Group
-											className='mb-3'
-											controlId='exampleForm.ControlInput1'
-										>
-											<Form.Label>New Password</Form.Label>
-											<Form.Control
-												type='password'
-												placeholder='Enter your new password'
-											/>
-										</Form.Group>
-										<Form.Group
-											className='mb-3'
-											controlId='exampleForm.ControlInput1'
-										>
-											<Form.Label>Re-type Password</Form.Label>
-											<Form.Control
-												type='password'
-												placeholder='Re-type your password'
-											/>
-										</Form.Group>
-										<Form.Group className='mb-3'>
-											<Button variant='info' type='submit' className='btnAuth'>
-												Update
-											</Button>
-										</Form.Group>
-									</Form>
-								</Card.Body>
-							</Card>
+							<AccountDetails
+								user={user}
+								dispatch={dispatch}
+								addToast={addToast}
+							/>
 						</Tab.Pane>
 						<Tab.Pane eventKey='second'>
 							<Row>

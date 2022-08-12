@@ -1,8 +1,4 @@
-// set token to session storage
-export const setToken = (token: string, type: string) => {
-	localStorage.setItem('_digi_auth_token', token);
-	localStorage.setItem('_user_type', type);
-};
+
 
 // get token
 export const getToken = () => {

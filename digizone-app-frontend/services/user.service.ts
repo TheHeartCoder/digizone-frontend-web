@@ -21,19 +21,35 @@ export const Users = {
 		return registerNewUserRes;
 	},
 	// login an user
-	loginUser: async (user: {}): Promise<resposnePayload> => {
+	loginUser: async (user: any): Promise<resposnePayload> => {
 		const loginUserRes = await requests.post('/users/login', user);
+		window.localStorage.setItem(
+			'_digi_user',
+			JSON.stringify(loginUserRes.result.user)
+		);
 		return loginUserRes;
 	},
 	// update user details
-	updateUser: async (user: {}): Promise<resposnePayload> => {
-		const updateUserRes = await requests.put('/users/1', user);
+	updateUser: async (user: any, id: string): Promise<resposnePayload> => {
+		const updateUserRes = await requests.patch(
+			`/users/update-name-password/${id}`,
+			user
+		);
+		// get data from localStorage
+		const userData = JSON.parse(
+			window.localStorage.getItem('_digi_user') || ''
+		);
+		// update user data
+		userData.name = user?.name;
+		// set user data
+		window.localStorage.setItem('_digi_user', JSON.stringify(userData));
+
 		return updateUserRes;
 	},
 	// forgot user's password
 	forgotUserPassword: async (email: string): Promise<resposnePayload> => {
 		const forgotUserPasswordRes = await requests.get(
-			'/users/forgot-password/ ' + email
+			`/users/forgot-password/${email}`
 		);
 		return forgotUserPasswordRes;
 	},
@@ -50,5 +66,12 @@ export const Users = {
 			`/users/verify-email/${otp}/${email}`
 		);
 		return verifyOTPRes;
+	},
+
+	//logout user
+	logoutUser: async (): Promise<resposnePayload> => {
+		const logoutUserRes = await requests.put('/users/logout', {});
+		window.localStorage.removeItem('_digi_user');
+		return logoutUserRes;
 	},
 };
