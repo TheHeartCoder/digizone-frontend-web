@@ -59,13 +59,18 @@ export class UsersController {
     return await this.usersService.updatePassword(id, updateUserDto);
   }
 
-  @Get('/verify')
-  async verifyEmail(@Query('token') token: string) {
-    return await this.usersService.verifyEmail(token);
+  @Get('/verify-email/:otp/:email')
+  async verifyEmail(@Param('otp') otp: string, @Param('email') email: string) {
+    return await this.usersService.verifyEmail(otp, email);
   }
 
-  @Get('/forgot-password')
-  async forgotPassword(@Query('email') email: string) {
+  @Get('/forgot-password/:email')
+  async forgotPassword(@Param('email') email: string) {
     return await this.usersService.forgotPassword(email);
+  }
+
+  @Get('/send-otp-mail/:email')
+  async sendOTPMail(@Param('email') email: string) {
+    return await this.usersService.resendOtpMailMessage(email);
   }
 }

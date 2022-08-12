@@ -35,24 +35,39 @@ export class UsersService {
       const userExist = await this.userDB.getUserDetailsByEmail(
         _createUserDto.email,
       );
-      if (userExist) {
+      if (userExist && userExist.isVerified) {
         throw new Error('You already have an account with us. Please login.');
       }
-      const newUser = await this.userDB.createNewUserInDB(_createUserDto);
-      // send verifyEmail link to user email
-      sendEmail(
+      // generate otp
+      const otp = Math.floor(Math.random() * 900000) + 100000;
+      // otp expiery time
+      const otpExpiryTime = new Date();
+      otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 10);
+
+      const newUser = await this.userDB.createNewUserInDB(
+        _createUserDto,
+        otp,
+        otpExpiryTime,
+      );
+
+      // send verifyEmail otp to user email
+       sendEmail(
         _createUserDto.email,
         config.get('emailService.emailTemplates.verifyEmail'),
+        'Email verification - Digizone',
         {
           customerName: _createUserDto.name,
           customerEmail: _createUserDto.email,
-          verifyLink: `${config.get('verifyEmailLink')}${newUser._id}`,
+          otp: otp,
         },
       );
       return {
-        email: newUser.email,
+        result: {
+          email: newUser.email,
+        },
         success: true,
-        message: 'User registered successfully. Please verify your email.',
+        message:
+          'Please activate your account by verifying your email. We have sent you an email with the OTP.',
       };
     } catch (error) {
       throw error;
@@ -98,7 +113,11 @@ export class UsersService {
   async findAll(type: userTypes): Promise<any> {
     try {
       const users = await this.userDB.getAllUsers(type);
-      return users;
+      return {
+        result: users,
+        success: true,
+        message: 'User logged in successfully',
+      };
     } catch (error) {
       throw error;
     }
@@ -107,7 +126,11 @@ export class UsersService {
   async findOne(id: string): Promise<any> {
     try {
       const user = await this.userDB.getUserDetailsById(id);
-      return user;
+      return {
+        result: user,
+        success: true,
+        message: 'User logged in successfully',
+      };
     } catch (error) {
       throw error;
     }
@@ -122,7 +145,10 @@ export class UsersService {
       }
       const password = await generateHashPassword(newPassword);
       await this.userDB.updateUserDetails(id, { password });
-      return {};
+      return {
+        success: true,
+        message: 'Password updated successfully',
+      };
     } catch (error) {
       throw error;
     }
@@ -142,9 +168,10 @@ export class UsersService {
       );
       await this.userDB.updateUserDetails(userExist._id, { password });
       // send email with new password
-      await sendEmail(
+      sendEmail(
         email,
         config.get('emailService.emailTemplates.forgotPassword'),
+        'Forgot Password - Digizone',
         {
           customerName: userExist.name,
           customerEmail: email,
@@ -156,7 +183,7 @@ export class UsersService {
       return {
         success: true,
         message: 'Password reset link sent to your email',
-        data: {
+        result: {
           email,
         },
       };
@@ -165,18 +192,64 @@ export class UsersService {
     }
   }
 
-  async verifyEmail(id: string): Promise<any> {
+  async resendOtpMailMessage(email: string): Promise<any> {
     try {
-      const userExist = await this.userDB.getUserDetailsById(id);
+      const userExist = await this.userDB.getUserDetailsByEmail(email);
       if (!userExist) {
         throw new Error(
           `User is not exists with us. Please register yourself.`,
         );
       }
-      await this.userDB.updateUserDetails(id, { isVerified: true });
+      // generate otp
+      const otp = Math.floor(Math.random() * 900000) + 100000;
+      // otp expiery time
+      const otpExpiryTime = new Date();
+      otpExpiryTime.setMinutes(otpExpiryTime.getMinutes() + 10);
+
+      await this.userDB.updateUserDetails(userExist._id, {
+        otp,
+        otpExpiryTime,
+      });
+      // send verifyEmail otp to user email
+      sendEmail(
+        email,
+        config.get('emailService.emailTemplates.verifyEmail'),
+        'Email verification - Digizone',
+        {
+          customerName: userExist.name,
+          customerEmail: email,
+          otp: otp,
+        },
+      );
       return {
         success: true,
-        message: 'Email verified successfully',
+        message: 'OTP sent to your email',
+        result: {
+          email,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifyEmail(otp: string, email: string): Promise<any> {
+    try {
+      const userExist = await this.userDB.getUserWithOtpAndEmail(otp, email);
+      if (!userExist) {
+        throw new Error(
+          `User is not exists with us. Please register yourself.`,
+        );
+      }
+      // check expiery time of otp
+      const currentTime = new Date();
+      if (currentTime > userExist.otpExpiryTime) {
+        throw new Error('OTP is expired.');
+      }
+      await this.userDB.updateUserDetails(userExist._id, { isVerified: true });
+      return {
+        success: true,
+        message: 'Email verified successfully. You can login now.',
       };
     } catch (error) {
       throw error;

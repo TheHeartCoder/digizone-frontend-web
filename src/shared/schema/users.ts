@@ -27,6 +27,12 @@ export class Users extends Document {
 
   @Prop({ default: false })
   isVerified: boolean;
+
+  @Prop({ type: String, default: null })
+  otp: string;
+
+  @Prop({ type: Date, default: null })
+  otpExpiryTime: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);

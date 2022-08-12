@@ -9,9 +9,21 @@ export class UserRepository {
   constructor(@InjectModel(Users.name) private userModel: Model<Users>) {}
 
   // save user details
-  async createNewUserInDB(data: CreateUserDto): Promise<Users> {
-    const user = new this.userModel(data);
-    return await user.save();
+  async createNewUserInDB(
+    data: CreateUserDto,
+    otp: string | number,
+    otpExpiryTime: Date,
+  ): Promise<Users> {
+    const userData = { ...data, otp, otpExpiryTime };
+    // if email exists then update else create new user
+    const userExist = await this.userModel.findOne({ email: userData.email });
+    if (userExist) {
+      return await this.userModel.findByIdAndUpdate(userExist._id, userData, {
+        new: true,
+      });
+    } else {
+      return await this.userModel.create(userData);
+    }
   }
   // get user details by email
   async getUserDetailsByEmail(email: string): Promise<any> {
@@ -34,5 +46,10 @@ export class UserRepository {
     return type
       ? await this.userModel.find({ type })
       : await this.userModel.find();
+  }
+
+  // get user with otp
+  async getUserWithOtpAndEmail(otp: string, email: string): Promise<any> {
+    return await this.userModel.findOne({ otp, email });
   }
 }

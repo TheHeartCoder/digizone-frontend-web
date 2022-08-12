@@ -93,7 +93,7 @@ export class ProductsService {
     if (!productDetails) throw new BadRequestException('No product found');
     return {
       message: 'Product found',
-      data: productDetails,
+      result: productDetails,
     };
   }
 

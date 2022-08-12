@@ -12,7 +12,10 @@ export class AppController {
   }
 
   @Get('csrf-token')
-  getCsrfToken(@Req() req: Request): string {
-    return req.csrfToken();
+  getCsrfToken(@Req() req: Request): any {
+    const csrfToken = req.csrfToken();
+    return {
+      result: csrfToken,
+    };
   }
 }
