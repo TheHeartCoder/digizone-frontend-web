@@ -54,12 +54,12 @@ export const sendEmail = async (
       'from',
       'mailgun@sandbox4ea7cfe84fde4fbcb3bf6b9157156213.mailgun.org',
     );
-    form.append('to', `${to}`);
-    form.append('subject', `"${subject}"`);
-    form.append('template', `"${templateName}"`);
+    form.append('to', to);
+    form.append('subject', subject);
+    form.append('template', templateName);
     // run loop on object
     Object.keys(templateVars).forEach((key) => {
-      form.append(`v:${key}`, `"${templateVars[key]}"`);
+      form.append(`v:${key}`, templateVars[key]);
     });
     console.log('form :: ', form);
     const username = 'api';

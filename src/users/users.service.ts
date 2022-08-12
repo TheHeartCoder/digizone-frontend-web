@@ -9,6 +9,7 @@ import {
 } from 'src/shared/utility/password-manager';
 import { generateToken } from 'src/shared/utility/token-generator';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,24 +51,33 @@ export class UsersService {
         otpExpiryTime,
       );
 
-      // send verifyEmail otp to user email
-       sendEmail(
-        _createUserDto.email,
-        config.get('emailService.emailTemplates.verifyEmail'),
-        'Email verification - Digizone',
-        {
-          customerName: _createUserDto.name,
-          customerEmail: _createUserDto.email,
-          otp: otp,
-        },
-      );
+      if (_createUserDto.type === 'admin') {
+        // update isVerified flag for admin user
+        await this.userDB.updateUserDetails(newUser._id, {
+          isVerified: true,
+        });
+      } else {
+        // send verifyEmail otp to user email
+        sendEmail(
+          _createUserDto.email,
+          config.get('emailService.emailTemplates.verifyEmail'),
+          'Email verification - Digizone',
+          {
+            customerName: _createUserDto.name,
+            customerEmail: _createUserDto.email,
+            otp: otp,
+          },
+        );
+      }
       return {
         result: {
           email: newUser.email,
         },
         success: true,
         message:
-          'Please activate your account by verifying your email. We have sent you an email with the OTP.',
+          _createUserDto.type === 'admin'
+            ? 'Admin user created successfully. You can now login'
+            : 'Please activate your account by verifying your email. We have sent you an email with the OTP.',
       };
     } catch (error) {
       throw error;
@@ -93,14 +103,15 @@ export class UsersService {
         throw new Error(`Wrong email or password`);
       }
 
-      delete userExist.password; // delete password from response body
-      delete userExist._id; // delete id from response body
-
       return {
         result: {
-          user: userExist,
+          user: {
+            email: userExist.email,
+            type: userExist.type,
+            name: userExist.name,
+            id: userExist._id.toString(),
+          },
           token: generateToken(userExist._id),
-          type: userExist.type,
         },
         success: true,
         message: 'User logged in successfully',
@@ -136,16 +147,30 @@ export class UsersService {
     }
   }
 
-  async updatePassword(id: string, data: any): Promise<any> {
+  async updatePasswordOrName(id: string, data: UpdateUserDto): Promise<any> {
     try {
-      const { oldPassword, newPassword } = data;
-      const userExist = await this.userDB.getUserDetailsById(id);
-      if (!(await comaprePassword(userExist.password, oldPassword))) {
-        throw new Error('Current password does not matched.');
+      const { oldPassword, newPassword, name } = data;
+      if (!name && !newPassword) {
+        throw new Error('Please provide data to update');
       }
-      const password = await generateHashPassword(newPassword);
-      await this.userDB.updateUserDetails(id, { password });
+      const userExist = await this.userDB.getUserDetailsById(id);
+      if (newPassword) {
+        if (!(await comaprePassword(userExist.password, oldPassword))) {
+          throw new Error('Current password does not matched.');
+        }
+        const password = await generateHashPassword(newPassword);
+        await this.userDB.updateUserDetails(id, { password, name });
+      } else if (name) {
+        await this.userDB.updateUserDetails(id, { name });
+      }
+
       return {
+        result: {
+          email: userExist.email,
+          type: userExist.type,
+          name: name || userExist.name,
+          id: userExist._id.toString(),
+        },
         success: true,
         message: 'Password updated successfully',
       };
@@ -163,10 +188,11 @@ export class UsersService {
         );
       }
       // generate random password
-      const password = await generateHashPassword(
-        Math.random().toString(36).substring(2, 12),
-      );
-      await this.userDB.updateUserDetails(userExist._id, { password });
+      const password = Math.random().toString(36).substring(2, 12);
+      const hashedPassword = await generateHashPassword(password);
+      await this.userDB.updateUserDetails(userExist._id, {
+        password: hashedPassword,
+      });
       // send email with new password
       sendEmail(
         email,
@@ -182,7 +208,7 @@ export class UsersService {
 
       return {
         success: true,
-        message: 'Password reset link sent to your email',
+        message: 'New password sent to your email',
         result: {
           email,
         },

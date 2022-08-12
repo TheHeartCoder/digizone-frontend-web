@@ -42,7 +42,15 @@ export class UsersModule implements NestModule {
           method: RequestMethod.POST,
         },
         {
-          path: `${config.get('appPrefix')}/users/forgot-password`,
+          path: `${config.get('appPrefix')}/users/forgot-password/:email`,
+          method: RequestMethod.GET,
+        },
+        {
+          path: `${config.get('appPrefix')}/users/verify-email/:otp/:email`,
+          method: RequestMethod.GET,
+        },
+        {
+          path: `${config.get('appPrefix')}/users/send-otp-mail/:email`,
           method: RequestMethod.GET,
         },
       )
