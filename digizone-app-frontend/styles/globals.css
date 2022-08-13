@@ -261,3 +261,11 @@ button.btn.btn-link.resendOtpBtn {
 	color: aliceblue;
 	border-radius: 6px;
 }
+
+.productSkuZone {
+	margin-top: 15px;
+}
+
+.skuBtn {
+	margin-right: 5px;
+}

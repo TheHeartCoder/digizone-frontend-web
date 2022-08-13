@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import {
 	Badge,
 	Button,
@@ -28,52 +28,91 @@ import { Tab } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
 import { useState } from 'react';
 import CartOffCanvas from '../../components/CartOffCanvas';
+import axios from 'axios';
+import SkuDetailsList from '../../components/Product/SkuDetailsList';
 
-const Product: NextPage = () => {
+interface ProductProps {
+	product: Record<string, any>;
+	relatedProducts: Record<string, any>[];
+}
+
+const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 	const [show, setShow] = useState(false);
+	const [skuDetailsFormShow, setSkuDetailsFormShow] = useState(false);
 	const handleShow = () => setShow(true);
+	console.log(product, relatedProducts);
+
+	const getFormatedStringFromDays = (numberOfDays: number) => {
+		var years = Math.floor(numberOfDays / 365);
+		var months = Math.floor((numberOfDays % 365) / 30);
+		var days = Math.floor((numberOfDays % 365) % 30);
+
+		var yearsDisplay =
+			years > 0 ? years + (years == 1 ? ' year ' : ' years ') : '';
+		var monthsDisplay =
+			months > 0 ? months + (months == 1 ? ' month ' : ' months ') : '';
+		var daysDisplay = days > 0 ? days + (days == 1 ? ' day' : ' days') : '';
+		return yearsDisplay + monthsDisplay + daysDisplay;
+	};
 	return (
 		<>
 			<Row className='firstRow'>
 				<Col sm={4}>
 					<Card className='productImgCard'>
-						<Card.Img
-							variant='top'
-							src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-						/>
+						<Card.Img variant='top' src={product?.image} />
 					</Card>
 				</Col>
 				<Col sm={8}>
-					<h2>Microsoft Windows 10 Pro - License Key (64Bit)</h2>
+					<h2>{product?.productName}</h2>
 					<div className='divStar'>
 						<StarRatingComponent
 							name='rate2'
 							editing={false}
 							starCount={5}
-							value={3}
+							value={product?.feedbackDetails?.avgRating || 0}
 						/>
-						(507)
+						({product?.feedbackDetails?.info?.length || 0} reviews)
 					</div>
 					<p className='productPrice'>
-						₹949.00{' '}
+						{product?.skuDetails && product?.skuDetails?.length > 1
+							? `₹${Math.min.apply(
+									Math,
+									product?.skuDetails.map((sku: { price: number }) => sku.price)
+							  )} - ₹${Math.max.apply(
+									Math,
+									product?.skuDetails.map((sku: { price: number }) => sku.price)
+							  )}`
+							: `₹${product?.skuDetails?.[0]?.price || '000'}`}{' '}
 						<Badge bg='warning' text='dark'>
 							2 Years
 						</Badge>
 					</p>
 					<ul>
-						<li>
-							The sale includes a license key which will be sent to your email
-							address immediately after payment.{' '}
-						</li>
-						<li> The license key is valid for one computer only.</li>
-						<li> The license key is valid for one user only.</li>
-						<li>
-							You will get all official updates and support from Microsoft.{' '}
-						</li>
+						{product?.highlights &&
+							product?.highlights.length > 0 &&
+							product?.highlights.map((highlight: string, key: any) => (
+								<li key={key}>{highlight}</li>
+							))}
 					</ul>
+					<div>
+						{product?.skuDetails &&
+							product?.skuDetails?.length > 0 &&
+							product?.skuDetails
+								.sort(
+									(a: { validity: number }, b: { validity: number }) =>
+										a.validity - b.validity
+								)
+								.map((sku: Record<string, any>, key: any) => (
+									<Badge bg='warning' text='dark' className='skuBtn' key={key}>
+										{sku.lifetime
+											? 'Lifetime'
+											: getFormatedStringFromDays(sku.validity)}
+									</Badge>
+								))}
+					</div>
 					<div className='productSkuZone'>
 						<NumericInput min={1} max={5} value={1} size={5} />
-						<Form.Select
+						{/* <Form.Select
 							aria-label='Default select example'
 							className='selectValidity'
 						>
@@ -81,7 +120,7 @@ const Product: NextPage = () => {
 							<option value='1'>One</option>
 							<option value='2'>Two</option>
 							<option value='3'>Three</option>
-						</Form.Select>
+						</Form.Select> */}
 						<Button variant='primary' className='cartBtn' onClick={handleShow}>
 							<BagCheckFill className='cartIcon' />
 							Add to cart
@@ -101,11 +140,15 @@ const Product: NextPage = () => {
 										Descriptions
 									</Nav.Link>
 								</Nav.Item>
-								<Nav.Item>
-									<Nav.Link eventKey='second' href='#'>
-										Requirements
-									</Nav.Link>
-								</Nav.Item>
+								{product?.requirmentSpecification &&
+									product?.requirmentSpecification.length > 0 && (
+										<Nav.Item>
+											<Nav.Link eventKey='second' href='#'>
+												Requirements
+											</Nav.Link>
+										</Nav.Item>
+									)}
+
 								<Nav.Item>
 									<Nav.Link eventKey='third' href='#'>
 										Reviews
@@ -120,38 +163,24 @@ const Product: NextPage = () => {
 						</Col>
 						<Col sm={9}>
 							<Tab.Content>
-								<Tab.Pane eventKey='first'>
-									The new Windows 10 Home operating system offers both
-									experienced users and beginners in, as the name implies, the
-									“home environment” ideal computer support. Just like every
-									previous “Home” version from Microsoft, the Win 10 Home
-									operating system stand out with its extremely user-friendly
-									interface. In addition, Microsoft Windows 10 Home adjusts to
-									the device used and its properties according to the platform.
-									System requirements for the Windows 10 Home operating system
-									are the same as for its two predecessors, Windows 7 und 8.1.
-									This means that even older computers can run with Windows 10
-									Home without a problem.
-								</Tab.Pane>
+								<Tab.Pane eventKey='first'>{product?.description}</Tab.Pane>
 								<Tab.Pane eventKey='second'>
 									<Table responsive>
 										<tbody>
-											<tr>
-												<td width='30%'>Table cell </td>
-												<td width='70%'>Table cell </td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
+											{product?.requirmentSpecification &&
+												product?.requirmentSpecification.length > 0 &&
+												product?.requirmentSpecification.map(
+													(requirement: string, key: any) => (
+														<tr key={key}>
+															<td width='30%'>
+																{Object.keys(requirement)[0]}{' '}
+															</td>
+															<td width='70%'>
+																{Object.values(requirement)[0]}
+															</td>
+														</tr>
+													)
+												)}
 										</tbody>
 									</Table>
 								</Tab.Pane>
@@ -276,203 +305,7 @@ const Product: NextPage = () => {
 									</div>
 								</Tab.Pane>
 								<Tab.Pane eventKey='fourth'>
-									<Button variant='secondary'>Add SKU Details</Button>
-									<Table responsive>
-										<thead>
-											<tr>
-												<th>Name</th>
-												<th>Price</th>
-												<th>Quantity</th>
-												<th>License Keys</th>
-												<th>Actions</th>
-											</tr>
-										</thead>
-
-										<tbody>
-											<tr>
-												<td>Lucky 001</td>
-												<td>
-													₹949.00{' '}
-													<Badge bg='warning' text='dark'>
-														2 Years
-													</Badge>
-												</td>
-												<td>8</td>
-												<td>
-													<Button
-														variant='outline-dark'
-														style={{ width: '100%' }}
-													>
-														<Eye /> View
-													</Button>
-												</td>
-												<td>
-													<Button variant='outline-dark'>
-														<Pen />
-													</Button>{' '}
-													<Button variant='outline-dark'>
-														<Archive />
-													</Button>
-												</td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
-											<tr>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-												<td>Table cell </td>
-											</tr>
-										</tbody>
-									</Table>
-									<Card style={{ padding: '10px' }}>
-										<Form>
-											<Form.Group controlId='formBasicEmail'>
-												<Form.Label>SKU Name</Form.Label>
-												<Form.Control
-													type='text'
-													placeholder='Enter SKU Name'
-												/>
-											</Form.Group>
-											<Form.Group controlId='formBasicPassword'>
-												<Form.Label>SKU Price For Each License</Form.Label>
-												<Form.Control
-													type='text'
-													placeholder='Enter SKU Price'
-												/>
-											</Form.Group>
-											<Form.Group controlId='formBasicPassword'>
-												<Form.Label>SKU Validity</Form.Label>{' '}
-												<small style={{ color: 'grey' }}>
-													(If validity is lifetime then check the box)
-													<Form.Check type='switch' id='custom-switch' />
-												</small>
-												<InputGroup className='mb-3'>
-													<Form.Control aria-label='Text input with checkbox' />
-													<DropdownButton
-														variant='outline-secondary'
-														title='Dropdown'
-														id='input-group-dropdown-9'
-														align='end'
-													>
-														<Dropdown.Item href='#'>Action</Dropdown.Item>
-														<Dropdown.Item href='#'>
-															Another action
-														</Dropdown.Item>
-														<Dropdown.Item href='#'>
-															Something else here
-														</Dropdown.Item>
-														<Dropdown.Divider />
-														<Dropdown.Item href='#'>
-															Separated link
-														</Dropdown.Item>
-													</DropdownButton>
-												</InputGroup>
-											</Form.Group>
-
-											<Form.Group controlId='formBasicPassword'>
-												<Form.Label>SKU License Keys</Form.Label>
-												<InputGroup className='mb-3'>
-													<Form.Control
-														type='text'
-														placeholder='Enter Product Highlight'
-													/>
-													<Button variant='secondary'>
-														<Check2Circle />
-													</Button>
-												</InputGroup>
-											</Form.Group>
-											<div>License Keys are listed below:</div>
-											<ListGroup className='licenceLists'>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-												<ListGroup.Item>
-													<Badge bg='info'>
-														dlehf4-ef443g-f4rgv2-fergr3-gvr553r-efwew
-													</Badge>{' '}
-													<span>
-														<Pen /> <Archive />
-													</span>
-												</ListGroup.Item>
-											</ListGroup>
-											<div style={{ marginTop: '10px' }}>
-												<Button variant='outline-info'>Cancel</Button>{' '}
-												<Button variant='outline-primary' type='submit'>
-													Submit
-												</Button>
-											</div>
-										</Form>
-									</Card>
+									<SkuDetailsList skuDetails={product?.skuDetails} />
 								</Tab.Pane>
 							</Tab.Content>
 						</Col>
@@ -525,6 +358,38 @@ const Product: NextPage = () => {
 			<CartOffCanvas setShow={setShow} show={show} />
 		</>
 	);
+};
+
+export const getServerSideProps: GetServerSideProps<ProductProps> = async (
+	context
+): Promise<any> => {
+	try {
+		if (!context.params?.id) {
+			return {
+				props: {
+					product: {},
+				},
+			};
+		}
+		const { data } = await axios.get(
+			'http://localhost:3100/api/v1/products/' + context.params?.id
+		);
+		return {
+			props: {
+				product: data?.result?.product || ({} as Record<string, any>),
+				relatedProducts:
+					data?.result?.relatedProducts ||
+					([] as unknown as Record<string, any[]>),
+			},
+		};
+	} catch (error) {
+		console.log(error);
+		return {
+			props: {
+				product: {},
+			},
+		};
+	}
 };
 
 export default Product;

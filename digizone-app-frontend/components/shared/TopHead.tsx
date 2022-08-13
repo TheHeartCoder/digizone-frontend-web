@@ -71,8 +71,16 @@ const TopHead = () => {
 					<Nav className='me-auto'>
 						<Nav.Link onClick={() => Router.push('/')}>Home</Nav.Link>
 						<NavDropdown title='Applications' id='collasible-nav-dropdown'>
-							<NavDropdown.Item href='#action/3.1'>Computer</NavDropdown.Item>
-							<NavDropdown.Item href='#action/3.2'>Mobile</NavDropdown.Item>
+							<NavDropdown.Item
+								onClick={() => Router.push('/products?baseType=Computer')}
+							>
+								Computer
+							</NavDropdown.Item>
+							<NavDropdown.Item
+								onClick={() => Router.push('/products?baseType=Mobile')}
+							>
+								Mobile
+							</NavDropdown.Item>
 						</NavDropdown>
 					</Nav>
 					<Nav>

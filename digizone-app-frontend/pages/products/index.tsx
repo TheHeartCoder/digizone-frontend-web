@@ -3,39 +3,26 @@ import { GetServerSideProps } from 'next';
 import type { NextPage } from 'next';
 import queryString from 'query-string';
 
-import {
-	Badge,
-	Button,
-	Card,
-	Col,
-	Dropdown,
-	DropdownButton,
-	ListGroup,
-	Modal,
-	Row,
-} from 'react-bootstrap';
+import { Col, Dropdown, DropdownButton, Row } from 'react-bootstrap';
 import BreadcrumbDisplay from '../../components/shared/BreadcrumbDisplay';
 import PaginationDisplay from '../../components/shared/PaginationDisplay';
-import StarRatingComponent from 'react-star-rating-component';
 import { PlusCircle } from 'react-bootstrap-icons';
 import { useContext, useEffect } from 'react';
-import { getUserType } from '../../helper/token-helper';
 import { useState } from 'react';
 import ProductItem from '../../components/Products/ProductItem';
 import Link from 'next/link';
-import { Products } from '../../services/product.service';
 import { useToasts } from 'react-toast-notifications';
 import { Context } from '../../context';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import ProductFilter from '../../components/Products/ProductFilter';
 
 interface Props {
 	products: Record<string, any>[];
 	metadata: Record<string, any>;
-	length: number;
 }
 
-const AllProducts: NextPage<Props> = ({ products, metadata, length }) => {
+const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 	const { addToast } = useToasts();
 	const [userType, setUserType] = useState('customer');
 	const router = useRouter();
@@ -50,8 +37,6 @@ const AllProducts: NextPage<Props> = ({ products, metadata, length }) => {
 			setUserType(user.type);
 		}
 	}, [user]);
-
-	console.log(products, metadata, length);
 
 	return (
 		<>
@@ -107,74 +92,7 @@ const AllProducts: NextPage<Props> = ({ products, metadata, length }) => {
 			</Row>
 			<Row>
 				<Col sm={2}>
-					<Card>
-						<Card.Header>Filter By</Card.Header>
-						<ListGroup variant='flush'>
-							<ListGroup.Item>
-								<DropdownButton
-									variant='outline-secondary'
-									title='Category'
-									id='input-group-dropdown-1'
-									className={styles.dropdownFilterBtn}
-									onSelect={(e) => {
-										if (e) {
-											router.query.category = e;
-											router.push(router);
-										} else {
-											delete router.query.category;
-											router.push(router);
-										}
-									}}
-								>
-									<Dropdown.Item href='#' eventKey=''>
-										Select category
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Operating System'>
-										Operating System
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Application Software'>
-										Application Software
-									</Dropdown.Item>
-								</DropdownButton>
-							</ListGroup.Item>
-							<ListGroup.Item>
-								<DropdownButton
-									variant='outline-secondary'
-									title='Platform'
-									id='input-group-dropdown-1'
-									className={styles.dropdownFilterBtn}
-									onSelect={(e) => {
-										if (e) {
-											router.query.platformType = e;
-											router.push(router);
-										} else {
-											delete router.query.platformType;
-											router.push(router);
-										}
-									}}
-								>
-									<Dropdown.Item href='#' eventKey=''>
-										Select platform
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Windows'>
-										Windows
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Android'>
-										Android
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='iOS'>
-										iOS
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Linux'>
-										Linux
-									</Dropdown.Item>
-									<Dropdown.Item href='#' eventKey='Mac'>
-										Mac
-									</Dropdown.Item>
-								</DropdownButton>
-							</ListGroup.Item>
-						</ListGroup>
-					</Card>
+					<ProductFilter />
 				</Col>
 				<Col sm={10}>
 					<Row xs={1} md={3} className='g-3'>
@@ -215,7 +133,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 			props: {
 				products: data?.result?.products || ([] as Record<string, any>[]),
 				metadata: data?.result?.metadata || {},
-				length: data?.result?.products?.length || 0,
 			},
 		};
 	} catch (error) {

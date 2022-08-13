@@ -368,7 +368,7 @@ const UpdateProduct: NextPage = () => {
 								productForm.highlights.map((highlight, index) => (
 									<ListGroup.Item key={index}>
 										{highlight}
-										<span>
+										<span style={{ float: 'right' }}>
 											<Pen
 												className='pointer'
 												onClick={() => {
@@ -376,7 +376,7 @@ const UpdateProduct: NextPage = () => {
 													console.log(index);
 													setUpdateHightlightIndex(index);
 												}}
-											/>{' '}
+											/>{' '} &nbsp;&nbsp;
 											<Archive
 												className='pointer'
 												onClick={() => {

@@ -14,17 +14,14 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 		// eslint-disable-next-line react/jsx-key
 		<Col>
 			<Card className='productCard'>
-				<Card.Img
-					variant='top'
-					src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-				/>
+				<Card.Img variant='top' src={product?.image} />
 				<Card.Body>
 					<Card.Title>Microsoft Window 10</Card.Title>
 					<StarRatingComponent
 						name='rate2'
 						editing={false}
 						starCount={5}
-						value={3}
+						value={product?.feedbackDetails?.avgRating || 0}
 					/>
 					<Card.Text>
 						<span className='priceText'>
@@ -52,16 +49,19 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 									<Pen />
 								</a>
 							</Link>
-							<Link href='/products/update-product'>
+							<Link href={`/products/${product?._id}`}>
 								<a className='btn btn-outline-dark viewProdBtn'>
 									<Eye />
 								</a>
 							</Link>
 						</div>
 					) : (
-						<Button variant='outline-dark' className='viewProdBtn'>
-							View Details
-						</Button>
+						<Link href={`/products/${product?._id}`}>
+							<a className='btn btn-outline-dark viewProdBtn'>
+								<Eye />
+								View Details
+							</a>
+						</Link>
 					)}
 				</Card.Body>
 			</Card>
