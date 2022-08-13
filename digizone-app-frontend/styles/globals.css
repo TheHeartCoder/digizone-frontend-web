@@ -233,16 +233,16 @@ select.selectValidity.form-select {
 
 .fileInputDiv {
 	margin-top: 15px;
-  position: relative;
-  overflow: hidden;
+	position: relative;
+	overflow: hidden;
 	cursor: pointer;
 }
 .fileInput {
-  position: absolute;
-  font-size: 50px;
-  opacity: 0;
-  right: 0;
-  top: 0;
+	position: absolute;
+	font-size: 50px;
+	opacity: 0;
+	right: 0;
+	top: 0;
 	cursor: pointer;
 }
 
@@ -253,4 +253,11 @@ select.selectValidity.form-select {
 
 button.btn.btn-link.resendOtpBtn {
 	padding-left: inherit;
+}
+
+.productFormHeading {
+	padding: 10px;
+	background: linear-gradient(90deg, #89f7fe 0%, #66a6ff 100%);
+	color: aliceblue;
+	border-radius: 6px;
 }

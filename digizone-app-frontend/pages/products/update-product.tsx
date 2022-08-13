@@ -32,7 +32,6 @@ const UpdateProduct: NextPage = () => {
 	// get product id from router params
 	const router = useRouter();
 	const productId = router.query.productId as string;
-	const fileRef = React.useRef<HTMLInputElement>(null);
 	const [productForm, setProductForm] = React.useState(initialForm);
 	const [requirementName, setRequirementName] = React.useState('');
 	const [requirementDescription, setRequirementDescription] =
@@ -42,21 +41,25 @@ const UpdateProduct: NextPage = () => {
 		React.useState(-1);
 	const [updateHightlightIndex, setUpdateHightlightIndex] = React.useState(-1);
 
+	console.log(productForm);
+
 	const hanldleHightlightAdd = () => {
-		updateHightlightIndex
-			? setProductForm({
-					...productForm,
-					highlights: productForm.highlights.map((value, index) => {
-						if (index === updateHightlightIndex) {
-							return hightlight;
-						}
-						return value;
-					}),
-			  })
-			: setProductForm({
-					...productForm,
-					highlights: [...productForm.highlights, hightlight],
-			  });
+		if (updateHightlightIndex > -1) {
+			setProductForm({
+				...productForm,
+				highlights: productForm.highlights.map((value, index) => {
+					if (index === updateHightlightIndex) {
+						return hightlight;
+					}
+					return value;
+				}),
+			});
+		} else {
+			setProductForm({
+				...productForm,
+				highlights: [...productForm.highlights, hightlight],
+			});
+		}
 		setHightlight('');
 		setUpdateHightlightIndex(-1);
 	};
@@ -115,9 +118,8 @@ const UpdateProduct: NextPage = () => {
 			style={{ padding: '15px', marginTop: '20px' }}
 		>
 			<Row>
-				<h4 className='text-center'>
-					<u>Product Details Form</u>
-				</h4>
+				<h4 className='text-center productFormHeading'>Product Details Form</h4>
+				<hr />
 				<Col>
 					<Form>
 						<Form.Group controlId='formBasicEmail'>
@@ -128,7 +130,7 @@ const UpdateProduct: NextPage = () => {
 								value={productForm.productName}
 								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 									setProductForm({
-										...initialForm,
+										...productForm,
 										productName: e.target.value,
 									})
 								}
@@ -146,7 +148,7 @@ const UpdateProduct: NextPage = () => {
 								value={productForm.description}
 								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 									setProductForm({
-										...initialForm,
+										...productForm,
 										description: e.target.value,
 									})
 								}
@@ -221,9 +223,11 @@ const UpdateProduct: NextPage = () => {
 																...productForm,
 																requirmentSpecification:
 																	productForm.requirmentSpecification.filter(
-																		(item, index) => index !== index
+																		(item, key) => key !== index
 																	),
 															});
+															setRequirementDescription('');
+															setRequirementName('');
 														}}
 													>
 														<Archive />
@@ -250,11 +254,10 @@ const UpdateProduct: NextPage = () => {
 							<Form.Select
 								aria-label='Default select example'
 								value={productForm.category}
-								defaultValue={productForm.category}
 								onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
 									const value = event.target.value;
 									setProductForm({
-										...initialForm,
+										...productForm,
 										category: value as string,
 									});
 								}}
@@ -271,11 +274,10 @@ const UpdateProduct: NextPage = () => {
 							<Form.Select
 								aria-label='Default select example'
 								value={productForm.platformType}
-								defaultValue={productForm.platformType}
 								onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
 									const value = event.target.value;
 									setProductForm({
-										...initialForm,
+										...productForm,
 										platformType: value as string,
 									});
 								}}
@@ -292,11 +294,10 @@ const UpdateProduct: NextPage = () => {
 							<Form.Select
 								aria-label='Default select example'
 								value={productForm.baseType}
-								defaultValue={productForm.baseType}
 								onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
 									const value = event.target.value;
 									setProductForm({
-										...initialForm,
+										...productForm,
 										baseType: value as string,
 									});
 								}}
@@ -315,7 +316,7 @@ const UpdateProduct: NextPage = () => {
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 									const value = event.target.value;
 									setProductForm({
-										...initialForm,
+										...productForm,
 										productUrl: value as string,
 									});
 								}}
@@ -330,7 +331,7 @@ const UpdateProduct: NextPage = () => {
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 									const value = event.target.value;
 									setProductForm({
-										...initialForm,
+										...productForm,
 										downloadUrl: value as string,
 									});
 								}}
@@ -372,19 +373,21 @@ const UpdateProduct: NextPage = () => {
 												className='pointer'
 												onClick={() => {
 													setHightlight(highlight);
+													console.log(index);
 													setUpdateHightlightIndex(index);
 												}}
 											/>{' '}
 											<Archive
 												className='pointer'
-												onClick={() =>
+												onClick={() => {
 													setProductForm({
 														...productForm,
 														highlights: productForm.highlights.filter(
-															(highlight, index) => index !== index
+															(highlight, key) => key !== index
 														),
-													})
-												}
+													});
+													setHightlight('');
+												}}
 											/>
 										</span>
 									</ListGroup.Item>

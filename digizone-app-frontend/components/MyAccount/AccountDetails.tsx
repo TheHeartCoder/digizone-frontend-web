@@ -79,6 +79,9 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 							type='text'
 							placeholder='Enter your full name'
 							value={accountForm.name}
+							onChange={(e) =>
+								setAccountForm({ ...accountForm, name: e.target.value })
+							}
 						/>
 					</Form.Group>
 					<Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
@@ -98,7 +101,7 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 							onChange={(e) =>
 								setAccountForm({ ...accountForm, oldPassword: e.target.value })
 							}
-              value={accountForm.oldPassword}
+							value={accountForm.oldPassword}
 						/>
 					</Form.Group>
 					<Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
@@ -109,7 +112,7 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 							onChange={(e) =>
 								setAccountForm({ ...accountForm, newPassword: e.target.value })
 							}
-              value={accountForm.newPassword}
+							value={accountForm.newPassword}
 						/>
 					</Form.Group>
 					<Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
@@ -123,7 +126,7 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 									confirmPassword: e.target.value,
 								})
 							}
-              value={accountForm.confirmPassword}
+							value={accountForm.confirmPassword}
 						/>
 					</Form.Group>
 					<Form.Group className='mb-3'>

@@ -7,8 +7,15 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../../styles/Home.module.css';
 import Router from 'next/router';
+import { useContext } from 'react';
+import { Context } from '../../context';
 
 const TopHead = () => {
+	const {
+		state: { user },
+		dispatch,
+	} = useContext(Context);
+
 	return (
 		<>
 			<Row className='mt-3'>
@@ -43,7 +50,11 @@ const TopHead = () => {
 						color='#4c575f'
 						className={styles.personIcon}
 						onClick={() => {
-							Router.push('/my-account');
+							if (user && user.email) {
+								Router.push('/my-account');
+							} else {
+								Router.push('/auth');
+							}
 						}}
 					/>
 				</Col>
