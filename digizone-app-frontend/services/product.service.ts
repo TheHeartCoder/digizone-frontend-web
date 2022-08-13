@@ -7,16 +7,23 @@ export const Products = {
 	getProductsForAdmin: async (
 		filter: Record<string, any>
 	): Promise<resposnePayload> => {
-		const url = queryString.stringifyUrl({ url: '/products/admin', query: filter });
+		const url = queryString.stringifyUrl({
+			url: '/products/admin',
+			query: filter,
+		});
 		const getProductRes = await requests.get(url);
 		return getProductRes;
 	},
 
 	// get products for customer
-	getProductsForCustomer: async (
-		filter: Record<string, any>
+	getProducts: async (
+		filter: Record<string, any>,
+		serverSide: boolean = false
 	): Promise<resposnePayload> => {
-		const url = queryString.stringifyUrl({ url: '/products', query: filter });
+		const url = queryString.stringifyUrl({
+			url: serverSide ? '' : '/products',
+			query: filter,
+		});
 		const getProductRes = await requests.get(url);
 		return getProductRes;
 	},

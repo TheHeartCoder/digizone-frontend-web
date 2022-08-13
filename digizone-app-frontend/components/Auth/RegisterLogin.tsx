@@ -4,7 +4,7 @@ import { Users } from '../../services/user.service';
 import { useToasts } from 'react-toast-notifications';
 import { resposnePayload } from '../../services/api';
 import validator from 'validator';
-import Router from 'next/Router';
+import Router from 'next/router';
 import { Context } from '../../context';
 interface IRegisterLoginProps {
 	isResgisterForm?: boolean;

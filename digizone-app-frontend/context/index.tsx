@@ -68,6 +68,8 @@ const Provider = ({ children }: Props) => {
 			return response;
 		},
 		function (error) {
+			console.log('error :: ' + error);
+
 			// any status codes that falls outside the range of 2xx cause this function
 			// to trigger
 			let res = error.response;

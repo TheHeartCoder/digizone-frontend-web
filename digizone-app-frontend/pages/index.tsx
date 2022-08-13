@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import { Badge, Button, Card, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
 import StarRatingComponent from 'react-star-rating-component';
+import Router from 'next/router';
 
 const Home: NextPage = () => {
 	return (
@@ -30,7 +31,6 @@ const Home: NextPage = () => {
 								<Card.Text>
 									<span className='priceText'>₹949.00 - ₹1699.00</span>
 								</Card.Text>
-
 								<Badge bg='warning' text='dark'>
 									2 Years
 								</Badge>{' '}
@@ -70,10 +70,9 @@ const Home: NextPage = () => {
 								/>
 								<Card.Text>
 									<span className='priceText'>
-									<span className='priceText'>₹949.00 - ₹1699.00</span>
+										<span className='priceText'>₹949.00 - ₹1699.00</span>
 									</span>
 								</Card.Text>
-
 								<Badge bg='warning' text='dark'>
 									2 Years
 								</Badge>{' '}
@@ -94,7 +93,11 @@ const Home: NextPage = () => {
 			</Row>
 			<Row>
 				<Col>
-					<Button variant='primary' className={styles.viewMoreBtn}>
+					<Button
+						variant='primary'
+						className={styles.viewMoreBtn}
+						onClick={() => Router.push('/products')}
+					>
 						View More
 					</Button>
 				</Col>

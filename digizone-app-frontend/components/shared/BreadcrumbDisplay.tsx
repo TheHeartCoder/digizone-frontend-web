@@ -1,12 +1,38 @@
+import Router from 'next/router';
+import { FC, Key } from 'react';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-const BreadcrumbDisplay = () => {
+
+interface children {
+	active: boolean;
+	href: string;
+	text: string;
+}
+interface IProps {
+	childrens?: children[];
+}
+const BreadcrumbDisplay: FC<IProps> = ({ childrens }) => {
 	return (
-		<Breadcrumb style={{ 'marginTop': '10px' }}>
-			<Breadcrumb.Item href='#'>Home</Breadcrumb.Item>
-			<Breadcrumb.Item href='https://getbootstrap.com/docs/4.0/components/breadcrumb/'>
-				Library
-			</Breadcrumb.Item>
-			<Breadcrumb.Item active>Data</Breadcrumb.Item>
+		<Breadcrumb style={{ marginTop: '10px' }}>
+			{childrens &&
+				childrens.map(
+					(
+						item: {
+							active: boolean;
+							href: string;
+							text: string;
+						},
+						index: Key | null | undefined
+					) => {
+						return (
+							<Breadcrumb.Item
+								key={index}
+								onClick={() => Router.push(item.href)}
+							>
+								{item.text}
+							</Breadcrumb.Item>
+						);
+					}
+				)}
 		</Breadcrumb>
 	);
 };

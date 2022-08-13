@@ -13,7 +13,9 @@ const TopHead = () => {
 		<>
 			<Row className='mt-3'>
 				<Col xs={6} md={3}>
-					<h3 className={styles.logoHeading}>Digizone</h3>
+					<h3 className={styles.logoHeading} onClick={() => Router.push('/')}>
+						Digizone
+					</h3>
 				</Col>
 				<Col xs={6} md={6}>
 					{' '}
@@ -56,7 +58,7 @@ const TopHead = () => {
 				<Navbar.Toggle aria-controls='responsive-navbar-nav' />
 				<Navbar.Collapse id='responsive-navbar-nav'>
 					<Nav className='me-auto'>
-						<Nav.Link href='#features'>Home</Nav.Link>
+						<Nav.Link onClick={() => Router.push('/')}>Home</Nav.Link>
 						<NavDropdown title='Applications' id='collasible-nav-dropdown'>
 							<NavDropdown.Item href='#action/3.1'>Computer</NavDropdown.Item>
 							<NavDropdown.Item href='#action/3.2'>Mobile</NavDropdown.Item>
