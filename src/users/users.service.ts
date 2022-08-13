@@ -154,6 +154,9 @@ export class UsersService {
         throw new Error('Please provide data to update');
       }
       const userExist = await this.userDB.getUserDetailsById(id);
+      if (!userExist) {
+        throw new Error('User not found');
+      }
       if (newPassword) {
         if (!(await comaprePassword(userExist.password, oldPassword))) {
           throw new Error('Current password does not matched.');

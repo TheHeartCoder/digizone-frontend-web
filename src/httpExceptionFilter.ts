@@ -38,9 +38,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
       message:
+        (exceptionResponse as HttpExceptionResponse).message ||
         (exceptionResponse as HttpExceptionResponse).error ||
         exceptionResponse ||
         'Something went wrong',
+      errorResponse: exceptionResponse as HttpExceptionResponse,
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
