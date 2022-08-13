@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from 'src/shared/middleware/roles.guard';
 import { Users, UserSchema } from 'src/shared/schema/users';
 import { UserRepository } from 'src/shared/repositories/users.repository';
+import { License, LicenseSchema } from 'src/shared/schema/license';
 
 @Module({
   controllers: [ProductsController],
@@ -30,6 +31,7 @@ import { UserRepository } from 'src/shared/repositories/users.repository';
   imports: [
     MongooseModule.forFeature([{ name: Products.name, schema: ProductSchema }]),
     MongooseModule.forFeature([{ name: Users.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: License.name, schema: LicenseSchema }]),
   ],
 })
 export class ProductsModule implements NestModule {

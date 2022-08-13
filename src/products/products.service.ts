@@ -85,15 +85,15 @@ export class ProductsService {
     };
   }
   // get product details by id
-  async getProductDetailsById(id: string, isAdmin: boolean): Promise<any> {
-    const productDetails = await this.productDB.getProductDetailsById(
-      id,
-      isAdmin,
+  async getProductDetailsById(id: string): Promise<any> {
+    const product = await this.productDB.getProductDetailsById(id);
+    if (!product) throw new BadRequestException('No product found');
+    const relatedProducts = await this.productDB.getRelatedProducts(
+      product.category,
     );
-    if (!productDetails) throw new BadRequestException('No product found');
     return {
       message: 'Product found',
-      result: productDetails,
+      result: { product, relatedProducts },
     };
   }
 

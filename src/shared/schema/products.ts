@@ -64,9 +64,6 @@ export class FeedbackSchema {
 })
 export class SkuDetails {
   @Prop({})
-  _id: string;
-
-  @Prop({})
   skuName: string; // name of the sku
 
   @Prop({ required: true })
@@ -76,19 +73,10 @@ export class SkuDetails {
   quantity: number;
 
   @Prop({ required: true })
-  validityAmount: number;
-
-  @Prop({
-    default: '',
-    enum: [durationType.day, durationType.month, durationType.year],
-  })
-  durationType: string;
+  validity: number;
 
   @Prop({ default: false })
   lifetime: boolean;
-
-  @Prop({ required: true })
-  licenceKeys: [string];
 }
 
 export const SkuDetailsSchema = SchemaFactory.createForClass(SkuDetails);
@@ -184,6 +172,9 @@ export class Products {
   )
   @Prop({ type: [] })
   highlights: string[];
+
+  @Prop({ type: Boolean, default: false })
+  isSoldOut: boolean;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);

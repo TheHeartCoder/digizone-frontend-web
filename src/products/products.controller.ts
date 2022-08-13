@@ -58,13 +58,7 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productsService.getProductDetailsById(id, false);
-  }
-
-  @Get('/:id/admin')
-  @Roles(userTypes.admin)
-  getProductDetailsById(@Param('id') id: string) {
-    return this.productsService.getProductDetailsById(id, true);
+    return this.productsService.getProductDetailsById(id);
   }
 
   @Patch(':id')

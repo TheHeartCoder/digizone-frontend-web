@@ -30,29 +30,16 @@ export class ProductRepository {
   }
 
   // get product details by id
-  async getProductDetailsById(id: string, isAdmin: boolean): Promise<any> {
-    let projection = {};
-    if (!isAdmin) {
-      projection = {
-        skuDetails: 0,
-        allSkuDetails: {
-          $map: {
-            input: '$skuDetails',
-            as: 'skuDetailsVal',
-            in: {
-              _id: '$$skuDetailsVal._id',
-              skuName: '$$skuDetailsVal.skuName',
-              price: '$$skuDetailsVal.price',
-              quantity: '$$skuDetailsVal.quantity',
-              validityAmount: '$$skuDetailsVal.shortDescription',
-              durationType: '$$skuDetailsVal.longDescription',
-              lifetime: '$$skuDetailsVal.lifetime',
-            },
-          },
-        },
-      };
-    }
-    const product = await this.productModel.findById(id).projection(projection);
+  async getProductDetailsById(id: string): Promise<any> {
+    const product = await this.productModel.findById(id);
+    return product;
+  }
+
+  // get related product details by id
+  async getRelatedProducts(category: string): Promise<any> {
+    const product = await this.productModel
+      .find({ category: category, isSoldOut: false })
+      .limit(4);
     return product;
   }
 
