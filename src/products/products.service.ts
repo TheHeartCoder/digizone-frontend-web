@@ -100,12 +100,15 @@ export class ProductsService {
   // get all products with sorting and filtering
   async getAllProducts(queryDetails: GetProductQueryDto): Promise<{
     message: string;
+    success: boolean;
     result: {
-      skip: number;
-      limit: number;
-      total: number;
-      pages: number;
-      links: any;
+      metadata: {
+        skip: number;
+        limit: number;
+        total: number;
+        pages: number;
+        links: any;
+      };
       products: [];
     };
   }> {
@@ -117,13 +120,16 @@ export class ProductsService {
       options,
     );
     return {
-      message: 'Products found',
+      message: result.length > 0 ? 'Products found' : 'No products found',
+      success: true,
       result: {
-        skip: options.skip || 0,
-        limit: options.limit,
-        total,
-        pages: options.limit ? Math.ceil(total / options.limit) : 1,
-        links: links(`/`, total),
+        metadata: {
+          skip: options.skip || 0,
+          limit: options.limit,
+          total,
+          pages: options.limit ? Math.ceil(total / options.limit) : 1,
+          links: links(`/`, total),
+        },
         products: result,
       },
     };

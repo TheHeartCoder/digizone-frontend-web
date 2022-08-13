@@ -76,42 +76,37 @@ export class ProductRepository {
   ): Promise<any> {
     options.sort = options.sort || { _id: -1 };
     options.skip = options.skip || 0;
-    options.limit = options.limit || 10;
-    const defaultProjection = {
-      skuDetails: 0,
-      allSkuDetails: {
-        $map: {
-          input: '$skuDetails',
-          as: 'skuDetailsVal',
-          in: {
-            _id: '$$skuDetailsVal._id',
-            skuName: '$$skuDetailsVal.skuName',
-            price: '$$skuDetailsVal.price',
-            quantity: '$$skuDetailsVal.quantity',
-            validityAmount: '$$skuDetailsVal.shortDescription',
-            durationType: '$$skuDetailsVal.longDescription',
-            lifetime: '$$skuDetailsVal.lifetime',
-          },
-        },
-      },
-      'feedbackDetails.info': 0,
-    };
+    options.limit = options.limit || 12;
 
     if (criteria.search) {
       criteria.productName = { $regex: new RegExp(criteria.search, 'i') };
       delete criteria.search;
     }
 
+    console.log(criteria, options);
+
     // aggregate products with citeria and options
-    const products = await this.productModel
-      .aggregate([
-        { $match: criteria },
-        { $sort: options.sort },
-        { $skip: options.skip },
-        { $limit: options.limit },
-        { $project: defaultProjection },
-      ])
-      .exec();
+    const products = await this.productModel.aggregate([
+      { $match: criteria },
+      { $sort: options.sort },
+      { $skip: options.skip },
+      { $limit: options.limit },
+      { $unwind: { path: '$skuDetails', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          'skuDetails.licenceKeys': 0,
+          'feedbackDetails.info': 0,
+          imageDetails: 0,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          data: { $first: '$$ROOT' },
+        },
+      },
+      { $replaceRoot: { newRoot: '$data' } },
+    ]);
     // get total products count
     const total = await this.productModel.countDocuments(criteria);
     return {
