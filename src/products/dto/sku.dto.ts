@@ -2,14 +2,13 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { durationType } from 'src/shared/schema/products';
 
 export class skuDto {
   @IsString()
@@ -21,26 +20,16 @@ export class skuDto {
   price: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   quantity: number;
 
   @IsNumber()
   @IsNotEmpty()
-  validityAmount: number;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(durationType)
-  durationType: string;
+  validity: number;
 
   @IsBoolean()
   @IsNotEmpty()
   lifetime: boolean;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsArray()
-  licenceKeys: [string];
 }
 
 export class skuDtoArrDto {

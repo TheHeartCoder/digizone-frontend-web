@@ -53,6 +53,10 @@ export class UsersModule implements NestModule {
           path: `${config.get('appPrefix')}/users/send-otp-mail/:email`,
           method: RequestMethod.GET,
         },
+        {
+          path: `${config.get('appPrefix')}/users/logout`,
+          method: RequestMethod.PUT,
+        },
       )
       .forRoutes(UsersController);
   }

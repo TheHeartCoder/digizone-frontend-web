@@ -63,13 +63,18 @@ export class FeedbackSchema {
   },
 })
 export class SkuDetails {
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  _id?: string;
+
   @Prop({})
   skuName: string; // name of the sku
 
   @Prop({ required: true })
   price: number;
 
-  @Prop({ required: true })
+  @Prop({ default: 0, type: Number })
   quantity: number;
 
   @Prop({ required: true })

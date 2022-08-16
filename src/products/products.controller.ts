@@ -73,21 +73,25 @@ export class ProductsController {
     return this.productsService.deleteProduct(id);
   }
 
-  @Post('/sku/:id')
+  @Post('/:productId/skus')
   @Roles(userTypes.admin)
   updateProductSkuDetails(
-    @Param('id') id: string,
+    @Param('productId') productId: string,
     @Body() skuDetails: skuDtoArrDto,
   ) {
-    return this.productsService.updateWithArrayOfSkuDetailsInDB(id, skuDetails);
+    return this.productsService.updateWithArrayOfSkuDetailsInDB(
+      productId,
+      skuDetails,
+    );
   }
 
-  @Put('/sku/:productId/:skuId')
+  @Put('/:productId/skus/:skuId')
   updateProductIndividualSkuDetails(
     @Param('productId') id: string,
     @Param('skuId') skuId: string,
     @Body() skuDetails: skuDto,
   ) {
+    console.log(skuDetails);
     return this.productsService.updateProductIndividualSkuDetails(
       id,
       skuId,
@@ -95,13 +99,13 @@ export class ProductsController {
     );
   }
 
-  @Delete('/sku/:productId')
+  @Delete('/:productId/skus/:skuId')
   @Roles(userTypes.admin)
   deleteProductSkuDetails(
     @Param('productId') id: string,
-    @Body('skuIds') skuIds: [string],
+    @Param('skuId') skuId: string,
     @Query('deleteAll') deleteAll: boolean,
   ) {
-    return this.productsService.deleteProductSkuDetails(id, skuIds, deleteAll);
+    return this.productsService.deleteProductSkuDetails(id, skuId, deleteAll);
   }
 }

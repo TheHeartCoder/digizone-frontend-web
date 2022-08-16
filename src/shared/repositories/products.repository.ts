@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
 
-import { Products } from '../schema/products';
+import { Products, SkuDetails } from '../schema/products';
 import { ParsedOptions } from 'qs-to-mongo/lib/query/options-to-mongo';
 @Injectable()
 export class ProductRepository {
@@ -103,10 +103,16 @@ export class ProductRepository {
   }
 
   // update with array of sku details in product
-  async updateWithArrayOfSkuDetailsInDB(id: string, data: any): Promise<any> {
-    return await this.productModel.updateOne(
+  async updateWithArrayOfSkuDetailsInDB(
+    id: string,
+    data: SkuDetails[],
+  ): Promise<any> {
+    return await this.productModel.findOneAndUpdate(
       { _id: id },
       { $push: { skuDetails: { $each: data } } },
+      {
+        new: true,
+      },
     );
   }
 
@@ -129,7 +135,7 @@ export class ProductRepository {
   // delete a sku details  in product
   async deleteSkuDetailsInDB(
     id: string,
-    skuIds: [string],
+    skuId: string,
     allDelete = false,
   ): Promise<any> {
     if (allDelete) {
@@ -140,7 +146,7 @@ export class ProductRepository {
     }
     return await this.productModel.updateOne(
       { _id: id },
-      { $pull: { skuDetails: { _id: { $in: skuIds } } } },
+      { $pull: { skuDetails: { _id: skuId } } },
     );
   }
 }

@@ -166,9 +166,8 @@ export class ProductsService {
     if (result.modifiedCount < 1) throw new Error('No product found');
     return {
       message: 'Product sku details successfully',
-      data: {
-        id,
-      },
+      success: true,
+      result,
     };
   }
 
@@ -183,6 +182,7 @@ export class ProductsService {
     if (result.modifiedCount < 1) throw new Error('No product found');
     return {
       message: 'Product sku details updated successfully',
+      success: true,
       data: {
         id,
       },
@@ -190,16 +190,14 @@ export class ProductsService {
   }
 
   // Delete individual product sku details
-  async deleteProductSkuDetails(
-    id: string,
-    skuIds: [string],
-    allDelete = false,
-  ) {
-    if (!skuIds || !skuIds.length || (!allDelete && !skuIds))
+  async deleteProductSkuDetails(id: string, skuId: string, allDelete = false) {
+    console.log('allDelete', skuId, allDelete);
+    if (!skuId || (!allDelete && !skuId))
       throw new BadRequestException('No sku details to delete');
-    await this.productDB.deleteSkuDetailsInDB(id, skuIds, allDelete);
+    await this.productDB.deleteSkuDetailsInDB(id, skuId, allDelete);
     return {
       message: 'Product sku details deleted successfully',
+      success: true,
       data: {
         id,
       },
