@@ -1,15 +1,60 @@
 import React, { FC } from 'react';
 import { Badge, Button, Table } from 'react-bootstrap';
 import { Archive, Eye, Pen } from 'react-bootstrap-icons';
+import { useToasts } from 'react-toast-notifications';
+import { getFormatedStringFromDays } from '../../helper/utils';
+import { Products } from '../../services/product.service';
 import SkuDetailsForm from './SkuDetailsForm';
 
 interface ISkuDetailsListProps {
 	skuDetails: any;
+	productId: string;
+	setAllSkuDetails: any;
 }
 
-const SkuDetailsList: FC<ISkuDetailsListProps> = ({ skuDetails }) => {
+const SkuDetailsList: FC<ISkuDetailsListProps> = ({
+	skuDetails: allSkuDetails,
+	productId,
+	setAllSkuDetails,
+}) => {
 	const [skuDetailsFormShow, setSkuDetailsFormShow] = React.useState(false);
-	const [allSkuDetails, setAllSkuDetails] = React.useState(skuDetails || []);
+	const [skuIdForUpdate, setSkuIdForUpdate] = React.useState('');
+	const { addToast } = useToasts();
+	const deleteHandler = async (skuId: string) => {
+		try {
+			const deleteConfirm = confirm(
+				'Want to delete? You will lost all licenses for this sku'
+			);
+			if (deleteConfirm) {
+				const deleteSkuRes = await Products.deleteSku(productId, skuId);
+				if (!deleteSkuRes.success) {
+					throw new Error(deleteSkuRes.message);
+				}
+				setAllSkuDetails(
+					allSkuDetails.filter((sku: { _id: string }) => sku._id !== skuId)
+				);
+				addToast(deleteSkuRes.message, {
+					appearance: 'success',
+					autoDismiss: true,
+				});
+			}
+		} catch (error: any) {
+			if (error.response) {
+				if (error.response.data?.message?.length > 0) {
+					return error.response.data.message.forEach((message: any) => {
+						addToast(message, { appearance: 'error', autoDismiss: true });
+					});
+				} else {
+					return addToast(error.response.data.message, {
+						appearance: 'error',
+						autoDismiss: true,
+					});
+				}
+			}
+			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		}
+	};
+
 	return (
 		<>
 			{!skuDetailsFormShow && (
@@ -39,7 +84,9 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({ skuDetails }) => {
 										<td>
 											₹{skuDetail?.price}{' '}
 											<Badge bg='warning' text='dark'>
-												{skuDetail?.validity}
+												{skuDetail?.lifetime
+													? 'Lifetime'
+													: getFormatedStringFromDays(skuDetail?.validity)}
 											</Badge>
 										</td>
 										<td>{skuDetail?.quantity}</td>
@@ -47,10 +94,19 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({ skuDetails }) => {
 											<Button variant='link'>View</Button>
 										</td>
 										<td>
-											<Button variant='outline-dark'>
+											<Button
+												variant='outline-dark'
+												onClick={() => {
+													setSkuIdForUpdate(skuDetail._id);
+													setSkuDetailsFormShow(true);
+												}}
+											>
 												<Pen />
 											</Button>{' '}
-											<Button variant='outline-dark'>
+											<Button
+												variant='outline-dark'
+												onClick={() => deleteHandler(skuDetail._id)}
+											>
 												<Archive />
 											</Button>
 										</td>
@@ -67,7 +123,14 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({ skuDetails }) => {
 			)}
 
 			{skuDetailsFormShow && (
-				<SkuDetailsForm setSkuDetailsFormShow={setSkuDetailsFormShow} />
+				<SkuDetailsForm
+					setSkuDetailsFormShow={setSkuDetailsFormShow}
+					setAllSkuDetails={setAllSkuDetails}
+					allSkuDetails={allSkuDetails}
+					productId={productId}
+					skuIdForUpdate={skuIdForUpdate}
+					setSkuIdForUpdate={setSkuIdForUpdate}
+				/>
 			)}
 		</>
 	);

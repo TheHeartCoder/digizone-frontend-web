@@ -3,18 +3,6 @@ import queryString from 'query-string';
 
 // create product service
 export const Products = {
-	// get products for admin
-	getProductsForAdmin: async (
-		filter: Record<string, any>
-	): Promise<resposnePayload> => {
-		const url = queryString.stringifyUrl({
-			url: '/products/admin',
-			query: filter,
-		});
-		const getProductRes = await requests.get(url);
-		return getProductRes;
-	},
-
 	// get products for customer
 	getProducts: async (
 		filter: Record<string, any>,
@@ -58,5 +46,41 @@ export const Products = {
 			image
 		);
 		return uploadProductImageRes;
+	},
+
+	// add sku details for an product
+	addSku: async (
+		productId: string,
+		sku: Record<string, any>
+	): Promise<resposnePayload> => {
+		const addSkuRes = await requests.post(
+			'/products/' + productId + '/skus',
+			sku
+		);
+		return addSkuRes;
+	},
+
+	// update sku details for an product
+	updateSku: async (
+		productId: string,
+		skuId: string,
+		sku: Record<string, any>
+	): Promise<resposnePayload> => {
+		const updateSkuRes = await requests.put(
+			'/products/' + productId + '/skus/' + skuId,
+			sku
+		);
+		return updateSkuRes;
+	},
+
+	// delete sku details for an product
+	deleteSku: async (
+		productId: string,
+		skuId: string
+	): Promise<resposnePayload> => {
+		const deleteSkuRes = await requests.delete(
+			'/products/' + productId + '/skus/' + skuId
+		);
+		return deleteSkuRes;
 	},
 };

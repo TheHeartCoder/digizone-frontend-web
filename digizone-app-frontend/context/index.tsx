@@ -83,8 +83,8 @@ const Provider = ({ children }: Props) => {
 								type: 'LOGOUT',
 								payload: undefined,
 							});
-							window.localStorage.removeItem('user');
-							router.push('/login');
+							localStorage.removeItem('_digi_user');
+							router.push('/auth');
 						})
 						.catch((err) => {
 							console.log('AXIOS INTERCEPTORS ERR', err);

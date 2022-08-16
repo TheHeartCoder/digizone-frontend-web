@@ -26,10 +26,11 @@ import {
 } from 'react-bootstrap-icons';
 import { Tab } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import CartOffCanvas from '../../components/CartOffCanvas';
 import axios from 'axios';
 import SkuDetailsList from '../../components/Product/SkuDetailsList';
+import { getFormatedStringFromDays } from '../../helper/utils';
 
 interface ProductProps {
 	product: Record<string, any>;
@@ -38,22 +39,13 @@ interface ProductProps {
 
 const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 	const [show, setShow] = useState(false);
-	const [skuDetailsFormShow, setSkuDetailsFormShow] = useState(false);
+	const [allSkuDetails, setAllSkuDetails] = React.useState(
+		product?.skuDetails || []
+	);
 	const handleShow = () => setShow(true);
 	console.log(product, relatedProducts);
 
-	const getFormatedStringFromDays = (numberOfDays: number) => {
-		var years = Math.floor(numberOfDays / 365);
-		var months = Math.floor((numberOfDays % 365) / 30);
-		var days = Math.floor((numberOfDays % 365) % 30);
-
-		var yearsDisplay =
-			years > 0 ? years + (years == 1 ? ' year ' : ' years ') : '';
-		var monthsDisplay =
-			months > 0 ? months + (months == 1 ? ' month ' : ' months ') : '';
-		var daysDisplay = days > 0 ? days + (days == 1 ? ' day' : ' days') : '';
-		return yearsDisplay + monthsDisplay + daysDisplay;
-	};
+	
 	return (
 		<>
 			<Row className='firstRow'>
@@ -305,7 +297,11 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 									</div>
 								</Tab.Pane>
 								<Tab.Pane eventKey='fourth'>
-									<SkuDetailsList skuDetails={product?.skuDetails} />
+									<SkuDetailsList
+										skuDetails={allSkuDetails}
+										productId={product._id}
+										setAllSkuDetails={setAllSkuDetails}
+									/>
 								</Tab.Pane>
 							</Tab.Content>
 						</Col>
