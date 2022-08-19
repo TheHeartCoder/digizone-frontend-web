@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Badge, Button, Table } from 'react-bootstrap';
 import { Archive, Eye, Pen } from 'react-bootstrap-icons';
 import { useToasts } from 'react-toast-notifications';
 import { getFormatedStringFromDays } from '../../helper/utils';
 import { Products } from '../../services/product.service';
 import SkuDetailsForm from './SkuDetailsForm';
+import SkuDetailsLicense from './SkuDetailsLicense';
 
 interface ISkuDetailsListProps {
 	skuDetails: any;
@@ -19,6 +20,8 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 }) => {
 	const [skuDetailsFormShow, setSkuDetailsFormShow] = React.useState(false);
 	const [skuIdForUpdate, setSkuIdForUpdate] = React.useState('');
+	const [licensesListFor, setLicensesListFor] = React.useState('');
+
 	const { addToast } = useToasts();
 	const deleteHandler = async (skuId: string) => {
 		try {
@@ -57,7 +60,7 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 
 	return (
 		<>
-			{!skuDetailsFormShow && (
+			{!skuDetailsFormShow && !licensesListFor && (
 				<>
 					<Button
 						variant='secondary'
@@ -91,11 +94,20 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 										</td>
 										<td>{skuDetail?.quantity}</td>
 										<td>
-											<Button variant='link'>View</Button>
+											<Button
+												variant='link'
+												onClick={() => {
+													setLicensesListFor(skuDetail?._id);
+													setSkuDetailsFormShow(false);
+												}}
+											>
+												View
+											</Button>
 										</td>
 										<td>
 											<Button
 												variant='outline-dark'
+												id={skuDetail._id}
 												onClick={() => {
 													setSkuIdForUpdate(skuDetail._id);
 													setSkuDetailsFormShow(true);
@@ -130,6 +142,14 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 					productId={productId}
 					skuIdForUpdate={skuIdForUpdate}
 					setSkuIdForUpdate={setSkuIdForUpdate}
+				/>
+			)}
+
+			{licensesListFor && (
+				<SkuDetailsLicense
+					licensesListFor={licensesListFor}
+					setLicensesListFor={setLicensesListFor}
+					productId={productId}
 				/>
 			)}
 		</>

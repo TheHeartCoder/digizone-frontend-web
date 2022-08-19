@@ -83,4 +83,50 @@ export const Products = {
 		);
 		return deleteSkuRes;
 	},
+
+	// get all licenses for a product SKU
+	getLicenses: async (
+		productId: string,
+		skuId: string
+	): Promise<resposnePayload> => {
+		const getLicensesRes = await requests.get(
+			'/products/' + productId + '/skus/' + skuId + '/licenses'
+		);
+		return getLicensesRes;
+	},
+
+	// add license for a product SKU
+	addLicense: async (
+		productId: string,
+		skuId: string,
+		license: Record<string, any>
+	): Promise<resposnePayload> => {
+		const addLicenseRes = await requests.post(
+			'/products/' + productId + '/skus/' + skuId + '/licenses',
+			license
+		);
+		return addLicenseRes;
+	},
+
+	// update license for a product SKU
+	updateLicense: async (
+		productId: string,
+		skuId: string,
+		licenseId: string,
+		license: Record<string, any>
+	): Promise<resposnePayload> => {
+		const updateLicenseRes = await requests.put(
+			'/products/' + productId + '/skus/' + skuId + '/licenses/' + licenseId,
+			license
+		);
+		return updateLicenseRes;
+	},
+
+	// delete license for a product SKU
+	deleteLicense: async (licenseId: string): Promise<resposnePayload> => {
+		const deleteLicenseRes = await requests.delete(
+			'/products/licenses/' + licenseId
+		);
+		return deleteLicenseRes;
+	},
 };

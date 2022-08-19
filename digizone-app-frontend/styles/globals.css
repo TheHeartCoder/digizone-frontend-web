@@ -269,3 +269,13 @@ button.btn.btn-link.resendOtpBtn {
 .skuBtn {
 	margin-right: 5px;
 }
+
+span.delLBtn {
+	margin: 5px;
+	cursor: pointer;
+}
+
+span.editLBtn {
+	margin: 5px;
+	cursor: pointer;
+}
