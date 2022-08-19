@@ -1,8 +1,12 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FC } from 'react';
 import { Button, Card, Col, Badge } from 'react-bootstrap';
-import { Eye, Pen, Upload } from 'react-bootstrap-icons';
+import { Eye, Pen, Trash, Upload } from 'react-bootstrap-icons';
 import StarRatingComponent from 'react-star-rating-component';
+import { useToasts } from 'react-toast-notifications';
+import { isArray } from 'util';
+import { Products } from '../../services/product.service';
 
 interface IProductItemProps {
 	userType: string;
@@ -10,13 +14,50 @@ interface IProductItemProps {
 }
 
 const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
+	const { addToast } = useToasts();
+	const router = useRouter();
+	const deleteProduct = async () => {
+		try {
+			const deleteConfirm = confirm(
+				'Want to delete? You will lost all details, skus and licences for this product'
+			);
+			if (deleteConfirm) {
+				const deleteProductRes = await Products.deleteProduct(product._id);
+				if (!deleteProductRes.success) {
+					throw new Error(deleteProductRes.message);
+				}
+				router.push('/products/');
+				addToast(deleteProductRes.message, {
+					appearance: 'success',
+					autoDismiss: true,
+				});
+			}
+		} catch (error: any) {
+			if (error.response) {
+				if (
+					isArray(error.response.data?.message) &&
+					error.response.data?.message?.length > 0
+				) {
+					return error.response.data.message.forEach((message: any) => {
+						addToast(message, { appearance: 'error', autoDismiss: true });
+					});
+				} else {
+					return addToast(error.response.data.message, {
+						appearance: 'error',
+						autoDismiss: true,
+					});
+				}
+			}
+			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		}
+	};
 	return (
 		// eslint-disable-next-line react/jsx-key
 		<Col>
 			<Card className='productCard'>
 				<Card.Img variant='top' src={product?.image} />
 				<Card.Body>
-					<Card.Title>Microsoft Window 10</Card.Title>
+					<Card.Title>{product.productName}</Card.Title>
 					<StarRatingComponent
 						name='rate2'
 						editing={false}
@@ -44,11 +85,18 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 								<Upload />
 								<input type='file' name='file' className='fileInput' />
 							</div>
-							<Link href='/products/update-product?productId='>
+							<Link href={`/products/update-product?productId=${product?._id}`}>
 								<a className='btn btn-outline-dark viewProdBtn'>
 									<Pen />
 								</a>
 							</Link>
+							<Button
+								variant='outline-dark'
+								className='btn btn-outline-dark viewProdBtn'
+								onClick={() => deleteProduct(product._id)}
+							>
+								<Trash />
+							</Button>
 							<Link href={`/products/${product?._id}`}>
 								<a className='btn btn-outline-dark viewProdBtn'>
 									<Eye />

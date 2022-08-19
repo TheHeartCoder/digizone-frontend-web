@@ -36,6 +36,12 @@ export const Products = {
 		return updateProductRes;
 	},
 
+	// delete product details
+	deleteProduct: async (id: string): Promise<resposnePayload> => {
+		const deleteProductRes = await requests.delete('/products/' + id);
+		return deleteProductRes;
+	},
+
 	// upload product image
 	uploadProductImage: async (
 		id: string,

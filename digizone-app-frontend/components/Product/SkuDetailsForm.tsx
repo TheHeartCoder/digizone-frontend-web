@@ -53,6 +53,7 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 			console.log(sku.validity);
 			const periodTimes = getFormatedStringFromDays(sku?.validity);
 			setSkuFrom({
+				...intialState,
 				...sku,
 				validity: periodTimes.split(' ')[0] || 0,
 				validityType: periodTimes.split(' ')[1] || 'Select Type',

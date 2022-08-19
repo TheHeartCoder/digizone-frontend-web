@@ -1,5 +1,5 @@
-import React from 'react';
-import type { NextPage } from 'next';
+import React, { useEffect } from 'react';
+import type { GetServerSideProps, NextPage } from 'next';
 import {
 	Button,
 	Card,
@@ -14,6 +14,8 @@ import { Table } from 'react-bootstrap';
 import { useToasts } from 'react-toast-notifications';
 import { useRouter } from 'next/router';
 import { Products } from '../../services/product.service';
+import axios from 'axios';
+import Link from 'next/link';
 
 const initialForm = {
 	productName: '' as string,
@@ -27,11 +29,16 @@ const initialForm = {
 	downloadUrl: '' as string,
 };
 
-const UpdateProduct: NextPage = () => {
+interface ProductProps {
+	product: Record<string, any>;
+	productIdForUpdate: string;
+}
+
+const UpdateProduct: NextPage<ProductProps> = ({
+	product,
+	productIdForUpdate,
+}) => {
 	const { addToast } = useToasts();
-	// get product id from router params
-	const router = useRouter();
-	const productId = router.query.productId as string;
 	const [productForm, setProductForm] = React.useState(initialForm);
 	const [requirementName, setRequirementName] = React.useState('');
 	const [requirementDescription, setRequirementDescription] =
@@ -41,7 +48,12 @@ const UpdateProduct: NextPage = () => {
 		React.useState(-1);
 	const [updateHightlightIndex, setUpdateHightlightIndex] = React.useState(-1);
 
-	console.log(productForm);
+	useEffect(() => {
+		if (product && product.productName) {
+			setProductForm({ ...initialForm, ...product });
+		}
+		console.log(product);
+	}, [product]);
 
 	const hanldleHightlightAdd = () => {
 		if (updateHightlightIndex > -1) {
@@ -102,8 +114,8 @@ const UpdateProduct: NextPage = () => {
 	) => {
 		e.preventDefault();
 
-		productId
-			? await Products.updateProduct(productId, productForm)
+		productIdForUpdate
+			? await Products.updateProduct(productIdForUpdate, productForm)
 			: await Products.saveProduct(productForm);
 		addToast('Product saved successfully', {
 			type: 'success',
@@ -376,7 +388,8 @@ const UpdateProduct: NextPage = () => {
 													console.log(index);
 													setUpdateHightlightIndex(index);
 												}}
-											/>{' '} &nbsp;&nbsp;
+											/>{' '}
+											&nbsp;&nbsp;
 											<Archive
 												className='pointer'
 												onClick={() => {
@@ -405,6 +418,9 @@ const UpdateProduct: NextPage = () => {
 			<Row>
 				<Col></Col>
 				<Col style={{ textAlign: 'end' }}>
+					<Link href={`/products`}>
+						<Button variant='secondary'>Back</Button>
+					</Link>{' '}
 					<Button
 						variant='info'
 						onClick={(
@@ -423,6 +439,34 @@ const UpdateProduct: NextPage = () => {
 			</Row>
 		</Card>
 	);
+};
+export const getServerSideProps: GetServerSideProps<ProductProps> = async (
+	context
+): Promise<any> => {
+	try {
+		if (!context.query?.productId) {
+			return {
+				props: {
+					product: {},
+				},
+			};
+		}
+		const { data } = await axios.get(
+			'http://localhost:3100/api/v1/products/' + context.query?.productId
+		);
+		return {
+			props: {
+				product: data?.result?.product || ({} as Record<string, any>),
+				productIdForUpdate: context.query?.productId,
+			},
+		};
+	} catch (error) {
+		return {
+			props: {
+				product: {},
+			},
+		};
+	}
 };
 
 export default UpdateProduct;
