@@ -22,6 +22,14 @@ export class ProductsService {
 
   // product image upload
   async uploadProductImage(id: string, file: any): Promise<any> {
+    // delete old imgae if it has
+    const product = await this.productDB.getProductDetailsById(id);
+    if (product.imageDetails?.public_id) {
+      await cloudinary.v2.uploader.destroy(product.imageDetails.public_id, {
+        invalidate: true,
+      });
+    }
+
     // upload file [image] to cloudinary
     const resOfCludinary = await cloudinary.v2.uploader.upload(file.path, {
       folder: config.get('cloudinary.folderPath'),
@@ -46,9 +54,8 @@ export class ProductsService {
 
     return {
       message: 'Product image uploaded successfully',
-      result: {
-        image: resOfCludinary.secure_url,
-      },
+      success: true,
+      result: resOfCludinary.secure_url,
     };
   }
 

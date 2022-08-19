@@ -85,21 +85,21 @@ export class ProductRepository {
       { $sort: options.sort },
       { $skip: options.skip },
       { $limit: options.limit },
-      { $unwind: { path: '$skuDetails', preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          'skuDetails.licenceKeys': 0,
-          'feedbackDetails.info': 0,
-          imageDetails: 0,
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          data: { $first: '$$ROOT' },
-        },
-      },
-      { $replaceRoot: { newRoot: '$data' } },
+      // { $unwind: { path: '$skuDetails', preserveNullAndEmptyArrays: true } },
+      // {
+      //   $project: {
+      //     'skuDetails.licenceKeys': 0,
+      //     'feedbackDetails.info': 0,
+      //     imageDetails: 0,
+      //   },
+      // },
+      // {
+      //   $group: {
+      //     _id: '$_id',
+      //     data: { $first: '$$ROOT' },
+      //   },
+      // },
+      // { $replaceRoot: { newRoot: '$data' } },
     ]);
     // get total products count
     const total = await this.productModel.countDocuments(criteria);
