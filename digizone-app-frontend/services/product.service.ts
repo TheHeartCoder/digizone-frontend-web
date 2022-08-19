@@ -47,7 +47,7 @@ export const Products = {
 		id: string,
 		image: any
 	): Promise<resposnePayload> => {
-		const uploadProductImageRes = await requests.put(
+		const uploadProductImageRes = await requests.post(
 			'/products/' + id + '/image',
 			image
 		);

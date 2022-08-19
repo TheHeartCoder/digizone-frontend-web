@@ -31,6 +31,7 @@ import CartOffCanvas from '../../components/CartOffCanvas';
 import axios from 'axios';
 import SkuDetailsList from '../../components/Product/SkuDetailsList';
 import { getFormatedStringFromDays } from '../../helper/utils';
+import ProductItem from '../../components/Products/ProductItem';
 
 interface ProductProps {
 	product: Record<string, any>;
@@ -45,7 +46,6 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 	const handleShow = () => setShow(true);
 	console.log(product, relatedProducts);
 
-	
 	return (
 		<>
 			<Row className='firstRow'>
@@ -312,42 +312,9 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 			<div className='separator'>Related Products</div>
 			<br />
 			<Row xs={1} md={4} className='g-3'>
-				{Array.from({ length: 4 }).map((_, idx) => (
-					// eslint-disable-next-line react/jsx-key
-					<Col>
-						<Card className='productCard'>
-							<Card.Img
-								variant='top'
-								src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-							/>
-							<Card.Body>
-								<Card.Title>Microsoft Window 10</Card.Title>
-								<StarRatingComponent
-									name='rate2'
-									editing={false}
-									starCount={5}
-									value={3}
-								/>
-								<Card.Text>
-									<span className='priceText'>
-										<span className='priceText'>₹949.00 - ₹1699.00</span>
-									</span>
-								</Card.Text>
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<br />
-								<Button variant='outline-dark' className='viewProdBtn'>
-									View Details
-								</Button>
-							</Card.Body>
-						</Card>
+				{relatedProducts.map((relatedProduct) => (
+					<Col key={relatedProduct._id}>
+						<ProductItem product={relatedProduct} userType={'customer'} />
 					</Col>
 				))}
 			</Row>

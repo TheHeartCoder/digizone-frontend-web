@@ -8,6 +8,7 @@ import Heading from '../components/shared/Heading';
 import Footer from '../components/shared/Footer';
 import { ToastProvider } from 'react-toast-notifications';
 import { Provider } from '../context';
+import NextNProgress from 'nextjs-progressbar';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
@@ -16,6 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 				<Heading />
 				<Container>
 					<ToastProvider>
+						<NextNProgress />
 						<TopHead />
 						<Component {...pageProps} />
 						<Footer />
