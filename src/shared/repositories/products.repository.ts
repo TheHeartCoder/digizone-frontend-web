@@ -3,13 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProductDto } from 'src/products/dto/create-product.dto';
 
-import { Products, SkuDetails } from '../schema/products';
+import { Products } from '../schema/products';
 import { ParsedOptions } from 'qs-to-mongo/lib/query/options-to-mongo';
+import { License } from '../schema/license';
 @Injectable()
 export class ProductRepository {
   constructor(
     @InjectModel(Products.name)
     private readonly productModel: Model<Products>,
+    @InjectModel(License.name)
+    private readonly licenseModel: Model<License>,
   ) {}
 
   // create product details
@@ -48,7 +51,11 @@ export class ProductRepository {
     id: string,
     data: CreateProductDto,
   ): Promise<any> {
-    return await this.productModel.updateOne({ _id: id }, { $set: data });
+    return await this.productModel.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true },
+    );
   }
 
   // delete product details
@@ -105,11 +112,11 @@ export class ProductRepository {
   // update with array of sku details in product
   async updateWithArrayOfSkuDetailsInDB(
     id: string,
-    data: SkuDetails[],
+    data: Record<string, any>,
   ): Promise<any> {
     return await this.productModel.findOneAndUpdate(
       { _id: id },
-      { $push: { skuDetails: { $each: data } } },
+      { $push: { skuDetails: { $each: data as any } } },
       {
         new: true,
       },
@@ -126,27 +133,62 @@ export class ProductRepository {
     Object.keys(data).forEach((key) => {
       dataForUpdate[`skuDetails.$.${key}`] = data[key];
     });
-    return await this.productModel.updateOne(
+    const e = await this.productModel.findOneAndUpdate(
       { _id: id, 'skuDetails._id': skuId },
       { $set: dataForUpdate },
+      { new: true },
     );
+    console.log(e);
+    return e;
   }
 
   // delete a sku details  in product
-  async deleteSkuDetailsInDB(
-    id: string,
-    skuId: string,
-    allDelete = false,
-  ): Promise<any> {
-    if (allDelete) {
-      return await this.productModel.updateOne(
-        { _id: id },
-        { $set: { skuDetails: [] } },
-      );
-    }
+  async deleteSkuDetailsInDB(id: string, skuId: string): Promise<any> {
     return await this.productModel.updateOne(
       { _id: id },
-      { $pull: { skuDetails: { _id: skuId } } },
+      { $pull: { skuDetails: { _id: skuId as any } } },
     );
+  }
+
+  // add license information in product
+  async addLicenseKeysForProductSkuInDB(
+    productId: string,
+    skuId: string,
+    licenseKey: string,
+  ): Promise<any> {
+    return await this.licenseModel.create({
+      product: productId,
+      productSku: skuId,
+      licenseKey,
+    });
+  }
+
+  // delete license keys in product
+  async deleteLicenseKeysForProductSkuInDB(id: string) {
+    return await this.licenseModel.deleteOne({ _id: id });
+  }
+
+  // get license keys in product
+  async getAllLicenseKeysForProductInDB(id: string, skuId: string) {
+    return await this.licenseModel.find({ product: id, productSku: skuId });
+  }
+
+  // update license keys in product
+  async updateLicenseKeysForProductSkuInDB(
+    id: string,
+    skuId: string,
+    licenseKeyId: string,
+    licenseKey: string,
+  ): Promise<any> {
+    return await this.licenseModel.updateOne(
+      { _id: licenseKeyId },
+      { $set: { licenseKey, productSku: skuId, product: id } },
+    );
+  }
+
+  // delete all license keys from product
+  async deleteAllLicenseKeysForProductInDB(id: string, skuId: string) {
+    if (id) return await this.licenseModel.deleteMany({ product: id });
+    return await this.licenseModel.deleteMany({ productSku: skuId });
   }
 }

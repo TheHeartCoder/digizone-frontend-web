@@ -104,8 +104,52 @@ export class ProductsController {
   deleteProductSkuDetails(
     @Param('productId') id: string,
     @Param('skuId') skuId: string,
-    @Query('deleteAll') deleteAll: boolean,
   ) {
-    return this.productsService.deleteProductSkuDetails(id, skuId, deleteAll);
+    return this.productsService.deleteProductSkuDetails(id, skuId);
+  }
+
+  @Post('/:productId/skus/:skuId/licenses')
+  @Roles(userTypes.admin)
+  addLicenseKeysForProductSku(
+    @Param('productId') productId: string,
+    @Param('skuId') skuId: string,
+    @Body('licenseKey') licenseKey: string,
+  ) {
+    return this.productsService.addLicenseKeysForProductSku(
+      productId,
+      skuId,
+      licenseKey,
+    );
+  }
+
+  @Delete('/licenses/:licenseKeyId')
+  @Roles(userTypes.admin)
+  deleteLicenseKeysForProductSku(@Param('licenseKeyId') licenseKeyId: string) {
+    return this.productsService.deleteLicenseKeysForProductSku(licenseKeyId);
+  }
+
+  @Get('/:productId/skus/:skuId/licenses')
+  @Roles(userTypes.admin)
+  getAllLicenseKeysForProduct(
+    @Param('productId') productId: string,
+    @Param('skuId') skuId: string,
+  ) {
+    return this.productsService.getAllLicenseKeysForProduct(productId, skuId);
+  }
+
+  @Put('/:productId/skus/:skuId/licenses/:licenseKeyId')
+  @Roles(userTypes.admin)
+  updateLicenseKeysForProductSku(
+    @Param('productId') productId: string,
+    @Param('skuId') skuId: string,
+    @Param('licenseKeyId') licenseKeyId: string,
+    @Body('licenseKey') licenseKey: string,
+  ) {
+    return this.productsService.updateLicenseKeysForProductSku(
+      productId,
+      skuId,
+      licenseKeyId,
+      licenseKey,
+    );
   }
 }

@@ -72,16 +72,15 @@ export class ProductsService {
     updateProductDto: CreateProductDto,
   ): Promise<{
     message: string;
-    data: {
-      id: string;
-    };
+    result: Record<string, any>;
   }> {
-    await this.productDB.updateProductDetailsInDB(id, updateProductDto);
+    const updatedProduct = await this.productDB.updateProductDetailsInDB(
+      id,
+      updateProductDto,
+    );
     return {
       message: 'Product updated successfully',
-      data: {
-        id,
-      },
+      result: updatedProduct,
     };
   }
   // get product details by id
@@ -146,7 +145,8 @@ export class ProductsService {
         invalidate: true,
       },
     );
-
+    // delete all licenceKeys from db
+    await this.productDB.deleteAllLicenseKeysForProductInDB(id, undefined);
     return {
       message: 'Product deleted successfully',
       data: {
@@ -163,7 +163,6 @@ export class ProductsService {
       data.skuDetails,
     );
 
-    if (result.modifiedCount < 1) throw new Error('No product found');
     return {
       message: 'Product sku details successfully',
       success: true,
@@ -179,28 +178,89 @@ export class ProductsService {
   ): Promise<any> {
     const result = await this.productDB.updateSkuDetailsInDB(id, skuId, data);
 
-    if (result.modifiedCount < 1) throw new Error('No product found');
     return {
       message: 'Product sku details updated successfully',
       success: true,
-      data: {
-        id,
-      },
+      result,
     };
   }
 
   // Delete individual product sku details
-  async deleteProductSkuDetails(id: string, skuId: string, allDelete = false) {
-    console.log('allDelete', skuId, allDelete);
-    if (!skuId || (!allDelete && !skuId))
-      throw new BadRequestException('No sku details to delete');
-    await this.productDB.deleteSkuDetailsInDB(id, skuId, allDelete);
+  async deleteProductSkuDetails(id: string, skuId: string) {
+    if (!skuId) throw new BadRequestException('No sku details to delete');
+    await this.productDB.deleteSkuDetailsInDB(id, skuId);
+    // delete all licenceKeys from db
+    await this.productDB.deleteAllLicenseKeysForProductInDB(undefined, skuId);
+
     return {
       message: 'Product sku details deleted successfully',
       success: true,
       data: {
         id,
       },
+    };
+  }
+  // add license keys for an product sku
+  async addLicenseKeysForProductSku(
+    id: string,
+    skuId: string,
+    licenseKey: string,
+  ): Promise<any> {
+    const result = await this.productDB.addLicenseKeysForProductSkuInDB(
+      id,
+      skuId,
+      licenseKey,
+    );
+    return {
+      message: 'License keys added successfully',
+      success: true,
+      result: result,
+    };
+  }
+
+  // delete a license key
+  async deleteLicenseKeysForProductSku(id: string) {
+    const result = await this.productDB.deleteLicenseKeysForProductSkuInDB(id);
+
+    return {
+      message: 'License keys deleted successfully',
+      success: true,
+      result: result,
+    };
+  }
+
+  // get license keys for a product sku
+  async getAllLicenseKeysForProduct(id: string, skuId: string) {
+    const result = await this.productDB.getAllLicenseKeysForProductInDB(
+      id,
+      skuId,
+    );
+
+    return {
+      message: 'License keys found',
+      success: true,
+      result: result,
+    };
+  }
+
+  // update license keys for a product sku
+  async updateLicenseKeysForProductSku(
+    productId: string,
+    skuId: string,
+    licenseKeyId: string,
+    licenseKey: string,
+  ): Promise<any> {
+    const result = await this.productDB.updateLicenseKeysForProductSkuInDB(
+      productId,
+      skuId,
+      licenseKeyId,
+      licenseKey,
+    );
+
+    return {
+      message: 'License keys updated successfully',
+      success: true,
+      result: result,
     };
   }
 }

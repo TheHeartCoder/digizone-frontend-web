@@ -62,20 +62,12 @@ export class FeedbackSchema {
     updatedAt: 'updatedAt',
   },
 })
-export class SkuDetails {
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-  })
-  _id?: string;
-
+export class SkuDetails extends mongoose.Document {
   @Prop({})
   skuName: string; // name of the sku
 
   @Prop({ required: true })
   price: number;
-
-  @Prop({ default: 0, type: Number })
-  quantity: number;
 
   @Prop({ required: true })
   validity: number;
