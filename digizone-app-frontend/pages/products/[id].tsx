@@ -26,12 +26,13 @@ import {
 } from 'react-bootstrap-icons';
 import { Tab } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import CartOffCanvas from '../../components/CartOffCanvas';
 import axios from 'axios';
 import SkuDetailsList from '../../components/Product/SkuDetailsList';
 import { getFormatedStringFromDays } from '../../helper/utils';
 import ProductItem from '../../components/Products/ProductItem';
+import { Context } from '../../context';
 
 interface ProductProps {
 	product: Record<string, any>;
@@ -43,8 +44,38 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 	const [allSkuDetails, setAllSkuDetails] = React.useState(
 		product?.skuDetails || []
 	);
-	const handleShow = () => setShow(true);
-	console.log(product, relatedProducts);
+
+	const [cartForm, setCartForm] = useState({
+		skuId: '',
+		quantity: 1,
+	});
+
+	const {
+		cartItems,
+		cartDispatch,
+		state: { user },
+	} = useContext(Context);
+
+	// const handleShow = () => setShow(true);
+	const handleCart = () => {
+		cartDispatch({
+			type: 'ADD_TO_CART',
+			payload: {
+				skuId: cartForm.skuId,
+				quantity: cartForm.quantity,
+				validity: product.skuDetails.find(
+					(sku: { skuId: string }) => sku.skuId === cartForm.skuId
+				),
+				price: product.skuDetails.find(
+					(sku: { skuId: string }) => sku.skuId === cartForm.skuId
+				).price,
+				productName: product.name,
+				productImage: product.image,
+				productId: product._id,
+			},
+		});
+		setShow(true);
+	};
 
 	return (
 		<>
@@ -113,10 +144,12 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							<option value='2'>Two</option>
 							<option value='3'>Three</option>
 						</Form.Select> */}
-						<Button variant='primary' className='cartBtn' onClick={handleShow}>
+						{/* {user?.type !== 'admin' && ( */}
+						<Button variant='primary' className='cartBtn' onClick={handleCart}>
 							<BagCheckFill className='cartIcon' />
 							Add to cart
 						</Button>
+						{/* )} */}
 					</div>
 				</Col>
 			</Row>

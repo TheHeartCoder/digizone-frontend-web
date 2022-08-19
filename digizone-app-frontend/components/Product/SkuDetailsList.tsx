@@ -73,7 +73,7 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 							<tr>
 								<th>Name</th>
 								<th>Price</th>
-								<th>Quantity</th>
+								{/* <th>Quantity</th> */}
 								<th>License Keys</th>
 								<th>Actions</th>
 							</tr>
@@ -92,7 +92,7 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 													: getFormatedStringFromDays(skuDetail?.validity)}
 											</Badge>
 										</td>
-										<td>{skuDetail?.quantity}</td>
+										{/* <td>{skuDetail?.quantity}</td> */}
 										<td>
 											<Button
 												variant='link'

@@ -1,9 +1,6 @@
 import { useReducer, createContext, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-interface CommonHeaderProperties {
-	'X-CSRF-Token': string;
-}
 
 type Props = {
 	children: React.ReactNode;
@@ -20,11 +17,23 @@ type Context = {
 		type: string;
 		payload: Record<string, any> | undefined;
 	}) => void;
+	cartItems: any;
+	cartDispatch: (action: {
+		type: string;
+		payload: Record<string, any>;
+	}) => void;
 };
 
 const initialContext: Context = {
 	state: intialState,
 	dispatch: () => {},
+	cartItems: [],
+	cartDispatch: function (action: {
+		type: string;
+		payload: Record<string, any>;
+	}): void {
+		throw new Error('Function not implemented.');
+	},
 };
 
 // create context
@@ -47,18 +56,65 @@ const rootReducer = (
 	}
 };
 
+// cart reducer
+const cartReducer = (
+	state: any,
+	action: { type: string; payload: Record<string, any> | undefined }
+) => {
+	switch (action.type) {
+		case 'ADD_TO_CART':
+			// add items to localStorage
+			const cartItems = [...state, action.payload];
+			window.localStorage.setItem('_digi_cart', JSON.stringify(cartItems));
+			return cartItems;
+		case 'REMOVE_FROM_CART':
+			// remove items from localStorage
+			const newCartItems = state.filter(
+				(item: { id: string }) => item.id !== action.payload?.id
+			);
+			window.localStorage.setItem('_digi_cart', JSON.stringify(newCartItems));
+			return newCartItems;
+		case 'UPDATE_CART':
+			// update items in localStorage
+			const updatedCartItems = state
+				.map((item: any) => {
+					if (item.id === action.payload?.id) {
+						return action.payload;
+					}
+					return item;
+				})
+				.filter((item: any) => item);
+			window.localStorage.setItem(
+				'_digi_cart',
+				JSON.stringify(updatedCartItems)
+			);
+			return updatedCartItems;
+		case 'GET_CART_ITEMS':
+			return action.payload;
+		default:
+			return state;
+	}
+};
+
 // context provider
 const Provider = ({ children }: Props) => {
 	const [state, dispatch] = useReducer(rootReducer, intialState);
+	const [cartItems, cartDispatch] = useReducer(cartReducer, []);
 
 	// router
 	const router = useRouter();
 
 	useEffect(() => {
-		return dispatch({
+		dispatch({
 			type: 'LOGIN',
 			payload: JSON.parse(window.localStorage.getItem('_digi_user') || '{}'),
 		});
+		// get cart items from localStorage
+		const cartItems = JSON.parse(
+			window.localStorage.getItem('_digi_cart') || '[]'
+		);
+		cartDispatch({ type: 'GET_CART_ITEMS', payload: cartItems });
+		return;
 	}, []);
 
 	axios.interceptors.response.use(
@@ -68,8 +124,6 @@ const Provider = ({ children }: Props) => {
 			return response;
 		},
 		function (error) {
-			console.log('error :: ' + error);
-
 			// any status codes that falls outside the range of 2xx cause this function
 			// to trigger
 			let res = error.response;
@@ -113,7 +167,9 @@ const Provider = ({ children }: Props) => {
 	}, []);
 
 	return (
-		<Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
+		<Context.Provider value={{ state, dispatch, cartItems, cartDispatch }}>
+			{children}
+		</Context.Provider>
 	);
 };
 

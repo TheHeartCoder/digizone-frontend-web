@@ -1,11 +1,15 @@
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { Button, Card, CloseButton, Image, Offcanvas } from 'react-bootstrap';
+import { Context } from '../context';
 interface IProps {
 	show: boolean;
 	setShow: (show: boolean) => void;
 }
 const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 	const handleClose = () => setShow(false);
+
+	const { cartItems, cartDispatch } = useContext(Context);
+	console.log('cartItems', cartItems);
 
 	return (
 		<>
