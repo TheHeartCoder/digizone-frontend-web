@@ -139,20 +139,19 @@ export class ProductsService {
     const deletedProduct = await this.productDB.deleteProductDetailsInDB(id);
     if (!deletedProduct) throw new BadRequestException('No product found');
     // delete image from cloudinary server
-    await cloudinary.v2.uploader.destroy(
-      deletedProduct.imageDetails.public_id,
-      {
-        invalidate: true,
-      },
-    );
+    if (deletedProduct?.imageDetails?.public_id)
+      await cloudinary.v2.uploader.destroy(
+        deletedProduct.imageDetails.public_id,
+        {
+          invalidate: true,
+        },
+      );
     // delete all licenceKeys from db
     await this.productDB.deleteAllLicenseKeysForProductInDB(id, undefined);
     return {
       message: 'Product deleted successfully',
-      data: {
-        id,
-        deletedProduct,
-      },
+      success: true,
+      result: deletedProduct,
     };
   }
 
