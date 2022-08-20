@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './httpExceptionFilter';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AllExceptionsFilter } from './httpExceptionFilter';
     }),
     ProductsModule,
     UsersModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [

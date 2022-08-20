@@ -25,5 +25,12 @@
     }
   },
   "loginLink": "http://localhost:3000/auth",
-  "verifyEmailLink": "http://localhost:3000/auth?verifyToken="
+  "verifyEmailLink": "http://localhost:3000/auth?verifyToken=",
+  "stripe": {
+    "publishable_key": "pk_test_51GzkT8C75ex8AkqxBjjmzLHcc1aBuKKkdxk0IQDhXfx58yaCtcOHm1rRm1zZbfYtOvesyS459XnBwcir8o6hVeQt00s2xbwlpk",
+    "secret_key": "sk_test_51GzkT8C75ex8AkqxNlnmuLprbZGDFTvbL2jGMVkyH70ZHXWRXfTeGCPeRlZjhhrABUm8s1GAGT43T5skBUv4hqBv00GrCiFOpg",
+    "successUrl": "http://localhost:3000/order-response?success=true&orderId=",
+    "cancelUrl": "http://localhost:3000/order-response?success=false&orderId=",
+    "webhook_secret": "whsec_65091664c52548dae5e241f06b7b885826abc096430fc3fcfea6fe567623d859"
+  }
 }

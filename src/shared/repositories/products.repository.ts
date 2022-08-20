@@ -144,9 +144,12 @@ export class ProductRepository {
 
   // delete a sku details  in product
   async deleteSkuDetailsInDB(id: string, skuId: string): Promise<any> {
-    return await this.productModel.updateOne(
+    return await this.productModel.findOneAndUpdate(
       { _id: id },
       { $pull: { skuDetails: { _id: skuId as any } } },
+      {
+        new: true,
+      },
     );
   }
 

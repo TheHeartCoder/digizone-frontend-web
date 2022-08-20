@@ -55,8 +55,10 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   skuDetatails: [SkuDetails];
-
+  @IsOptional()
   image?: string;
-
+  @IsOptional()
   imageDetails?: any;
+  @IsOptional()
+  stripeProductId?: string;
 }

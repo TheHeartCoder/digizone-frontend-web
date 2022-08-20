@@ -16,7 +16,7 @@ import { RolesGuard } from 'src/shared/middleware/roles.guard';
 import { Users, UserSchema } from 'src/shared/schema/users';
 import { UserRepository } from 'src/shared/repositories/users.repository';
 import { License, LicenseSchema } from 'src/shared/schema/license';
-
+import { StripeModule } from 'nestjs-stripe';
 @Module({
   controllers: [ProductsController],
   providers: [
@@ -32,6 +32,10 @@ import { License, LicenseSchema } from 'src/shared/schema/license';
     MongooseModule.forFeature([{ name: Products.name, schema: ProductSchema }]),
     MongooseModule.forFeature([{ name: Users.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: License.name, schema: LicenseSchema }]),
+    StripeModule.forRoot({
+      apiKey: config.get('stripe.secret_key'),
+      apiVersion: '2022-08-01',
+    }),
   ],
 })
 export class ProductsModule implements NestModule {

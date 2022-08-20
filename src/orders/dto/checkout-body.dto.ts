@@ -1,7 +1,6 @@
 import {
   ArrayMinSize,
   IsArray,
-  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,36 +9,21 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class skuDto {
+export class checkoutDto {
   @IsString()
   @IsNotEmpty()
-  skuName: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  price: number;
+  skuPriceId: string;
 
   @IsNumber()
   @IsOptional()
   quantity: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  validity: number;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  lifetime: boolean;
-
-  @IsOptional()
-  stripePriceId?: string;
 }
 
-export class skuDtoArrDto {
+export class checkoutDtoArrDto {
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => skuDto)
-  skuDetails: skuDto[];
+  @Type(() => checkoutDto)
+  checkoutDetails: checkoutDto[];
 }

@@ -7,11 +7,13 @@ import cloudinary from 'cloudinary';
 import { GetProductQueryDto } from './dto/get-product.dto';
 import config from 'config';
 import fs from 'fs';
-
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
 @Injectable()
 export class ProductsService {
   constructor(
     @Inject(ProductRepository) private readonly productDB: ProductRepository,
+    @InjectStripe() private readonly stripeClient: Stripe,
   ) {
     cloudinary.v2.config({
       cloud_name: config.get('cloudinary.cloud_name'),
@@ -52,6 +54,11 @@ export class ProductsService {
       imageDetails: resOfCludinary,
     });
 
+    // update product in stripe
+    await this.stripeClient.products.update(product.stripeProductId, {
+      images: [resOfCludinary.secure_url],
+    });
+
     return {
       message: 'Product image uploaded successfully',
       success: true,
@@ -64,9 +71,18 @@ export class ProductsService {
     message: string;
     result: Record<string, any>;
   }> {
+    // create products in stripe
+    const creratProductInStripe = await this.stripeClient.products.create({
+      name: createProductDto.productName,
+      description: createProductDto.description,
+    });
+
+    createProductDto.stripeProductId = creratProductInStripe.id;
+
     const createdProduct = await this.productDB.createProductInDB(
       createProductDto,
     );
+
     return {
       message: 'Product created successfully',
       result: createdProduct,
@@ -81,10 +97,18 @@ export class ProductsService {
     message: string;
     result: Record<string, any>;
   }> {
+    // check product is exists or not
+    const existproduct = await this.productDB.getProductDetailsById(id);
+
     const updatedProduct = await this.productDB.updateProductDetailsInDB(
       id,
       updateProductDto,
     );
+    // update product in stripe
+    await this.stripeClient.products.update(existproduct.stripeProductId, {
+      name: updateProductDto.productName,
+      description: updateProductDto.description,
+    });
     return {
       message: 'Product updated successfully',
       result: updatedProduct,
@@ -155,6 +179,9 @@ export class ProductsService {
       );
     // delete all licenceKeys from db
     await this.productDB.deleteAllLicenseKeysForProductInDB(id, undefined);
+
+    // delete product from stripe
+    await this.stripeClient.products.del(deletedProduct.stripeProductId);
     return {
       message: 'Product deleted successfully',
       success: true,
@@ -164,6 +191,19 @@ export class ProductsService {
 
   // Update with array of sku details in product
   async updateWithArrayOfSkuDetailsInDB(id: string, data: skuDtoArrDto) {
+    // get exists product details
+    const product = await this.productDB.getProductDetailsById(id);
+    if (!product) throw new BadRequestException('No product found');
+    // create price in Stripe
+    for (let i = 0; i < data.skuDetails.length; i++) {
+      const priceDetails = await this.stripeClient.prices.create({
+        unit_amount: data.skuDetails[i].price * 100,
+        currency: 'inr',
+        product: product.stripeProductId,
+      });
+      data.skuDetails[i].stripePriceId = priceDetails.id;
+    }
+
     const result = await this.productDB.updateWithArrayOfSkuDetailsInDB(
       id,
       data.skuDetails,
@@ -182,6 +222,26 @@ export class ProductsService {
     skuId: string,
     data: skuDto,
   ): Promise<any> {
+    // get exists product details
+    const product = await this.productDB.getProductDetailsById(id);
+    if (!product) throw new BadRequestException('No product found');
+    const skuDetails = product.skuDetails.find(
+      (sku: { _id: string }) => sku._id === skuId,
+    );
+    if (skuDetails.price !== data.price) {
+      // inactive price in stripe
+      await this.stripeClient.prices.update(skuDetails.stripePriceId, {
+        active: false,
+      });
+      // create new price in stripe
+      const priceDetails = await this.stripeClient.prices.create({
+        unit_amount: data.price * 100,
+        currency: 'inr',
+        product: product.stripeProductId,
+      });
+      data.stripePriceId = priceDetails.id;
+    }
+
     const result = await this.productDB.updateSkuDetailsInDB(id, skuId, data);
 
     return {
@@ -194,7 +254,17 @@ export class ProductsService {
   // Delete individual product sku details
   async deleteProductSkuDetails(id: string, skuId: string) {
     if (!skuId) throw new BadRequestException('No sku details to delete');
-    await this.productDB.deleteSkuDetailsInDB(id, skuId);
+    const deletedSkuProduct = await this.productDB.deleteSkuDetailsInDB(
+      id,
+      skuId,
+    );
+    const skuDetails = deletedSkuProduct.skuDetails.find(
+      (sku: { _id: string }) => sku._id === skuId,
+    );
+    // inactive price in stripe
+    await this.stripeClient.prices.update(skuDetails.stripePriceId, {
+      active: false,
+    });
     // delete all licenceKeys from db
     await this.productDB.deleteAllLicenseKeysForProductInDB(undefined, skuId);
 

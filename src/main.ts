@@ -8,22 +8,24 @@ import cookieParser from 'cookie-parser';
 import csurf from 'csurf';
 import { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
+import { raw } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
- 
+  const app = await NestFactory.create(AppModule, { rawBody: true });
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
     next();
   });
-
   app.enableCors({
     allowedHeaders: '*',
     origin: '*',
   });
   app.use(cookieParser());
+
+  app.use('/api/v1/orders/webhook', raw({ type: '*/*' }));
   app.use(csurf({ cookie: true }));
   app.use(morgan('tiny'));
   app.useGlobalPipes(new ValidationPipe());

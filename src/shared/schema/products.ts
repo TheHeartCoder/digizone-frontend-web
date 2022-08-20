@@ -74,6 +74,9 @@ export class SkuDetails extends mongoose.Document {
 
   @Prop({ default: false })
   lifetime: boolean;
+
+  @Prop({ default: '' })
+  stripePriceId?: string;
 }
 
 export const SkuDetailsSchema = SchemaFactory.createForClass(SkuDetails);
@@ -172,6 +175,9 @@ export class Products {
 
   @Prop({ type: Boolean, default: false })
   isSoldOut: boolean;
+
+  @Prop({ type: String, default: '' })
+  stripeProductId: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);
