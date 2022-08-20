@@ -279,3 +279,13 @@ span.editLBtn {
 	margin: 5px;
 	cursor: pointer;
 }
+
+.items {
+  -webkit-box-shadow: 5px 5px 4px -1px rgba(0,0,0,0.25);
+  box-shadow: 5px 5px 4px -1px rgba(0, 0, 0, 0.08);
+}
+
+
+.spec {
+  font-size: 14px;
+}

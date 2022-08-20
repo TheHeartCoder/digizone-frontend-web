@@ -19,8 +19,16 @@
 	color: #4c575f;
 	font-size: 1rem;
 	font-weight: bold;
-	cursor: unset;
+	cursor: pointer;
+	border-radius: 8px;
 }
+
+.cartItems:hover {
+	color: #ffffff;
+	background-color: #25a3fe;
+	border-radius: 8px;
+}
+
 .productCats {
 	text-align: center;
 	margin-top: 20px;
@@ -30,7 +38,6 @@
 	/* border: 1px solid #4c575f */
 	-webkit-text-stroke: 1px #4c575f;
 	margin-bottom: 20px;
-
 }
 
 .viewMoreBtn {

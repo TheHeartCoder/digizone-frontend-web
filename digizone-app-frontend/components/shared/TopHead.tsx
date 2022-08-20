@@ -7,13 +7,16 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../../styles/Home.module.css';
 import Router from 'next/router';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Context } from '../../context';
+import CartOffCanvas from '../CartOffCanvas';
 
 const TopHead = () => {
+	const [show, setShow] = React.useState(false);
+
 	const {
 		state: { user },
-		dispatch,
+		cartItems,
 	} = useContext(Context);
 
 	return (
@@ -84,8 +87,18 @@ const TopHead = () => {
 						</NavDropdown>
 					</Nav>
 					<Nav>
-						<Nav.Link className={styles.cartItems}>
-							Items: <Badge bg='secondary'>3</Badge> (Rs. 250.00)
+						<Nav.Link
+							className={styles.cartItems}
+							onClick={() => setShow(true)}
+						>
+							Items: <Badge bg='secondary'>{cartItems.length}</Badge> (₹
+							{cartItems
+								.map(
+									(item: { quantity: number; price: number }) =>
+										Number(item.price) * Number(item.quantity)
+								)
+								.reduce((a: number, b: number) => a + b, 0)}
+							)
 						</Nav.Link>
 						<Nav.Link href='#deets'>Checkout</Nav.Link>
 						<Nav.Link eventKey={2} href='#memes'>
@@ -94,6 +107,7 @@ const TopHead = () => {
 					</Nav>
 				</Navbar.Collapse>
 			</Navbar>
+			<CartOffCanvas setShow={setShow} show={show} />
 		</>
 	);
 };

@@ -70,20 +70,18 @@ const cartReducer = (
 		case 'REMOVE_FROM_CART':
 			// remove items from localStorage
 			const newCartItems = state.filter(
-				(item: { id: string }) => item.id !== action.payload?.id
+				(item: { skuId: string }) => item.skuId !== action.payload?.skuId
 			);
 			window.localStorage.setItem('_digi_cart', JSON.stringify(newCartItems));
 			return newCartItems;
 		case 'UPDATE_CART':
 			// update items in localStorage
-			const updatedCartItems = state
-				.map((item: any) => {
-					if (item.id === action.payload?.id) {
-						return action.payload;
-					}
-					return item;
-				})
-				.filter((item: any) => item);
+			const updatedCartItems = state.map((item: any) => {
+				if (item.skuId === action.payload?.skuId) {
+					return action.payload;
+				}
+				return item;
+			});
 			window.localStorage.setItem(
 				'_digi_cart',
 				JSON.stringify(updatedCartItems)

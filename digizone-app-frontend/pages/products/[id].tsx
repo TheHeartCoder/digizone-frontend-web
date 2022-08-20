@@ -7,23 +7,12 @@ import {
 	Dropdown,
 	DropdownButton,
 	Form,
-	InputGroup,
-	ListGroup,
 	Nav,
-	SplitButton,
-	Tabs,
 } from 'react-bootstrap';
 import { Row } from 'react-bootstrap';
 import StarRatingComponent from 'react-star-rating-component';
 import NumericInput from 'react-numeric-input';
-import {
-	Archive,
-	BagCheckFill,
-	Check2Circle,
-	Eye,
-	Pen,
-	PersonFill,
-} from 'react-bootstrap-icons';
+import { BagCheckFill, PersonFill } from 'react-bootstrap-icons';
 import { Tab } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
 import React, { useContext, useState } from 'react';
@@ -45,10 +34,13 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 		product?.skuDetails || []
 	);
 
-	const [cartForm, setCartForm] = useState({
-		skuId: '',
-		quantity: 1,
-	});
+	const [displaySku, setDisplaySku] = React.useState(
+		product?.skuDetails.sort(
+			(a: { price: number }, b: { price: number }) => a.price - b.price
+		)[0] || {}
+	);
+
+	const [quantity, setQuantity] = useState(1);
 
 	const {
 		cartItems,
@@ -56,20 +48,23 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 		state: { user },
 	} = useContext(Context);
 
+	console.log(quantity);
+
 	// const handleShow = () => setShow(true);
 	const handleCart = () => {
 		cartDispatch({
-			type: 'ADD_TO_CART',
+			type: cartItems.find(
+				(item: { skuId: string }) => item.skuId === displaySku._id
+			)
+				? 'UPDATE_CART'
+				: 'ADD_TO_CART',
 			payload: {
-				skuId: cartForm.skuId,
-				quantity: cartForm.quantity,
-				validity: product.skuDetails.find(
-					(sku: { skuId: string }) => sku.skuId === cartForm.skuId
-				),
-				price: product.skuDetails.find(
-					(sku: { skuId: string }) => sku.skuId === cartForm.skuId
-				).price,
-				productName: product.name,
+				skuId: displaySku._id,
+				quantity: quantity,
+				validity: displaySku.lifetime ? 0 : displaySku.validity,
+				lifetime: displaySku.lifetime,
+				price: displaySku.price,
+				productName: product.productName,
 				productImage: product.image,
 				productId: product._id,
 			},
@@ -97,7 +92,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 						({product?.feedbackDetails?.info?.length || 0} reviews)
 					</div>
 					<p className='productPrice'>
-						{product?.skuDetails && product?.skuDetails?.length > 1
+						{/* {product?.skuDetails && product?.skuDetails?.length > 1
 							? `₹${Math.min.apply(
 									Math,
 									product?.skuDetails.map((sku: { price: number }) => sku.price)
@@ -105,9 +100,12 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 									Math,
 									product?.skuDetails.map((sku: { price: number }) => sku.price)
 							  )}`
-							: `₹${product?.skuDetails?.[0]?.price || '000'}`}{' '}
+							: `₹${product?.skuDetails?.[0]?.price || '000'}`}{' '} */}
+						₹{displaySku?.price} {''}
 						<Badge bg='warning' text='dark'>
-							2 Years
+							{displaySku?.lifetime
+								? 'Lifetime'
+								: getFormatedStringFromDays(displaySku.validity)}
 						</Badge>
 					</p>
 					<ul>
@@ -126,7 +124,14 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 										a.validity - b.validity
 								)
 								.map((sku: Record<string, any>, key: any) => (
-									<Badge bg='warning' text='dark' className='skuBtn' key={key}>
+									<Badge
+										bg='info'
+										text='dark'
+										className='skuBtn'
+										key={key}
+										style={{ cursor: 'pointer' }}
+										onClick={() => setDisplaySku(sku)}
+									>
 										{sku.lifetime
 											? 'Lifetime'
 											: getFormatedStringFromDays(sku.validity)}
@@ -134,7 +139,13 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 								))}
 					</div>
 					<div className='productSkuZone'>
-						<NumericInput min={1} max={5} value={1} size={5} />
+						<NumericInput
+							min={1}
+							max={5}
+							value={quantity}
+							size={5}
+							onChange={(value) => setQuantity(Number(value))}
+						/>
 						{/* <Form.Select
 							aria-label='Default select example'
 							className='selectValidity'
@@ -147,7 +158,9 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 						{/* {user?.type !== 'admin' && ( */}
 						<Button variant='primary' className='cartBtn' onClick={handleCart}>
 							<BagCheckFill className='cartIcon' />
-							Add to cart
+							{cartItems.find((item: any) => item.skuId === displaySku._id)
+								? 'Update cart'
+								: 'Add to cart'}
 						</Button>
 						{/* )} */}
 					</div>
@@ -297,10 +310,10 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 												'Light',
 												'Light',
 												'Light',
-											].map((variant) => (
+											].map((variant, index) => (
 												<Card
 													bg={variant.toLowerCase()}
-													key={variant}
+													key={index}
 													text={
 														variant.toLowerCase() === 'light' ? 'dark' : 'white'
 													}
