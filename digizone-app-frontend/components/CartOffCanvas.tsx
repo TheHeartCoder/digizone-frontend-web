@@ -6,6 +6,7 @@ import { Button, Card, CloseButton, Image, Offcanvas } from 'react-bootstrap';
 import { Trash } from 'react-bootstrap-icons';
 import { Context } from '../context';
 import { getFormatedStringFromDays } from '../helper/utils';
+import { Orders } from '../services/order.service';
 import CartItems from './CartItems';
 interface IProps {
 	show: boolean;
@@ -14,6 +15,20 @@ interface IProps {
 const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 	const handleClose = () => setShow(false);
 	const router = useRouter();
+	const { cartItems, cartDispatch } = useContext(Context);
+	const handleCheckout = async () => {
+		try {
+			if (cartItems.length > 0) {
+				const sessionRes = await Orders.checkoutSession(cartItems);
+				if (!sessionRes.success) {
+					throw new Error(sessionRes.message);
+				}
+				router.push(sessionRes.result);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<>
@@ -26,10 +41,13 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 					<Button
 						variant='primary'
 						style={{ width: '100%' }}
-						onClick={() => {
-							setShow(false);
-							router.push('/checkout');
-						}}
+						onClick={
+							() => handleCheckout()
+							// 	{
+							// 	setShow(false);
+							// 	router.push('/checkout');
+							// }
+						}
 					>
 						Checkout
 					</Button>

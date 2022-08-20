@@ -62,7 +62,7 @@ const CartItems: FC<IProps> = ({ rmvdeleteBtn }) => {
 				<div className='d-flex flex-row'>
 					<h4>No items in cart</h4>
 					<Link href={`/products`}>
-						<Button variant='outline-primary'>Shop Now</Button>
+						<Button variant='outline-primary' style={{ marginLeft: '10px' }}>Shop Now</Button>
 					</Link>
 				</div>
 			)}

@@ -67,6 +67,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 				productName: product.productName,
 				productImage: product.image,
 				productId: product._id,
+				skuPriceId: displaySku.stripePriceId,
 			},
 		});
 		setShow(true);

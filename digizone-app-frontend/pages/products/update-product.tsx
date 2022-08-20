@@ -316,7 +316,7 @@ const UpdateProduct: NextPage<ProductProps> = ({
 							>
 								<option>Choose the base type</option>
 								<option value='Computer'>Computer</option>
-								<option value='2'>Mobile</option>
+								<option value='Mobile'>Mobile</option>
 							</Form.Select>
 						</Form.Group>
 						<Form.Group controlId='formBasicEmail'>
