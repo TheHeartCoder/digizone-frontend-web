@@ -1,42 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { checkoutDtoArrDto } from './dto/checkout-body.dto';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
 import config from 'config';
+import { OrdersRepository } from 'src/shared/repositories/orders.repository';
 
 @Injectable()
 export class OrdersService {
-  constructor(@InjectStripe() private readonly stripeClient: Stripe) {}
+  constructor(
+    @InjectStripe() private readonly stripeClient: Stripe,
+    @Inject(OrdersRepository) private readonly orderDB: OrdersRepository,
+  ) {}
 
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  async create(createOrderDto: Record<string, any>) {
+    return await this.orderDB.createOrderInDB(createOrderDto);
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  async findAll() {
+    return await this.orderDB.getAllOrders();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    return await this.orderDB.getOrderDetailsById(id);
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async fullfillOrder(id: string, updateOrderDto: Record<string, any>) {
+    return await this.orderDB.updateOrderDetailsInDB(id, updateOrderDto);
   }
 
   async checkout(checkoutBody: checkoutDtoArrDto, user: Record<string, any>) {
-    console.log(user);
+    console.log(user._id);
+    console.log(checkoutBody);
+
     const session = await this.stripeClient.checkout.sessions.create({
       line_items: checkoutBody.checkoutDetails.map((item) => ({
         price: item.skuPriceId,
         quantity: item.quantity,
       })),
+      metadata: {
+        user_id: user._id.toString(),
+        items: JSON.stringify(checkoutBody),
+      },
       mode: 'payment',
       billing_address_collection: 'required',
       phone_number_collection: {
@@ -54,11 +58,7 @@ export class OrdersService {
   }
 
   async webhookHandler(body: any, sig: any) {
-    console.log(body, sig);
-    console.log('--------------------------------');
-
     let event;
-
     try {
       event = await this.stripeClient.webhooks.constructEvent(
         body,
@@ -71,24 +71,56 @@ export class OrdersService {
 
     switch (event.type) {
       case 'checkout.session.async_payment_failed':
-        const session = event.data.object;
-        // Then define and call a function to handle the event checkout.session.async_payment_failed
-        console.log('Webhook received A: ', session);
+        const sessiond: Record<string, any> = event.data.object;
+        console.log('checkout.session.async_payment_failed :: ', sessiond);
+
+        const orderDataC = await this.createOrderObject(sessiond);
+        await this.fullfillOrder(sessiond.id, orderDataC);
         break;
       case 'checkout.session.async_payment_succeeded':
-        const sessions = event.data.object;
-        // Then define and call a function to handle the event checkout.session.async_payment_succeeded
-        console.log('Webhook received S: ', sessions);
+        const sessions: Record<string, any> = event.data.object;
+        console.log('checkout.session.async_payment_succeeded :: ', sessions);
+        const orderDataB = await this.createOrderObject(sessions);
+        if (sessions.payment_status === 'paid') {
+          await this.fullfillOrder(sessions.id, orderDataB);
+        }
         break;
       case 'checkout.session.completed':
-        const sessiond = event.data.object;
-        // Then define and call a function to handle the event checkout.session.completed
-        console.log('Webhook received V: ', sessiond);
+        const session: Record<string, any> = event.data.object;
+        console.log('checkout.session.completed :: ', session);
+        const orderData = await this.createOrderObject(session);
+        await this.create(orderData);
+        if (session.payment_status === 'paid') {
+          await this.fullfillOrder(session.id, orderData);
+        }
         break;
       // ... handle other event types
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
     return true;
+  }
+
+  // create order object
+  async createOrderObject(orderData: Record<string, any>) {
+    const order = {
+      orderId: Math.floor(new Date().valueOf() * Math.random()),
+      user: orderData.metadata?.user_id,
+      customerAddress: orderData.customer_details?.address,
+      customerPhoneNumber: orderData.customer_details?.phone,
+      paymnetInfo: {
+        paymentMethod: orderData.payment_method_types[0],
+        paymentIntentId: orderData.payment_intent,
+        paymentDate: new Date(),
+        paymnetFailureReason: '',
+        paymentAmount: orderData.amount_total / 100,
+        paymentStatus: orderData.payment_status,
+      },
+      orderStatus: orderData.status,
+      orderDate: new Date(),
+      checkoutSessionId: orderData.id,
+      orderedItems: JSON.parse(orderData.metadata?.items).checkoutDetails,
+    };
+    return order;
   }
 }

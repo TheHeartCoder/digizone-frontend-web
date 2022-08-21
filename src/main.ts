@@ -5,7 +5,7 @@ import { LoggerInterceptor } from './loggerInterceptor';
 import { TransformationInterceptor } from './responseInterceptor';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
-import csurf from 'csurf';
+// import csurf from 'csurf';
 import { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import { raw } from 'express';
@@ -26,7 +26,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.use('/api/v1/orders/webhook', raw({ type: '*/*' }));
-  app.use(csurf({ cookie: true }));
+  // app.use(csurf({ cookie: true }));
   app.use(morgan('tiny'));
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('/api/v1');
