@@ -77,6 +77,9 @@ export class SkuDetails extends mongoose.Document {
 
   @Prop({ default: '' })
   stripePriceId?: string;
+
+  @Prop({ default: '' })
+  skuCode?: string;
 }
 
 export const SkuDetailsSchema = SchemaFactory.createForClass(SkuDetails);

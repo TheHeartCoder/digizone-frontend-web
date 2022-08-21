@@ -4,15 +4,22 @@ import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
 import config from 'config';
 import { OrdersRepository } from 'src/shared/repositories/orders.repository';
+import { ProductRepository } from 'src/shared/repositories/products.repository';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectStripe() private readonly stripeClient: Stripe,
     @Inject(OrdersRepository) private readonly orderDB: OrdersRepository,
+    @Inject(ProductRepository) private readonly productDB: ProductRepository,
   ) {}
 
   async create(createOrderDto: Record<string, any>) {
+    const orderExists = await this.orderDB.getOrderDetailsBySessionId(
+      createOrderDto?.checkoutSessionId,
+    );
+    if (orderExists) return true;
+
     return await this.orderDB.createOrderInDB(createOrderDto);
   }
 
@@ -25,6 +32,7 @@ export class OrdersService {
   }
 
   async fullfillOrder(id: string, updateOrderDto: Record<string, any>) {
+    console.log('fullfillOrder :: ');
     return await this.orderDB.updateOrderDetailsInDB(id, updateOrderDto);
   }
 
@@ -36,10 +44,14 @@ export class OrdersService {
       line_items: checkoutBody.checkoutDetails.map((item) => ({
         price: item.skuPriceId,
         quantity: item.quantity,
+        adjustable_quantity: {
+          enabled: true,
+          maximum: 5,
+          minimum: 1,
+        },
       })),
       metadata: {
         user_id: user._id.toString(),
-        items: JSON.stringify(checkoutBody),
       },
       mode: 'payment',
       billing_address_collection: 'required',
@@ -82,29 +94,67 @@ export class OrdersService {
         console.log('checkout.session.async_payment_succeeded :: ', sessions);
         const orderDataB = await this.createOrderObject(sessions);
         if (sessions.payment_status === 'paid') {
+          // get license for ordered items
+          for (let i = 0; i < orderDataB.orderedItems.length; i++) {
+            const item = orderDataB.orderedItems[i];
+            // get license for item
+            const license = await this.getLicense(
+              orderDataB.orderId + '',
+              item.skuCode,
+              item.productId,
+            );
+            // add license to order
+            orderDataB.orderedItems[i].license = license;
+          }
+
           await this.fullfillOrder(sessions.id, orderDataB);
         }
         break;
       case 'checkout.session.completed':
         const session: Record<string, any> = event.data.object;
-        console.log('checkout.session.completed :: ', session);
+        console.log('axisss', session);
         const orderData = await this.createOrderObject(session);
         await this.create(orderData);
         if (session.payment_status === 'paid') {
           await this.fullfillOrder(session.id, orderData);
         }
         break;
-      // ... handle other event types
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
     return true;
   }
 
+  // getLicense
+  async getLicense(orderId: string, skuCode: string, productId: string) {
+    const product = await this.productDB.getProductDetailsById(productId);
+    const skuDetails = await product.skuDetails.find(
+      (sku: { skuCode: string }) => sku.skuCode === skuCode,
+    );
+    const license = await this.productDB.updateLicenseKeysForProductSkuInDBV2(
+      {
+        product: productId,
+        productSku: skuDetails._id,
+        isSold: false,
+      },
+      {
+        isSold: true,
+        orderId,
+      },
+    );
+    return license.licenseKey;
+  }
+
   // create order object
   async createOrderObject(orderData: Record<string, any>) {
+    const lineItems = await this.stripeClient.checkout.sessions.listLineItems(
+      orderData.id,
+    );
+
+    console.log('lineItems.data ::: ', lineItems.data);
+
     const order = {
-      orderId: Math.floor(new Date().valueOf() * Math.random()),
+      orderId: Math.floor(new Date().valueOf() * Math.random()) + '',
       user: orderData.metadata?.user_id,
       customerAddress: orderData.customer_details?.address,
       customerPhoneNumber: orderData.customer_details?.phone,
@@ -116,10 +166,9 @@ export class OrdersService {
         paymentAmount: orderData.amount_total / 100,
         paymentStatus: orderData.payment_status,
       },
-      orderStatus: orderData.status,
       orderDate: new Date(),
       checkoutSessionId: orderData.id,
-      orderedItems: JSON.parse(orderData.metadata?.items).checkoutDetails,
+      orderedItems: lineItems.data.map((item) => item.price.metadata),
     };
     return order;
   }

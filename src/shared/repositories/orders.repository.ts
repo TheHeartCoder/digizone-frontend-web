@@ -16,6 +16,14 @@ export class OrdersRepository {
     return await order.save();
   }
 
+  // get order details by session id
+  async getOrderDetailsBySessionId(sessionId: string): Promise<any> {
+    const order = await this.ordersModel.findOne({
+      checkoutSessionId: sessionId,
+    });
+    return order;
+  }
+
   // get order details by id
   async getOrderDetailsById(id: string): Promise<any> {
     const order = await this.ordersModel.findById(id);

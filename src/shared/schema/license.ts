@@ -30,6 +30,11 @@ export class License {
     type: Boolean,
   })
   isSold: boolean;
+
+  @Prop({
+    default: '',
+  })
+  orderId: string;
 }
 
 export const LicenseSchema = SchemaFactory.createForClass(License);

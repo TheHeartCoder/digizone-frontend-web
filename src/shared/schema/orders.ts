@@ -14,13 +14,12 @@ export enum paymentStatus {
 
 export enum orderStatus {
   pending = 'pending',
-  complete = 'processing',
   delivered = 'delivered',
 }
 
 export class OrderedItems {
   @Prop({ required: true })
-  skuId: string; // sku of the product
+  skuCode: string; // sku of the product
   @Prop({ required: true })
   quantity: number; // quantity of the product
   @Prop({ required: true })
@@ -33,6 +32,8 @@ export class OrderedItems {
   productId: string; // product id of the product
   @Prop({ required: true })
   skuPriceId: string; // sku price id of the product
+  @Prop({ required: true })
+  productName: string; // product name of the product
 }
 
 @Schema({
@@ -77,7 +78,7 @@ export class Orders {
     paymentIntentId: string;
     paymnetFailureReason: string;
   };
-  @Prop({ required: true })
+  @Prop({ default: orderStatus.pending })
   orderStatus: string;
 
   @Prop({ required: true })

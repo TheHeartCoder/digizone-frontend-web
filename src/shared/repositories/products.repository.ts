@@ -194,4 +194,21 @@ export class ProductRepository {
     if (id) return await this.licenseModel.deleteMany({ product: id });
     return await this.licenseModel.deleteMany({ productSku: skuId });
   }
+
+  // get license keys for a sku in product
+  async getLicenseKeysForProductSkuInDB(id: string, skuId: string) {
+    return await this.licenseModel.find({ product: id, productSku: skuId });
+  }
+
+  // license update
+  async updateLicenseKeysForProductSkuInDBV2(
+    query: Record<string, any>,
+    data: Record<string, any>,
+  ): Promise<any> {
+    return await this.licenseModel.findOneAndUpdate(
+      query,
+      { $set: data },
+      { new: true },
+    );
+  }
 }

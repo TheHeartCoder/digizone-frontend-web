@@ -3,7 +3,6 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -15,7 +14,6 @@ export class checkoutDto {
   skuPriceId: string;
 
   @IsNumber()
-  @IsOptional()
   quantity: number;
 }
 

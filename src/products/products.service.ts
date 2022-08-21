@@ -195,11 +195,18 @@ export class ProductsService {
     const product = await this.productDB.getProductDetailsById(id);
     if (!product) throw new BadRequestException('No product found');
     // create price in Stripe
+    const skuCode = Math.random().toString(36).substr(2, 5) + Date.now();
     for (let i = 0; i < data.skuDetails.length; i++) {
       const priceDetails = await this.stripeClient.prices.create({
         unit_amount: data.skuDetails[i].price * 100,
         currency: 'inr',
         product: product.stripeProductId,
+        metadata: {
+          skuCode: skuCode,
+          validity: data.skuDetails[i].validity,
+          lifetime: data.skuDetails[i].lifetime + '',
+          productId: id,
+        },
       });
       data.skuDetails[i].stripePriceId = priceDetails.id;
     }
@@ -238,6 +245,14 @@ export class ProductsService {
         unit_amount: data.price * 100,
         currency: 'inr',
         product: product.stripeProductId,
+        metadata: {
+          skuCode: skuDetails.skuCode,
+          validity: skuDetails.validity,
+          lifetime: skuDetails.lifetime,
+          productId: skuDetails.productId,
+          price: data.price,
+          productName: product.productName,
+        },
       });
       data.stripePriceId = priceDetails.id;
     }
@@ -259,8 +274,9 @@ export class ProductsService {
       skuId,
     );
     const skuDetails = deletedSkuProduct.skuDetails.find(
-      (sku: { _id: string }) => sku._id === skuId,
+      (sku: { _id: string }) => sku._id.toString() === skuId,
     );
+    console.log(skuId, skuDetails, deletedSkuProduct.skuDetails);
     // inactive price in stripe
     await this.stripeClient.prices.update(skuDetails.stripePriceId, {
       active: false,
