@@ -1,4 +1,6 @@
-import type { NextPage } from 'next';
+import axios from 'axios';
+import type { GetServerSideProps, NextPage } from 'next';
+import Link from 'next/link';
 import {
 	Badge,
 	Button,
@@ -11,7 +13,13 @@ import {
 } from 'react-bootstrap';
 import { Clipboard } from 'react-bootstrap-icons';
 
-const Order: NextPage = () => {
+interface OrderProps {
+	order: any;
+}
+
+const Order: NextPage<OrderProps> = ({ order }) => {
+	console.log(order);
+
 	return (
 		<>
 			<Row>
@@ -27,90 +35,42 @@ const Order: NextPage = () => {
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td>
-											{' '}
-											<div className='itemTitle'>
-												<Image
-													height={50}
-													width={50}
-													roundedCircle={true}
-													src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-													alt=''
-												/>
-												<p style={{ marginLeft: '5px' }}>
-													Windows 10 Home License Key 32-Bit asfdsaf das fsdf
-													sag afsg as
-													<p style={{ fontWeight: 'bold' }}>3 X ₹300</p>
-												</p>
-											</div>
-											<Button variant='link'>
-												Issue with this product? Then Contact US...
-											</Button>
-										</td>
-										<td>
-											er4r3-f4vrv-45fr44-hgj76-ikjio-n7ef4g5{' '}
-											<Button variant='light' size='sm'>
-												<Clipboard />
-											</Button>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											{' '}
-											<div className='itemTitle'>
-												<Image
-													height={50}
-													width={50}
-													roundedCircle={true}
-													src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-													alt=''
-												/>
-												<p style={{ marginLeft: '5px' }}>
-													Windows 10 Home License Key 32-Bit asfdsaf das fsdf
-													sag afsg as
-													<p style={{ fontWeight: 'bold' }}>3 X ₹300</p>
-												</p>
-											</div>
-											<Button variant='link'>
-												Issue with this product? Then Contact US...
-											</Button>
-										</td>
-										<td>
-											er4r3-f4vrv-45fr44-hgj76-ikjio-n7ef4g5{' '}
-											<Button variant='light' size='sm'>
-												<Clipboard />
-											</Button>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											{' '}
-											<div className='itemTitle'>
-												<Image
-													height={50}
-													width={50}
-													roundedCircle={true}
-													src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
-													alt=''
-												/>
-												<p style={{ marginLeft: '5px' }}>
-													Windows 10 Home License Key 32-Bit asfdsaf das fsdf
-													sag afsg as
-													<p style={{ fontWeight: 'bold' }}>3 X ₹300</p>
-												</p>
-											</div>
-											<Button variant='link'>
-												Issue with this product? Then Contact US...
-											</Button>
-										</td>
-										<td>
-											er4r3-f4vrv-45fr44-hgj76-ikjio-n7ef4g5{' '}
-											<Button variant='light' size='sm'>
-												<Clipboard />
-											</Button>
-										</td>
-									</tr>
+									{order.orderedItems.map((item: any) => (
+										<tr key={item.skuCode}>
+											<td>
+												{' '}
+												<div className='itemTitle'>
+													<Image
+														height={50}
+														width={50}
+														roundedCircle={true}
+														src={
+															item.productImage ||
+															'https://st4.depositphotos.com/14953852/22772/v/600/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg'
+														}
+														alt=''
+													/>
+													<p style={{ marginLeft: '5px' }}>
+														{item.productName || 'Demo Product'}
+														<p style={{ fontWeight: 'bold' }}>
+															{item.quantity} X ₹{item.price}
+														</p>
+													</p>
+												</div>
+												<Link href={''}>
+													<Button variant='link'>
+														Issue with this product? Then Contact US...
+													</Button>
+												</Link>
+											</td>
+											<td>
+												{item.license || ' Not Found '}{' '}
+												<Button variant='light' size='sm'>
+													<Clipboard />
+												</Button>
+											</td>
+										</tr>
+									))}
 								</tbody>
 							</Table>
 						</Card.Body>
@@ -121,19 +81,34 @@ const Order: NextPage = () => {
 				<Col>
 					<Card style={{ marginTop: '20px' }}>
 						<Card.Header>
-							<Card.Title>Total Amout : ₹2533</Card.Title>
+							<Card.Title>
+								Total Amout : ₹{order.paymnetInfo?.paymentAmount}
+							</Card.Title>
 						</Card.Header>
 						<Card.Body>
 							<ListGroup className='list-group-flush'>
 								<ListGroup.Item>
 									Order Date & Time: 20th Sep, 2022, 06:26PM
 								</ListGroup.Item>
-								<ListGroup.Item>Paymnet Method: Card</ListGroup.Item>
 								<ListGroup.Item>
-									Order Status: <Badge bg='secondary'>Completed</Badge>
+									Paymnet Method:{' '}
+									{order.paymnetInfo?.paymentMethod.toUpperCase()}
 								</ListGroup.Item>
 								<ListGroup.Item>
-									Billing Address : 1600 Pennsylvania Avenue NW Washington, D.C.{' '}
+									Order Status: <Badge>{order.orderStatus.toUpperCase()}</Badge>
+								</ListGroup.Item>
+								<ListGroup.Item>
+									Add Line 1 : {order.customerAddress.line1}
+									<br />
+									Add Line 2 : {order.customerAddress.line2}
+									<br />
+									City : {order.customerAddress.city}
+									<br />
+									State : {order.customerAddress.state}
+									<br />
+									Country : {order.customerAddress.country}
+									<br />
+									Postal Code : {order.customerAddress.postal_code}
 								</ListGroup.Item>
 							</ListGroup>
 						</Card.Body>
@@ -142,6 +117,47 @@ const Order: NextPage = () => {
 			</Row>
 		</>
 	);
+};
+
+export const getServerSideProps: GetServerSideProps<OrderProps> = async (
+	context
+): Promise<any> => {
+	try {
+		if (!context.params?.id) {
+			return {
+				props: {
+					order: {},
+				},
+			};
+		}
+		const { data } = await axios.get(
+			`http://localhost:3100/api/v1/orders/${context?.params?.id}`,
+			{
+				withCredentials: true,
+				headers: {
+					Cookie: context?.req?.headers?.cookie as string,
+				},
+			}
+		);
+		if (!data.success) {
+			return {
+				props: {
+					order: {},
+				},
+			};
+		}
+		return {
+			props: {
+				order: data?.result || ({} as Record<string, any>),
+			},
+		};
+	} catch (error) {
+		return {
+			props: {
+				order: {},
+			},
+		};
+	}
 };
 
 export default Order;

@@ -14,6 +14,7 @@ import { Col, Row } from 'react-bootstrap';
 import StarRatingComponent from 'react-star-rating-component';
 import { useToasts } from 'react-toast-notifications';
 import AccountDetails from '../components/MyAccount/AccountDetails';
+import AllOrders from '../components/MyAccount/AllOrders';
 import { Context } from '../context';
 import { Users } from '../services/user.service';
 
@@ -87,68 +88,7 @@ const MyAccount = () => {
 							/>
 						</Tab.Pane>
 						<Tab.Pane eventKey='second'>
-							<Row>
-								<DropdownButton
-									variant='outline-secondary'
-									title='Filter by status'
-									id='input-group-dropdown-2'
-								>
-									<Dropdown.Item href='#'>Pending</Dropdown.Item>
-									<Dropdown.Item href='#'>Placed</Dropdown.Item>
-									<Dropdown.Item href='#'>Confirmed</Dropdown.Item>
-									<Dropdown.Item href='#'>Shipped</Dropdown.Item>
-									<Dropdown.Item href='#'>Completed</Dropdown.Item>
-								</DropdownButton>
-							</Row>
-							<Table responsive>
-								<thead>
-									<tr>
-										<th>Order ID</th>
-										<th>Order Date</th>
-										<th>Order Status</th>
-										<th>Order Total</th>
-										<th>Order Actions</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>
-											<Button variant='outline-dark'>View Order Details</Button>
-										</td>
-									</tr>
-									<tr>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>
-											<Button variant='outline-dark'>View Order Details</Button>
-										</td>
-									</tr>
-									<tr>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>
-											<Button variant='outline-dark'>View Order Details</Button>
-										</td>
-									</tr>
-									<tr>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>Table cell </td>
-										<td>
-											<Button variant='outline-dark'>View Order Details</Button>
-										</td>
-									</tr>
-								</tbody>
-							</Table>
+							<AllOrders />
 						</Tab.Pane>
 						<Tab.Pane eventKey='third'>
 							<div>

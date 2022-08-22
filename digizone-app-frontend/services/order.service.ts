@@ -11,4 +11,18 @@ export const Orders = {
 		});
 		return checkoutSessionRes;
 	},
+
+	// find order
+	getAllOrders: async (status?: string): Promise<resposnePayload> => {
+		const findOrderRes = await requests.get(
+			status ? `/orders?status=${status}` : `/orders`
+		);
+		return findOrderRes;
+	},
+
+	// get an order
+	getOrder: async (orderId: string): Promise<resposnePayload> => {
+		const getOrderRes = await requests.get(`/orders/${orderId}`);
+		return getOrderRes;
+	}
 };
