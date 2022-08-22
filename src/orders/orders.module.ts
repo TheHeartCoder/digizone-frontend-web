@@ -9,10 +9,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserRepository } from 'src/shared/repositories/users.repository';
 import { Orders, OrderSchema } from 'src/shared/schema/orders';
 import { OrdersRepository } from 'src/shared/repositories/orders.repository';
+import { ProductRepository } from 'src/shared/repositories/products.repository';
+import { Products, ProductSchema } from 'src/shared/schema/products';
+import { License, LicenseSchema } from 'src/shared/schema/license';
 
 @Module({
   controllers: [OrdersController],
-  providers: [OrdersService, UserRepository, OrdersRepository],
+  providers: [
+    OrdersService,
+    UserRepository,
+    OrdersRepository,
+    ProductRepository,
+  ],
   imports: [
     StripeModule.forRoot({
       apiKey: config.get('stripe.secret_key'),
@@ -20,6 +28,8 @@ import { OrdersRepository } from 'src/shared/repositories/orders.repository';
     }),
     MongooseModule.forFeature([{ name: Users.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Orders.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([{ name: Products.name, schema: ProductSchema }]),
+    MongooseModule.forFeature([{ name: License.name, schema: LicenseSchema }]),
   ],
 })
 export class OrdersModule {
