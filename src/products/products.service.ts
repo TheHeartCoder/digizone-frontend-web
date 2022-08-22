@@ -206,6 +206,9 @@ export class ProductsService {
           validity: data.skuDetails[i].validity,
           lifetime: data.skuDetails[i].lifetime + '',
           productId: id,
+          price: data.skuDetails[i].price,
+          productName: product.productName,
+          productImage: product.image,
         },
       });
       data.skuDetails[i].stripePriceId = priceDetails.id;
@@ -252,6 +255,7 @@ export class ProductsService {
           productId: skuDetails.productId,
           price: data.price,
           productName: product.productName,
+          productImage: product.image,
         },
       });
       data.stripePriceId = priceDetails.id;
@@ -287,7 +291,7 @@ export class ProductsService {
     return {
       message: 'Product sku details deleted successfully',
       success: true,
-      data: {
+      result: {
         id,
       },
     };

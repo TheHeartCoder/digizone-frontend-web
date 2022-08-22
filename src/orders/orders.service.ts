@@ -5,6 +5,7 @@ import Stripe from 'stripe';
 import config from 'config';
 import { OrdersRepository } from 'src/shared/repositories/orders.repository';
 import { ProductRepository } from 'src/shared/repositories/products.repository';
+import { UserRepository } from 'src/shared/repositories/users.repository';
 
 @Injectable()
 export class OrdersService {
@@ -12,6 +13,7 @@ export class OrdersService {
     @InjectStripe() private readonly stripeClient: Stripe,
     @Inject(OrdersRepository) private readonly orderDB: OrdersRepository,
     @Inject(ProductRepository) private readonly productDB: ProductRepository,
+    @Inject(UserRepository) private readonly userDB: UserRepository,
   ) {}
 
   async create(createOrderDto: Record<string, any>) {
@@ -23,12 +25,26 @@ export class OrdersService {
     return await this.orderDB.createOrderInDB(createOrderDto);
   }
 
-  async findAll() {
-    return await this.orderDB.getAllOrders();
+  async findAll(user: Record<string, any>, status?: string) {
+    const existUser = await this.userDB.getUserDetailsById(user._id.toString());
+    const query = {} as Record<string, any>;
+    if (existUser.type === 'customer') query.userId = user._id.toString();
+    if (status) query.orderStatus = status;
+    const result = await this.orderDB.getAllOrders(query);
+    return {
+      message: 'Orders found',
+      success: true,
+      result,
+    };
   }
 
   async findOne(id: string) {
-    return await this.orderDB.getOrderDetailsById(id);
+    const result = await this.orderDB.getOrderDetailsById(id);
+    return {
+      message: 'Order details fetched successfully',
+      success: true,
+      result: result,
+    };
   }
 
   async fullfillOrder(id: string, updateOrderDto: Record<string, any>) {
@@ -37,9 +53,6 @@ export class OrdersService {
   }
 
   async checkout(checkoutBody: checkoutDtoArrDto, user: Record<string, any>) {
-    console.log(user._id);
-    console.log(checkoutBody);
-
     const session = await this.stripeClient.checkout.sessions.create({
       line_items: checkoutBody.checkoutDetails.map((item) => ({
         price: item.skuPriceId,
@@ -84,16 +97,18 @@ export class OrdersService {
     switch (event.type) {
       case 'checkout.session.async_payment_failed':
         const sessiond: Record<string, any> = event.data.object;
-        console.log('checkout.session.async_payment_failed :: ', sessiond);
-
         const orderDataC = await this.createOrderObject(sessiond);
         await this.fullfillOrder(sessiond.id, orderDataC);
         break;
       case 'checkout.session.async_payment_succeeded':
         const sessions: Record<string, any> = event.data.object;
-        console.log('checkout.session.async_payment_succeeded :: ', sessions);
         const orderDataB = await this.createOrderObject(sessions);
         if (sessions.payment_status === 'paid') {
+          // check order is already completed or not
+          const orderExists = await this.orderDB.getOrderDetailsBySessionId(
+            sessions.id,
+          );
+          if (orderExists.orderStatus === 'completed') return true;
           // get license for ordered items
           for (let i = 0; i < orderDataB.orderedItems.length; i++) {
             const item = orderDataB.orderedItems[i];
@@ -112,10 +127,28 @@ export class OrdersService {
         break;
       case 'checkout.session.completed':
         const session: Record<string, any> = event.data.object;
-        console.log('axisss', session);
+        // check order is already completed or not
+        const orderExists = await this.orderDB.getOrderDetailsBySessionId(
+          sessions.id,
+        );
+        if (orderExists) return true;
         const orderData = await this.createOrderObject(session);
         await this.create(orderData);
         if (session.payment_status === 'paid') {
+          if (orderExists.orderStatus !== 'completed') {
+            // get license for ordered items
+            for (let i = 0; i < orderDataB.orderedItems.length; i++) {
+              const item = orderDataB.orderedItems[i];
+              // get license for item
+              const license = await this.getLicense(
+                orderDataB.orderId + '',
+                item.skuCode,
+                item.productId,
+              );
+              // add license to order
+              orderDataB.orderedItems[i].license = license;
+            }
+          }
           await this.fullfillOrder(session.id, orderData);
         }
         break;
@@ -151,8 +184,6 @@ export class OrdersService {
       orderData.id,
     );
 
-    console.log('lineItems.data ::: ', lineItems.data);
-
     const order = {
       orderId: Math.floor(new Date().valueOf() * Math.random()) + '',
       user: orderData.metadata?.user_id,
@@ -168,7 +199,10 @@ export class OrdersService {
       },
       orderDate: new Date(),
       checkoutSessionId: orderData.id,
-      orderedItems: lineItems.data.map((item) => item.price.metadata),
+      orderedItems: lineItems.data.map((item) => {
+        item.price.metadata.quantity = item.quantity + '';
+        return item.price.metadata;
+      }),
     };
     return order;
   }

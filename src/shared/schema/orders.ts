@@ -14,7 +14,7 @@ export enum paymentStatus {
 
 export enum orderStatus {
   pending = 'pending',
-  delivered = 'delivered',
+  completed = 'completed',
 }
 
 export class OrderedItems {
@@ -79,7 +79,7 @@ export class Orders {
     paymnetFailureReason: string;
   };
   @Prop({ default: orderStatus.pending })
-  orderStatus: string;
+  orderStatus: orderStatus;
 
   @Prop({ required: true })
   orderDate: Date;

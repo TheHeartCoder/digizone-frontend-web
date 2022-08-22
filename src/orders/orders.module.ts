@@ -12,6 +12,8 @@ import { OrdersRepository } from 'src/shared/repositories/orders.repository';
 import { ProductRepository } from 'src/shared/repositories/products.repository';
 import { Products, ProductSchema } from 'src/shared/schema/products';
 import { License, LicenseSchema } from 'src/shared/schema/license';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from 'src/shared/middleware/roles.guard';
 
 @Module({
   controllers: [OrdersController],
@@ -20,6 +22,10 @@ import { License, LicenseSchema } from 'src/shared/schema/license';
     UserRepository,
     OrdersRepository,
     ProductRepository,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
   imports: [
     StripeModule.forRoot({

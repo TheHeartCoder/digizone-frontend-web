@@ -19,18 +19,18 @@ export class AuthMiddleware implements NestMiddleware {
       const token = req.cookies._digi_auth_token;
       // const token = (authHeaders as string).split(' ')[1];
       if (!token) {
-        throw new UnauthorizedException('Unauthorized');
+        throw new UnauthorizedException('Unauthorized! Missing Token');
       }
       const decoded: any = jwt.verify(token, config.get('tokenSecret'));
       const user: any = await this.userDB.getUserDetailsById(decoded.id);
       if (!user) {
-        throw new UnauthorizedException('Unauthorized');
+        throw new UnauthorizedException('Unauthorized! User not Exists');
       }
       user.password = undefined;
       req.user = user;
       next();
     } catch (error) {
-      throw new UnauthorizedException('Unauthorized');
+      throw new UnauthorizedException(error.message);
     }
   }
 }

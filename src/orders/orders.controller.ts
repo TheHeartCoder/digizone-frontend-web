@@ -6,6 +6,7 @@ import {
   Param,
   Req,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -22,11 +23,11 @@ export class OrdersController {
   }
 
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  findAll(@Query('status') status: string, @Req() req: any) {
+    return this.ordersService.findAll(req.user, status);
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
   }

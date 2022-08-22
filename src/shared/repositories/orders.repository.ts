@@ -31,8 +31,8 @@ export class OrdersRepository {
   }
 
   // get all orders
-  async getAllOrders(): Promise<any> {
-    const orders = await this.ordersModel.find();
+  async getAllOrders(query = {}): Promise<any> {
+    const orders = await this.ordersModel.find(query);
     return orders;
   }
 
