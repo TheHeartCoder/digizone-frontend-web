@@ -22,6 +22,7 @@ import SkuDetailsList from '../../components/Product/SkuDetailsList';
 import { getFormatedStringFromDays } from '../../helper/utils';
 import ProductItem from '../../components/Products/ProductItem';
 import { Context } from '../../context';
+import ReviewSection from '../../components/Product/ReviewSection';
 
 interface ProductProps {
 	product: Record<string, any>;
@@ -224,124 +225,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 									</Table>
 								</Tab.Pane>
 								<Tab.Pane eventKey='third'>
-									<div>
-										<Button variant='outline-info' className='addReview'>
-											Add review
-										</Button>
-										<div className='reviewInputZone'>
-											<Form>
-												<Form.Group className='mb-3' controlId='formBasicEmail'>
-													<Form.Label>Your Rating</Form.Label>
-													<br />
-													<StarRatingComponent
-														name='rate2'
-														editing={true}
-														starCount={5}
-														value={0}
-													/>
-												</Form.Group>
-												<Form.Group
-													className='mb-3'
-													controlId='formBasicPassword'
-												>
-													<Form.Label>Your Review</Form.Label>
-													<Form.Control as='textarea' rows={3} />
-												</Form.Group>
-												<Form.Group
-													className='mb-3'
-													controlId='formBasicCheckbox'
-												></Form.Group>
-												<Button variant='primary' type='submit'>
-													Submit
-												</Button>
-											</Form>
-										</div>
-										<DropdownButton
-											variant='outline-secondary'
-											title='Filter by rating'
-											id='input-group-dropdown-2'
-										>
-											<Dropdown.Item href='#'>
-												<StarRatingComponent
-													name='rate2'
-													editing={false}
-													starCount={5}
-													value={5}
-												/>
-											</Dropdown.Item>
-											<Dropdown.Item href='#'>
-												<StarRatingComponent
-													name='rate2'
-													editing={false}
-													starCount={5}
-													value={4}
-												/>
-											</Dropdown.Item>
-											<Dropdown.Item href='#'>
-												<StarRatingComponent
-													name='rate2'
-													editing={false}
-													starCount={5}
-													value={3}
-												/>
-											</Dropdown.Item>
-											<Dropdown.Item href='#'>
-												<StarRatingComponent
-													name='rate2'
-													editing={false}
-													starCount={5}
-													value={2}
-												/>
-											</Dropdown.Item>
-											<Dropdown.Item href='#'>
-												<StarRatingComponent
-													name='rate2'
-													editing={false}
-													starCount={5}
-													value={1}
-												/>
-											</Dropdown.Item>
-										</DropdownButton>
-										<div className='reviewZone'>
-											{' '}
-											{[
-												'Light',
-												'Light',
-												'Light',
-												'Light',
-												'Light',
-												'Light',
-											].map((variant, index) => (
-												<Card
-													bg={variant.toLowerCase()}
-													key={index}
-													text={
-														variant.toLowerCase() === 'light' ? 'dark' : 'white'
-													}
-													style={{ width: '100%' }}
-													className='mb-2'
-												>
-													<Card.Header className='reviewHeader'>
-														<PersonFill className='personReview' />
-														Arindam Paul{' '}
-														<StarRatingComponent
-															name='rate2'
-															editing={false}
-															starCount={5}
-															value={3}
-														/>
-													</Card.Header>
-													<Card.Body>
-														<Card.Text>
-															<p className='reviewDt'>20th September 2017</p>
-															Some quick example text to build on the card title
-															and make up the bulk of the cards content.
-														</Card.Text>
-													</Card.Body>
-												</Card>
-											))}
-										</div>
-									</div>
+									<ReviewSection reviews={product.reviewDetails || []} />
 								</Tab.Pane>
 								<Tab.Pane eventKey='fourth'>
 									<SkuDetailsList

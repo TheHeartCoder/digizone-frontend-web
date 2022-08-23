@@ -89,6 +89,10 @@ const cartReducer = (
 			return updatedCartItems;
 		case 'GET_CART_ITEMS':
 			return action.payload;
+		case 'CLEAR_CART':
+			// clear cart from localStorage
+			window.localStorage.removeItem('_digi_cart');
+			return [];
 		default:
 			return state;
 	}
