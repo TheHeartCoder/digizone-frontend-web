@@ -6,6 +6,7 @@ import config from 'config';
 import { OrdersRepository } from 'src/shared/repositories/orders.repository';
 import { ProductRepository } from 'src/shared/repositories/products.repository';
 import { UserRepository } from 'src/shared/repositories/users.repository';
+import { sendEmail } from 'src/shared/utility/mail-handler';
 
 @Injectable()
 export class OrdersService {
@@ -102,12 +103,12 @@ export class OrdersService {
         break;
       case 'checkout.session.async_payment_succeeded':
         const sessions: Record<string, any> = event.data.object;
+        // check order is already completed or not
+        const orderExists = await this.orderDB.getOrderDetailsBySessionId(
+          sessions.id,
+        );
         const orderDataB = await this.createOrderObject(sessions);
         if (sessions.payment_status === 'paid') {
-          // check order is already completed or not
-          const orderExists = await this.orderDB.getOrderDetailsBySessionId(
-            sessions.id,
-          );
           if (orderExists.orderStatus === 'completed') return true;
           // get license for ordered items
           for (let i = 0; i < orderDataB.orderedItems.length; i++) {
@@ -122,34 +123,51 @@ export class OrdersService {
             orderDataB.orderedItems[i].license = license;
           }
 
-          await this.fullfillOrder(sessions.id, orderDataB);
+          const orderDetailsB = await this.fullfillOrder(
+            sessions.id,
+            orderDataB,
+          );
+          await this.sendOrderEmail(
+            orderDataB.customerEmail,
+            orderDataB.orderId,
+            `${config.get('emailService.emailTemplates.orderSuccess')}${
+              orderDetailsB._id
+            }`,
+          );
         }
         break;
       case 'checkout.session.completed':
         const session: Record<string, any> = event.data.object;
         // check order is already completed or not
-        const orderExists = await this.orderDB.getOrderDetailsBySessionId(
+        const orderExistsB = await this.orderDB.getOrderDetailsBySessionId(
           sessions.id,
         );
-        if (orderExists) return true;
+        if (orderExistsB) return true;
         const orderData = await this.createOrderObject(session);
         await this.create(orderData);
         if (session.payment_status === 'paid') {
-          if (orderExists.orderStatus !== 'completed') {
+          if (orderExistsB.orderStatus !== 'completed') {
             // get license for ordered items
-            for (let i = 0; i < orderDataB.orderedItems.length; i++) {
-              const item = orderDataB.orderedItems[i];
+            for (let i = 0; i < orderData.orderedItems.length; i++) {
+              const item = orderData.orderedItems[i];
               // get license for item
               const license = await this.getLicense(
-                orderDataB.orderId + '',
+                orderData.orderId + '',
                 item.skuCode,
                 item.productId,
               );
               // add license to order
-              orderDataB.orderedItems[i].license = license;
+              orderData.orderedItems[i].license = license;
             }
           }
-          await this.fullfillOrder(session.id, orderData);
+          const orderDetails = await this.fullfillOrder(session.id, orderData);
+          await this.sendOrderEmail(
+            orderData.customerEmail,
+            orderData.orderId,
+            `${config.get('emailService.emailTemplates.orderSuccess')}${
+              orderDetails._id
+            }`,
+          );
         }
         break;
       default:
@@ -178,6 +196,18 @@ export class OrdersService {
     return license.licenseKey;
   }
 
+  async sendOrderEmail(email: string, orderId: string, orderLink: string) {
+    await sendEmail(
+      email,
+      config.get('emailService.emailTemplates.orderSuccess'),
+      'Email verification - Digizone',
+      {
+        orderId,
+        orderLink,
+      },
+    );
+  }
+
   // create order object
   async createOrderObject(orderData: Record<string, any>) {
     const lineItems = await this.stripeClient.checkout.sessions.listLineItems(
@@ -188,6 +218,7 @@ export class OrdersService {
       orderId: Math.floor(new Date().valueOf() * Math.random()) + '',
       user: orderData.metadata?.user_id,
       customerAddress: orderData.customer_details?.address,
+      customerEmail: orderData.customer_email,
       customerPhoneNumber: orderData.customer_details?.phone,
       paymnetInfo: {
         paymentMethod: orderData.payment_method_types[0],

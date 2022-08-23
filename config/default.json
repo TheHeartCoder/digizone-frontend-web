@@ -21,7 +21,8 @@
     "publicApiKey": "pubkey-2839820e8d7f1ca0940ec4a5cd464204",
     "emailTemplates": {
       "forgotPassword": "forgot-password-template",
-      "verifyEmail": "verify-email-template"
+      "verifyEmail": "verify-email-template",
+      "orderSuccess": "order-success"
     }
   },
   "loginLink": "http://localhost:3000/auth",
@@ -29,8 +30,9 @@
   "stripe": {
     "publishable_key": "pk_test_51GzkT8C75ex8AkqxBjjmzLHcc1aBuKKkdxk0IQDhXfx58yaCtcOHm1rRm1zZbfYtOvesyS459XnBwcir8o6hVeQt00s2xbwlpk",
     "secret_key": "sk_test_51GzkT8C75ex8AkqxNlnmuLprbZGDFTvbL2jGMVkyH70ZHXWRXfTeGCPeRlZjhhrABUm8s1GAGT43T5skBUv4hqBv00GrCiFOpg",
-    "successUrl": "http://localhost:3000/order-response?success=true&orderId=",
-    "cancelUrl": "http://localhost:3000/order-response?success=false&orderId=",
+    "successUrl": "http://localhost:3000/order-success",
+    "cancelUrl": "http://localhost:3000/order-cancel",
     "webhook_secret": "whsec_65091664c52548dae5e241f06b7b885826abc096430fc3fcfea6fe567623d859"
-  }
+  },
+  "orderLink": "http://localhost:3000/orders/"
 }

@@ -280,7 +280,6 @@ export class ProductsService {
     const skuDetails = deletedSkuProduct.skuDetails.find(
       (sku: { _id: string }) => sku._id.toString() === skuId,
     );
-    console.log(skuId, skuDetails, deletedSkuProduct.skuDetails);
     // inactive price in stripe
     await this.stripeClient.prices.update(skuDetails.stripePriceId, {
       active: false,
@@ -358,5 +357,32 @@ export class ProductsService {
       success: true,
       result: result,
     };
+  }
+
+  async addReview(
+    productId: string,
+    rating: number,
+    review: string,
+    user: Record<string, any>,
+  ) {
+    const product = await this.productDB.getProductDetailsById(productId);
+    if (!product) throw new BadRequestException('No product found');
+    const result = await this.productDB.addReviewForAProduct(productId, {
+      rating,
+      feedbackMsg: review,
+      customerId: user._id,
+      customerName: user.name,
+    });
+    return result;
+  }
+
+  async deleteReview(productId: string, reviewId: string) {
+    const product = await this.productDB.getProductDetailsById(productId);
+    if (!product) throw new BadRequestException('No product found');
+    const result = await this.productDB.deleteReviewForAProduct(
+      productId,
+      reviewId,
+    );
+    return result;
   }
 }

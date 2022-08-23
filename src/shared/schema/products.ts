@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { Users } from './users';
 import { Factory } from 'nestjs-seeder';
 
+export type ProductDocument = Products & Document;
 export enum categoryType {
   operatingSystem = 'Operating System',
   applicationSoftware = 'Application Software',
@@ -33,12 +33,12 @@ export enum durationType {
     updatedAt: 'updatedAt',
   },
 })
-export class Feebackers {
+export class Feebackers extends mongoose.Document {
   @Prop({})
   customerId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Users' })
-  customer: Users; // User schema
+  @Prop({ type: String })
+  customerName: string;
 
   @Prop({})
   rating: number;
@@ -48,13 +48,13 @@ export class Feebackers {
 }
 export const FeebackersSchema = SchemaFactory.createForClass(Feebackers);
 
-export class FeedbackSchema {
-  @Prop({})
-  avgRating: string;
+// export class FeedbackSchema {
+//   @Prop({})
+//   avgRating: string;
 
-  @Prop([{ type: FeebackersSchema }])
-  info: Feebackers[];
-}
+//   @Prop([{ type: FeebackersSchema }])
+//   info: Feebackers[];
+// }
 
 @Schema({
   timestamps: {
@@ -152,7 +152,7 @@ export class Products {
   downloadUrl: string;
 
   @Prop({})
-  feedbackDetails: FeedbackSchema;
+  feedbackDetails: [Feebackers];
 
   @Prop([{ type: SkuDetailsSchema }])
   skuDetails: SkuDetails[];
@@ -184,5 +184,9 @@ export class Products {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);
-
+ProductSchema.virtual('avgRating').get(function (this: ProductDocument) {
+  const ratings: any[] = [];
+  this.feedbackDetails.forEach((comment) => ratings.push(comment.rating));
+  return (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(2);
+});
 //https://fakerjs.dev/api/

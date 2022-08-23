@@ -211,4 +211,29 @@ export class ProductRepository {
       { new: true },
     );
   }
+
+  // update with array of reviews in product
+  async addReviewForAProduct(
+    id: string,
+    data: Record<string, any>,
+  ): Promise<any> {
+    return await this.productModel.findOneAndUpdate(
+      { _id: id },
+      { $push: { feedbackDetails: data } },
+      {
+        new: true,
+      },
+    );
+  }
+
+  // delete review for a product
+  async deleteReviewForAProduct(productId: string, reviewId: string) {
+    return await this.productModel.findOneAndUpdate(
+      { _id: productId },
+      { $pull: { feedbackDetails: { _id: reviewId as any } } },
+      {
+        new: true,
+      },
+    );
+  }
 }

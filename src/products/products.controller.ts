@@ -11,6 +11,7 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -37,62 +38,65 @@ export class ProductsController {
   )
   @HttpCode(200)
   @Roles(userTypes.admin)
-  uploadProductImage(
+  async uploadProductImage(
     @Param('id') id: string,
     @UploadedFile() file: ParameterDecorator,
   ) {
-    return this.productsService.uploadProductImage(id, file);
+    return await this.productsService.uploadProductImage(id, file);
   }
 
   @Post()
   @Roles(userTypes.admin)
   @HttpCode(201)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  async create(@Body() createProductDto: CreateProductDto) {
+    return await this.productsService.create(createProductDto);
   }
 
   @Get()
-  findAll(@Query() queryDetails: GetProductQueryDto) {
+  async findAll(@Query() queryDetails: GetProductQueryDto) {
     return this.productsService.getAllProducts(queryDetails);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.getProductDetailsById(id);
+  async findOne(@Param('id') id: string) {
+    return await this.productsService.getProductDetailsById(id);
   }
 
   @Patch(':id')
   @Roles(userTypes.admin)
-  update(@Param('id') id: string, @Body() updateProductDto: CreateProductDto) {
-    return this.productsService.updateProduct(id, updateProductDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: CreateProductDto,
+  ) {
+    return await this.productsService.updateProduct(id, updateProductDto);
   }
 
   @Delete(':id')
   @Roles(userTypes.admin)
-  remove(@Param('id') id: string) {
-    return this.productsService.deleteProduct(id);
+  async remove(@Param('id') id: string) {
+    return await this.productsService.deleteProduct(id);
   }
 
   @Post('/:productId/skus')
   @Roles(userTypes.admin)
-  updateProductSkuDetails(
+  async updateProductSkuDetails(
     @Param('productId') productId: string,
     @Body() skuDetails: skuDtoArrDto,
   ) {
-    return this.productsService.updateWithArrayOfSkuDetailsInDB(
+    return await this.productsService.updateWithArrayOfSkuDetailsInDB(
       productId,
       skuDetails,
     );
   }
 
   @Put('/:productId/skus/:skuId')
-  updateProductIndividualSkuDetails(
+  async updateProductIndividualSkuDetails(
     @Param('productId') id: string,
     @Param('skuId') skuId: string,
     @Body() skuDetails: skuDto,
   ) {
     console.log(skuDetails);
-    return this.productsService.updateProductIndividualSkuDetails(
+    return await this.productsService.updateProductIndividualSkuDetails(
       id,
       skuId,
       skuDetails,
@@ -101,21 +105,21 @@ export class ProductsController {
 
   @Delete('/:productId/skus/:skuId')
   @Roles(userTypes.admin)
-  deleteProductSkuDetails(
+  async deleteProductSkuDetails(
     @Param('productId') id: string,
     @Param('skuId') skuId: string,
   ) {
-    return this.productsService.deleteProductSkuDetails(id, skuId);
+    return await this.productsService.deleteProductSkuDetails(id, skuId);
   }
 
   @Post('/:productId/skus/:skuId/licenses')
   @Roles(userTypes.admin)
-  addLicenseKeysForProductSku(
+  async addLicenseKeysForProductSku(
     @Param('productId') productId: string,
     @Param('skuId') skuId: string,
     @Body('licenseKey') licenseKey: string,
   ) {
-    return this.productsService.addLicenseKeysForProductSku(
+    return await this.productsService.addLicenseKeysForProductSku(
       productId,
       skuId,
       licenseKey,
@@ -124,32 +128,62 @@ export class ProductsController {
 
   @Delete('/licenses/:licenseKeyId')
   @Roles(userTypes.admin)
-  deleteLicenseKeysForProductSku(@Param('licenseKeyId') licenseKeyId: string) {
-    return this.productsService.deleteLicenseKeysForProductSku(licenseKeyId);
+  async deleteLicenseKeysForProductSku(
+    @Param('licenseKeyId') licenseKeyId: string,
+  ) {
+    return await this.productsService.deleteLicenseKeysForProductSku(
+      licenseKeyId,
+    );
   }
 
   @Get('/:productId/skus/:skuId/licenses')
   @Roles(userTypes.admin)
-  getAllLicenseKeysForProduct(
+  async getAllLicenseKeysForProduct(
     @Param('productId') productId: string,
     @Param('skuId') skuId: string,
   ) {
-    return this.productsService.getAllLicenseKeysForProduct(productId, skuId);
+    return await this.productsService.getAllLicenseKeysForProduct(
+      productId,
+      skuId,
+    );
   }
 
   @Put('/:productId/skus/:skuId/licenses/:licenseKeyId')
   @Roles(userTypes.admin)
-  updateLicenseKeysForProductSku(
+  async updateLicenseKeysForProductSku(
     @Param('productId') productId: string,
     @Param('skuId') skuId: string,
     @Param('licenseKeyId') licenseKeyId: string,
     @Body('licenseKey') licenseKey: string,
   ) {
-    return this.productsService.updateLicenseKeysForProductSku(
+    return await this.productsService.updateLicenseKeysForProductSku(
       productId,
       skuId,
       licenseKeyId,
       licenseKey,
     );
+  }
+
+  @Post('/:productId/reviews')
+  async addReview(
+    @Param('productId') productId: string,
+    @Body('rating') rating: number,
+    @Body('review') review: string,
+    @Req() req: any,
+  ) {
+    return await this.productsService.addReview(
+      productId,
+      rating,
+      review,
+      req.user,
+    );
+  }
+
+  @Delete('/:productId/reviews/:reviewId')
+  async deleteReview(
+    @Param('productId') productId: string,
+    @Param('reviewId') reviewId: string,
+  ) {
+    return await this.productsService.deleteReview(productId, reviewId);
   }
 }
