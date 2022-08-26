@@ -53,4 +53,16 @@ export class OrdersRepository {
       { new: true },
     );
   }
+
+  // get order details by customer id and product id
+  async findOrderByCustomerIdAndProductId(
+    userId: string,
+    productId: string,
+  ): Promise<any> {
+    const order = await this.ordersModel.findOne({
+      user: userId,
+      'orderedItems.productId': productId,
+    });
+    return order;
+  }
 }

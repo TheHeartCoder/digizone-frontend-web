@@ -151,8 +151,8 @@ export class Products {
   @Prop({ required: true })
   downloadUrl: string;
 
-  @Prop({})
-  feedbackDetails: [Feebackers];
+  @Prop([{ type: FeebackersSchema }])
+  feedbackDetails: Feebackers[];
 
   @Prop([{ type: SkuDetailsSchema }])
   skuDetails: SkuDetails[];

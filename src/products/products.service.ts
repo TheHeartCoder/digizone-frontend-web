@@ -9,10 +9,12 @@ import config from 'config';
 import fs from 'fs';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
+import { OrdersRepository } from 'src/shared/repositories/orders.repository';
 @Injectable()
 export class ProductsService {
   constructor(
     @Inject(ProductRepository) private readonly productDB: ProductRepository,
+    @Inject(OrdersRepository) private readonly orderDB: OrdersRepository,
     @InjectStripe() private readonly stripeClient: Stripe,
   ) {
     cloudinary.v2.config({
@@ -367,13 +369,41 @@ export class ProductsService {
   ) {
     const product = await this.productDB.getProductDetailsById(productId);
     if (!product) throw new BadRequestException('No product found');
+
+    // validation 01 - if cutomer already gave review then throw error
+    if (
+      product.feedbackDetails.find(
+        (value: { customerId: string }) =>
+          value.customerId === user._id.toString(),
+      )
+    ) {
+      throw new BadRequestException(
+        'You have already gave the review for this product',
+      );
+    }
+
+    // Validation 02 - if the customer successfully ordered this item
+    const orderDetails = await this.orderDB.findOrderByCustomerIdAndProductId(
+      user._id,
+      productId,
+    );
+    if (!orderDetails) {
+      throw new BadRequestException(
+        'Please purchase this product, then you will allow to give review for this product',
+      );
+    }
+
     const result = await this.productDB.addReviewForAProduct(productId, {
       rating,
       feedbackMsg: review,
       customerId: user._id,
       customerName: user.name,
     });
-    return result;
+    return {
+      message: 'Review added successfully',
+      success: true,
+      result: result,
+    };
   }
 
   async deleteReview(productId: string, reviewId: string) {
@@ -383,6 +413,10 @@ export class ProductsService {
       productId,
       reviewId,
     );
-    return result;
+    return {
+      message: 'Review deleted successfully',
+      success: true,
+      result: result,
+    };
   }
 }
