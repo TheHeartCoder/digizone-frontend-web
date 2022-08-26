@@ -1,33 +1,36 @@
 import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
-import { Badge } from 'react-bootstrap';
+import { Badge, Button } from 'react-bootstrap';
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { CartFill, PersonSquare, Search } from 'react-bootstrap-icons';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../../styles/Home.module.css';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 import { Context } from '../../context';
 import CartOffCanvas from '../CartOffCanvas';
 
 const TopHead = () => {
 	const [show, setShow] = React.useState(false);
+	const [searchText, setSearchText] = React.useState('');
 
 	const {
 		state: { user },
 		cartItems,
 	} = useContext(Context);
 
+	const router = useRouter();
+
 	return (
 		<>
 			<Row className='mt-3'>
-				<Col xs={6} md={3}>
-					<h3 className={styles.logoHeading} onClick={() => Router.push('/')}>
+				<Col xs={6} md={4}>
+					<h3 className={styles.logoHeading} onClick={() => router.push('/')}>
 						Digizone
 					</h3>
 				</Col>
-				<Col xs={6} md={6}>
+				<Col xs={6} md={4}>
 					{' '}
 					<InputGroup>
 						<InputGroup.Text id='inputGroup-sizing-default'>
@@ -37,10 +40,22 @@ const TopHead = () => {
 							aria-label='Default'
 							aria-describedby='inputGroup-sizing-default'
 							placeholder='Search the product here...'
+							value={searchText}
+							onChange={(e) => setSearchText(e.target.value)}
 						/>
+						<Button
+							variant='outline-success'
+							id='button-addon2'
+							onClick={() => {
+								setSearchText('');
+								router.push(`/products?search=${searchText}`);
+							}}
+						>
+							Search
+						</Button>
 					</InputGroup>
 				</Col>
-				<Col xs={6} md={3}>
+				<Col xs={6} md={4}>
 					<CartFill
 						height='40'
 						width='40'
@@ -54,9 +69,9 @@ const TopHead = () => {
 						className={styles.personIcon}
 						onClick={() => {
 							if (user && user.email) {
-								Router.push('/my-account');
+								router.push('/my-account');
 							} else {
-								Router.push('/auth');
+								router.push('/auth');
 							}
 						}}
 					/>
@@ -72,15 +87,15 @@ const TopHead = () => {
 				<Navbar.Toggle aria-controls='responsive-navbar-nav' />
 				<Navbar.Collapse id='responsive-navbar-nav'>
 					<Nav className='me-auto'>
-						<Nav.Link onClick={() => Router.push('/')}>Home</Nav.Link>
+						<Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
 						<NavDropdown title='Applications' id='collasible-nav-dropdown'>
 							<NavDropdown.Item
-								onClick={() => Router.push('/products?baseType=Computer')}
+								onClick={() => router.push('/products?baseType=Computer')}
 							>
 								Computer
 							</NavDropdown.Item>
 							<NavDropdown.Item
-								onClick={() => Router.push('/products?baseType=Mobile')}
+								onClick={() => router.push('/products?baseType=Mobile')}
 							>
 								Mobile
 							</NavDropdown.Item>

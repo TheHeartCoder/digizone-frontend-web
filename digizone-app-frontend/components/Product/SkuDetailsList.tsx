@@ -43,7 +43,7 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 			}
 		} catch (error: any) {
 			if (error.response) {
-				if (error.response.data?.message?.length > 0) {
+				if (Array.isArray(error.response?.data?.message)) {
 					return error.response.data.message.forEach((message: any) => {
 						addToast(message, { appearance: 'error', autoDismiss: true });
 					});

@@ -225,7 +225,10 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 									</Table>
 								</Tab.Pane>
 								<Tab.Pane eventKey='third'>
-									<ReviewSection reviews={product.reviewDetails || []} />
+									<ReviewSection
+										reviews={product.feedbackDetails || []}
+										productId={product._id}
+									/>
 								</Tab.Pane>
 								<Tab.Pane eventKey='fourth'>
 									<SkuDetailsList

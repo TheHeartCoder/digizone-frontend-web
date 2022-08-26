@@ -38,7 +38,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			if (error.response) {
 				if (
 					isArray(error.response.data?.message) &&
-					error.response.data?.message?.length > 0
+					(Array.isArray(error.response?.data?.message))
 				) {
 					return error.response.data.message.forEach((message: any) => {
 						addToast(message, { appearance: 'error', autoDismiss: true });
@@ -76,7 +76,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			if (error.response) {
 				if (
 					isArray(error.response.data?.message) &&
-					error.response.data?.message?.length > 0
+					(Array.isArray(error.response?.data?.message))
 				) {
 					return error.response.data.message.forEach((message: any) => {
 						addToast(message, { appearance: 'error', autoDismiss: true });

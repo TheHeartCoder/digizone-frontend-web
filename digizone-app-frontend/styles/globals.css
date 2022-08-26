@@ -289,3 +289,26 @@ span.editLBtn {
 .spec {
   font-size: 14px;
 }
+
+.filterRating {
+	border: 2px solid #3a6299;
+	padding: 5px;
+	width: fit-content;
+	float: right;
+	margin-bottom: 5px;
+	border-radius: 14px;
+	display: flex;
+}
+
+button.reloadBtn.btn.btn-outline-secondary {
+	border: none;
+	padding: 0px;
+	margin-left: 14px;
+	margin-top: -8px;
+	margin-right: 7px;
+}
+
+button.reloadBtn.btn.btn-outline-secondary:hover {
+	padding: 5px;
+	margin: 5px;
+}

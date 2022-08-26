@@ -136,10 +136,9 @@ export const Products = {
 		return deleteLicenseRes;
 	},
 
-	// add license for a product SKU
+	// add review for an product
 	addReview: async (
 		productId: string,
-		skuId: string,
 		review: Record<string, any>
 	): Promise<resposnePayload> => {
 		const addReviewRes = await requests.post(
@@ -149,7 +148,7 @@ export const Products = {
 		return addReviewRes;
 	},
 
-	// add license for a product SKU
+	// delete product review
 	deleteReview: async (
 		productId: string,
 		reviewId: string

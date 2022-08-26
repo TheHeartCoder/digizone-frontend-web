@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -6,8 +6,12 @@ import { Badge, Button, Card, Container } from 'react-bootstrap';
 import styles from '../styles/Home.module.css';
 import StarRatingComponent from 'react-star-rating-component';
 import Router from 'next/router';
+import axios from 'axios';
 
-const Home: NextPage = () => {
+interface Props {
+	products: Record<string, any>;
+}
+const Home: NextPage<Props> = ({ products }) => {
 	return (
 		<>
 			<h3 className={styles.productCats}>Latest Products</h3>
@@ -104,6 +108,21 @@ const Home: NextPage = () => {
 			</Row>
 		</>
 	);
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async (
+	context
+): Promise<any> => {
+	try {
+		const { data } = await axios.get('http://localhost:3100/api/v1/products');
+		return {
+			props: {
+				products: data?.result?.products || {},
+			},
+		};
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 export default Home;
