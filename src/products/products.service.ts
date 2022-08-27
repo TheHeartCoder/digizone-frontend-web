@@ -133,19 +133,34 @@ export class ProductsService {
   async getAllProducts(queryDetails: GetProductQueryDto): Promise<{
     message: string;
     success: boolean;
-    result: {
-      metadata: {
-        skip: number;
-        limit: number;
-        total: number;
-        pages: number;
-        links: any;
-      };
-      products: [];
-    };
+    result:
+      | {
+          metadata: {
+            skip: number;
+            limit: number;
+            total: number;
+            pages: number;
+            links: any;
+          };
+          products: [];
+        }
+      | Record<string, any>;
   }> {
+    let callForDashboard = false;
+    if (queryDetails.dashboard == 'true') callForDashboard = true;
+    delete queryDetails.dashboard;
     const data = qs2m(queryDetails);
     const { criteria, options, links } = data;
+    console.log('callForDashboard :: ', callForDashboard);
+
+    if (callForDashboard) {
+      const result = await this.productDB.getGroupByProduct();
+      return {
+        message: result.length > 0 ? 'Products found' : 'No products found',
+        success: true,
+        result: result,
+      };
+    }
 
     const { total, result } = await this.productDB.getAllProductsFromDB(
       criteria,
@@ -393,12 +408,25 @@ export class ProductsService {
       );
     }
 
-    const result = await this.productDB.addReviewForAProduct(productId, {
-      rating,
-      feedbackMsg: review,
-      customerId: user._id,
-      customerName: user.name,
-    });
+    // calculte average rating
+    const ratings: any[] = [];
+    product.feedbackDetails.forEach((comment: { rating: any }) =>
+      ratings.push(comment.rating),
+    );
+    const avgRating = (
+      ratings.reduce((a, b) => a + b) / ratings.length
+    ).toFixed(2);
+
+    const result = await this.productDB.addReviewForAProduct(
+      productId,
+      avgRating,
+      {
+        rating,
+        feedbackMsg: review,
+        customerId: user._id,
+        customerName: user.name,
+      },
+    );
     return {
       message: 'Review added successfully',
       success: true,

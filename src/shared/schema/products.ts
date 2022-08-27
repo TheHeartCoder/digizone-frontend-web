@@ -151,6 +151,9 @@ export class Products {
   @Prop({ required: true })
   downloadUrl: string;
 
+  @Prop({ type: Number })
+  avgRating: number;
+
   @Prop([{ type: FeebackersSchema }])
   feedbackDetails: Feebackers[];
 
@@ -184,9 +187,9 @@ export class Products {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Products);
-ProductSchema.virtual('avgRating').get(function (this: ProductDocument) {
-  const ratings: any[] = [];
-  this.feedbackDetails.forEach((comment) => ratings.push(comment.rating));
-  return (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(2);
-});
+// ProductSchema.virtual('avgRating').get(function (this: ProductDocument) {
+//   const ratings: any[] = [];
+//   this.feedbackDetails.forEach((comment) => ratings.push(comment.rating));
+//   return (ratings.reduce((a, b) => a + b) / ratings.length).toFixed(2);
+// });
 //https://fakerjs.dev/api/

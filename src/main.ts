@@ -9,7 +9,7 @@ import csurf from 'csurf';
 import { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import { raw } from 'express';
-
+const ROOT_IGNORE_LIST = ['/api/v1/orders/webhook'];
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
@@ -24,9 +24,22 @@ async function bootstrap() {
     origin: '*',
   });
   app.use(cookieParser());
-
   app.use('/api/v1/orders/webhook', raw({ type: '*/*' }));
-  app.use(csurf({ cookie: true }));
+
+  const csrfMiddleware = csurf({
+    cookie: true,
+  });
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (ROOT_IGNORE_LIST.includes(req.url)) {
+      next();
+    } else {
+      csrfMiddleware(req, res, next);
+    }
+  });
+
+  // app.use(csurf({ cookie: true }));
+
   app.use(morgan('tiny'));
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('/api/v1');

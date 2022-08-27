@@ -54,6 +54,8 @@ export class OrdersService {
   }
 
   async checkout(checkoutBody: checkoutDtoArrDto, user: Record<string, any>) {
+    // check all items are in stock
+
     const session = await this.stripeClient.checkout.sessions.create({
       line_items: checkoutBody.checkoutDetails.map((item) => ({
         price: item.skuPriceId,

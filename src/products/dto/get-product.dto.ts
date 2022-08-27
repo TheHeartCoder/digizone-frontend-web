@@ -1,4 +1,4 @@
-import { IsIn, IsString, ValidateIf } from 'class-validator';
+import { IsIn, IsOptional, IsString, ValidateIf } from 'class-validator';
 import {
   baseType,
   categoryType,
@@ -30,11 +30,7 @@ export class GetProductQueryDto {
   @IsString()
   @IsIn([baseType.computer, baseType.mobile])
   baseType: baseType;
-}
 
-// Query for get all product details from database
-// search by name
-// Filter by category, base type, platformType
-// Sorting by Price and Rating , it can be low to high and high to low
-// Selectable field is sku details and feedbackers [ Only 5 feedbackers will be selected ]
-// Pagination
+  @IsOptional()
+  dashboard?: string;
+}

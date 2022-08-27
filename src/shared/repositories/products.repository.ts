@@ -77,29 +77,12 @@ export class ProductRepository {
       delete criteria.search;
     }
 
-    console.log(criteria, options);
-
     // aggregate products with citeria and options
     const products = await this.productModel.aggregate([
       { $match: criteria },
       { $sort: options.sort },
       { $skip: options.skip },
       { $limit: options.limit },
-      // { $unwind: { path: '$skuDetails', preserveNullAndEmptyArrays: true } },
-      // {
-      //   $project: {
-      //     'skuDetails.licenceKeys': 0,
-      //     'feedbackDetails.info': 0,
-      //     imageDetails: 0,
-      //   },
-      // },
-      // {
-      //   $group: {
-      //     _id: '$_id',
-      //     data: { $first: '$$ROOT' },
-      //   },
-      // },
-      // { $replaceRoot: { newRoot: '$data' } },
     ]);
     // get total products count
     const total = await this.productModel.countDocuments(criteria);
@@ -107,6 +90,21 @@ export class ProductRepository {
       total,
       result: products,
     };
+  }
+
+  // get group wise product for dashboard
+  async getGroupByProduct() {
+    const products = await this.productModel.aggregate([
+      {
+        $facet: {
+          latestProducts: [{ $sort: { createdAt: -1 } }, { $limit: 4 }],
+          topSoldProducts: [{ $sort: { avgRating: -1 } }, { $limit: 8 }],
+        },
+      },
+    ]);
+    console.log(products);
+
+    return products;
   }
 
   // update with array of sku details in product
@@ -133,13 +131,12 @@ export class ProductRepository {
     Object.keys(data).forEach((key) => {
       dataForUpdate[`skuDetails.$.${key}`] = data[key];
     });
-    const e = await this.productModel.findOneAndUpdate(
+    const updatedProduct = await this.productModel.findOneAndUpdate(
       { _id: id, 'skuDetails._id': skuId },
       { $set: dataForUpdate },
       { new: true },
     );
-    console.log(e);
-    return e;
+    return updatedProduct;
   }
 
   // delete a sku details  in product
@@ -215,11 +212,12 @@ export class ProductRepository {
   // update with array of reviews in product
   async addReviewForAProduct(
     id: string,
+    avgRating: string,
     data: Record<string, any>,
   ): Promise<any> {
     return await this.productModel.findOneAndUpdate(
       { _id: id },
-      { $push: { feedbackDetails: data } },
+      { $set: { avgRating }, $push: { feedbackDetails: data } },
       {
         new: true,
       },

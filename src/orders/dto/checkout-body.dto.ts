@@ -15,6 +15,9 @@ export class checkoutDto {
 
   @IsNumber()
   quantity: number;
+
+  @IsString()
+  skuId: string;
 }
 
 export class checkoutDtoArrDto {
