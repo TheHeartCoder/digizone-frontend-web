@@ -89,7 +89,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							name='rate2'
 							editing={false}
 							starCount={5}
-							value={product?.feedbackDetails?.avgRating || 0}
+							value={product?.avgRating || 0}
 						/>
 						({product?.feedbackDetails?.info?.length || 0} reviews)
 					</div>

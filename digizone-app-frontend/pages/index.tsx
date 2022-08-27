@@ -7,93 +7,42 @@ import styles from '../styles/Home.module.css';
 import StarRatingComponent from 'react-star-rating-component';
 import Router from 'next/router';
 import axios from 'axios';
+import ProductItem from '../components/Products/ProductItem';
 
 interface Props {
 	products: Record<string, any>;
 }
 const Home: NextPage<Props> = ({ products }) => {
+	console.log('products :: ', products);
+
 	return (
 		<>
 			<h3 className={styles.productCats}>Latest Products</h3>
 			<Row xs={1} md={4} className='g-4'>
-				{Array.from({ length: 4 }).map((_, idx) => (
-					// eslint-disable-next-line react/jsx-key
-					<Col>
-						<Card className='productCard'>
-							<Card.Img
-								variant='top'
-								src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
+				{products.latestProducts &&
+					products.latestProducts.map(
+						(product: any, index: React.Key | null | undefined) => (
+							<ProductItem
+								product={product}
+								userType={'customer'}
+								key={index}
 							/>
-							<Card.Body>
-								<Card.Title>Microsoft Window 10</Card.Title>
-								<StarRatingComponent
-									name='rate2'
-									editing={false}
-									starCount={5}
-									value={4}
-								/>
-								<Card.Text>
-									<span className='priceText'>₹949.00 - ₹1699.00</span>
-								</Card.Text>
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<br />
-								<Button variant='outline-dark' className='viewProdBtn'>
-									View Details
-								</Button>
-							</Card.Body>
-						</Card>
-					</Col>
-				))}
+						)
+					)}
 			</Row>
 			<hr />
 			<h3 className={styles.productCats}>Top Rated Products</h3>
 			<Row xs={1} md={4} className='g-4'>
-				{Array.from({ length: 8 }).map((_, idx) => (
-					// eslint-disable-next-line react/jsx-key
-					<Col>
-						<Card className='productCard'>
-							<Card.Img
-								variant='top'
-								src='https://i.ytimg.com/vi/aTVOTY93XXU/maxresdefault.jpg'
+				{products.topSoldProducts &&
+					products.topSoldProducts.map(
+						(product: any, index: React.Key | null | undefined) => (
+							<ProductItem
+								product={product}
+								userType={'customer'}
+								key={index}
 							/>
-							<Card.Body>
-								<Card.Title>Microsoft Window 10</Card.Title>
-								<StarRatingComponent
-									name='rate2'
-									editing={false}
-									starCount={5}
-									value={4}
-								/>
-								<Card.Text>
-									<span className='priceText'>
-										<span className='priceText'>₹949.00 - ₹1699.00</span>
-									</span>
-								</Card.Text>
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<Badge bg='warning' text='dark'>
-									2 Years
-								</Badge>{' '}
-								<br />
-								<Button variant='outline-dark' className='viewProdBtn'>
-									View Details
-								</Button>
-							</Card.Body>
-						</Card>
-					</Col>
-				))}
+						)
+					)}
 			</Row>
 			<Row>
 				<Col>
@@ -114,10 +63,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 	context
 ): Promise<any> => {
 	try {
-		const { data } = await axios.get('http://localhost:3100/api/v1/products');
+		const { data } = await axios.get(
+			'http://localhost:3100/api/v1/products?dashboard=true'
+		);
 		return {
 			props: {
-				products: data?.result?.products || {},
+				products: data?.result[0] || {},
 			},
 		};
 	} catch (error) {

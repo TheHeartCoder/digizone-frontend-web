@@ -73,7 +73,7 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 							}
 						}}
 					>
-						<Dropdown.Item href='#' eventKey='-feedbackDetails.avgRating'>
+						<Dropdown.Item href='#' eventKey='-avgRating'>
 							Rating
 						</Dropdown.Item>
 						<Dropdown.Item href='#' eventKey='-createdAt'>

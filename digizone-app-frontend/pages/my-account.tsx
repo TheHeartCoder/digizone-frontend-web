@@ -66,11 +66,11 @@ const MyAccount = () => {
 								All Orders
 							</Nav.Link>
 						</Nav.Item>
-						<Nav.Item>
+						{/* <Nav.Item>
 							<Nav.Link eventKey='third' href='#'>
 								Support tickets
 							</Nav.Link>
-						</Nav.Item>
+						</Nav.Item> */}
 						<Nav.Item>
 							<Nav.Link eventKey='third' href='#' onClick={logoutHandler}>
 								Logout

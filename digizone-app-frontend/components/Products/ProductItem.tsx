@@ -38,7 +38,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			if (error.response) {
 				if (
 					isArray(error.response.data?.message) &&
-					(Array.isArray(error.response?.data?.message))
+					Array.isArray(error.response?.data?.message)
 				) {
 					return error.response.data.message.forEach((message: any) => {
 						addToast(message, { appearance: 'error', autoDismiss: true });
@@ -76,7 +76,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			if (error.response) {
 				if (
 					isArray(error.response.data?.message) &&
-					(Array.isArray(error.response?.data?.message))
+					Array.isArray(error.response?.data?.message)
 				) {
 					return error.response.data.message.forEach((message: any) => {
 						addToast(message, { appearance: 'error', autoDismiss: true });
@@ -114,7 +114,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 						name='rate2'
 						editing={false}
 						starCount={5}
-						value={product?.feedbackDetails?.avgRating || 0}
+						value={product?.avgRating || 0}
 					/>
 					<Card.Text>
 						<span className='priceText'>

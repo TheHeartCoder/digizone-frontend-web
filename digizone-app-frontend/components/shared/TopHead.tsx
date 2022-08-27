@@ -2,7 +2,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import { Badge, Button } from 'react-bootstrap';
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { CartFill, PersonSquare, Search } from 'react-bootstrap-icons';
+import { PersonCircle, Search } from 'react-bootstrap-icons';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../../styles/Home.module.css';
@@ -56,13 +56,13 @@ const TopHead = () => {
 					</InputGroup>
 				</Col>
 				<Col xs={6} md={4}>
-					<CartFill
+					{/* <CartFill
 						height='40'
 						width='40'
 						color='#4c575f'
 						className={styles.personIcon}
-					/>
-					<PersonSquare
+					/> */}
+					<PersonCircle
 						height='40'
 						width='40'
 						color='#4c575f'
@@ -115,9 +115,9 @@ const TopHead = () => {
 								.reduce((a: number, b: number) => a + b, 0)}
 							)
 						</Nav.Link>
-						<Nav.Link href='#deets'>Checkout</Nav.Link>
+						{/* <Nav.Link href='#deets'>Checkout</Nav.Link> */}
 						<Nav.Link eventKey={2} href='#memes'>
-							Contact Us
+							{/* Contact Us */}
 						</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>
