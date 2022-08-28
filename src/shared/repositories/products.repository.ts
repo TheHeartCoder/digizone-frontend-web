@@ -234,4 +234,9 @@ export class ProductRepository {
       },
     );
   }
+
+  // check license in stock or not
+  async getLicenseForASku(skuId: string) {
+    return await this.licenseModel.find({ productSku: skuId, isSold: false });
+  }
 }

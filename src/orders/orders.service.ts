@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { checkoutDtoArrDto } from './dto/checkout-body.dto';
 import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
@@ -55,6 +55,30 @@ export class OrdersService {
 
   async checkout(checkoutBody: checkoutDtoArrDto, user: Record<string, any>) {
     // check all items are in stock
+    const lineItems = [];
+    const cartItems = checkoutBody.checkoutDetails;
+    for (let i = 0; i < cartItems.length; i++) {
+      const inStockItems = await this.productDB.getLicenseForASku(
+        cartItems[i].skuId,
+      );
+      if (inStockItems && inStockItems.length > 0) {
+        lineItems.push({
+          price: cartItems[i].skuPriceId,
+          quantity: cartItems[i].quantity,
+          adjustable_quantity: {
+            enabled: true,
+            maximum: 5,
+            minimum: 1,
+          },
+        });
+      }
+    }
+
+    if (lineItems.length < 1) {
+      throw new BadRequestException(
+        'These products are not available right now',
+      );
+    }
 
     const session = await this.stripeClient.checkout.sessions.create({
       line_items: checkoutBody.checkoutDetails.map((item) => ({
