@@ -49,8 +49,6 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 		state: { user },
 	} = useContext(Context);
 
-	console.log(quantity);
-
 	// const handleShow = () => setShow(true);
 	const handleCart = () => {
 		cartDispatch({
