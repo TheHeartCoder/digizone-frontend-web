@@ -48,7 +48,6 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 		cartDispatch,
 		state: { user },
 	} = useContext(Context);
-
 	// const handleShow = () => setShow(true);
 	const handleCart = () => {
 		cartDispatch({
