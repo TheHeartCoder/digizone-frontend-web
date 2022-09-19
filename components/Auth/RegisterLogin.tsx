@@ -23,6 +23,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 	const { addToast } = useToasts();
 	const [authForm, setAuthForm] = React.useState(initalForm);
 	const [isLoading, setIsLoading] = React.useState(false);
+	const [isLoadingForgotPwd, setIsLoadingForgotPwd] = React.useState(false);
 	const [otpTime, setOtpTime] = React.useState(false);
 	const [otpForm, setOtpForm] = React.useState({ email: '', otp: '' });
 
@@ -191,7 +192,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 					'Invalid email. Plese enter a valid email and we will send you a password for you'
 				);
 			}
-			setIsLoading(true);
+			setIsLoadingForgotPwd(true);
 			const { success, message }: resposnePayload =
 				await Users.forgotUserPassword(email);
 			if (!success) throw new Error(message);
@@ -205,7 +206,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
 		} finally {
-			setIsLoading(false);
+			setIsLoadingForgotPwd(false);
 		}
 	};
 
@@ -305,6 +306,13 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 								disabled={isLoading}
 								onClick={verifyUser}
 							>
+								{isLoading && (
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>
+								)}
 								Submit
 							</Button>
 						</Form.Group>
@@ -317,6 +325,13 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 								disabled={isLoading}
 								onClick={isResgisterForm ? handleRegister : handleLogin}
 							>
+								{isLoading && (
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>
+								)}
 								{isResgisterForm ? 'Register' : 'Login'}
 							</Button>
 						</Form.Group>
@@ -328,6 +343,13 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 						href=''
 						onClick={forgotPassword}
 					>
+						{isLoadingForgotPwd && (
+							<span
+								className='spinner-border spinner-border-sm'
+								role='status'
+								aria-hidden='true'
+							></span>
+						)}
 						Forgot your password?
 					</a>
 				)}

@@ -64,7 +64,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 ): Promise<any> => {
 	try {
 		const { data } = await axios.get(
-			'https://digizone-backend.onrender.com/api/v1/products?dashboard=true'
+			`${
+				process.env.NODE_ENV !== 'production'
+					? process.env.NEXT_PUBLIC_BASE_API_URL_LOCAL
+					: process.env.NEXT_PUBLIC_BASE_API_URL
+			}/products?dashboard=true`
 		);
 		return {
 			props: {

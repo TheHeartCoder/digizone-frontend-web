@@ -131,7 +131,11 @@ export const getServerSideProps: GetServerSideProps<OrderProps> = async (
 			};
 		}
 		const { data } = await axios.get(
-			`https://digizone-backend.onrender.com/api/v1/orders/${context?.params?.id}`,
+			`${
+				process.env.NODE_ENV !== 'production'
+					? process.env.NEXT_PUBLIC_BASE_API_URL_LOCAL
+					: process.env.NEXT_PUBLIC_BASE_API_URL
+			}/orders/${context?.params?.id}`,
 			{
 				withCredentials: true,
 				headers: {

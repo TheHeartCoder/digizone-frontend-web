@@ -452,7 +452,11 @@ export const getServerSideProps: GetServerSideProps<ProductProps> = async (
 			};
 		}
 		const { data } = await axios.get(
-			'https://digizone-backend.onrender.com/api/v1/products/' + context.query?.productId
+			`${
+				process.env.NODE_ENV !== 'production'
+					? process.env.NEXT_PUBLIC_BASE_API_URL_LOCAL
+					: process.env.NEXT_PUBLIC_BASE_API_URL
+			}/products/` + context.query?.productId
 		);
 		return {
 			props: {

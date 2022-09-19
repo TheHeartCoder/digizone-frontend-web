@@ -36,9 +36,11 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 	);
 
 	const [displaySku, setDisplaySku] = React.useState(
-		product?.skuDetails.sort(
-			(a: { price: number }, b: { price: number }) => a.price - b.price
-		)[0] || {}
+		product?.skuDetails
+			? product?.skuDetails.sort(
+					(a: { price: number }, b: { price: number }) => a.price - b.price
+			  )[0] || {}
+			: {}
 	);
 
 	const [quantity, setQuantity] = useState(1);
@@ -266,7 +268,11 @@ export const getServerSideProps: GetServerSideProps<ProductProps> = async (
 			};
 		}
 		const { data } = await axios.get(
-			'https://digizone-backend.onrender.com/api/v1/products/' + context.params?.id
+			`${
+				process.env.NODE_ENV !== 'production'
+					? process.env.NEXT_PUBLIC_BASE_API_URL_LOCAL
+					: process.env.NEXT_PUBLIC_BASE_API_URL
+			}/products/` + context.params?.id
 		);
 		return {
 			props: {
