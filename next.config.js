@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/v1/:path*',
-        destination: 'http://localhost:3100/api/v1/:path*' // Proxy to Backend
+        destination: 'https://digizone-backend.onrender.com/api/v1/:path*' // Proxy to Backend
       }
     ]
   }

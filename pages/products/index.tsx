@@ -125,7 +125,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 	try {
 		// get products with axios
 		const url = queryString.stringifyUrl({
-			url: 'http://localhost:3100/api/v1/products',
+			url: 'https://digizone-backend.onrender.com/api/v1/products',
 			query: context.query,
 		});
 		const { data } = await axios.get(url);

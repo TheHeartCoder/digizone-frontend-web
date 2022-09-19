@@ -131,7 +131,7 @@ export const getServerSideProps: GetServerSideProps<OrderProps> = async (
 			};
 		}
 		const { data } = await axios.get(
-			`http://localhost:3100/api/v1/orders/${context?.params?.id}`,
+			`https://digizone-backend.onrender.com/api/v1/orders/${context?.params?.id}`,
 			{
 				withCredentials: true,
 				headers: {
