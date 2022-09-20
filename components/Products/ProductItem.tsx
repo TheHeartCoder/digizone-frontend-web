@@ -96,7 +96,6 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			setUploading(false);
 		}
 	};
-	
 
 	return (
 		// eslint-disable-next-line react/jsx-key
@@ -178,6 +177,13 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 								className='btn btn-outline-dark viewProdBtn'
 								onClick={() => deleteProduct()}
 							>
+								{isLoading && (
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>
+								)}
 								<Trash />
 							</Button>
 							<Link href={`/products/${product?._id}`}>
