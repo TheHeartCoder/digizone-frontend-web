@@ -36,6 +36,7 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 	skuIdForUpdate,
 	setSkuIdForUpdate,
 }) => {
+	console.log(productId);
 	const { addToast } = useToasts();
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [skuForm, setSkuFrom] = React.useState(intialState);
@@ -148,7 +149,19 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 							label='Lifetime'
 							checked={skuForm.lifetime}
 							onChange={(e) =>
-								setSkuFrom({ ...skuForm, lifetime: e.target.checked })
+								e.target.checked
+									? setSkuFrom({
+											...skuForm,
+											lifetime: e.target.checked,
+											validity: 0,
+											validityType: 'Select Type',
+									  })
+									: setSkuFrom({
+											...skuForm,
+											validity: 0,
+											lifetime: e.target.checked,
+											validityType: 'Select Type',
+									  })
 							}
 						/>
 					</small>
@@ -166,6 +179,7 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 							variant='outline-secondary'
 							title={skuForm.validityType}
 							id='input-group-dropdown-9'
+							disabled={skuForm.lifetime}
 							align='end'
 							onSelect={(e) =>
 								setSkuFrom({
@@ -194,6 +208,13 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 						onClick={handleSubmit}
 						disabled={isLoading}
 					>
+						{isLoading && (
+							<span
+								className='spinner-border spinner-border-sm'
+								role='status'
+								aria-hidden='true'
+							></span>
+						)}
 						Submit
 					</Button>
 				</div>

@@ -33,6 +33,11 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 	const [addFormShow, setAddFormShow] = React.useState(false);
 	const [licenseIdForUpdate, setLicenseIdForUpdate] = React.useState('');
 	const [isLoading, setIsLoading] = React.useState(false);
+	const [isLoadingForDelete, setIsLoadingorDelete] = React.useState({
+		status: false,
+		id: '',
+	});
+	const [isLoadingForFetch, setIsLoadingorFetch] = React.useState(false);
 	const { addToast } = useToasts();
 	useEffect(() => {
 		if (licensesListFor) {
@@ -51,6 +56,7 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 
 	const fetchAllLicenses = async (productId: string, skuId: string) => {
 		try {
+			setIsLoadingorFetch(true);
 			const licensesRes = await Products.getLicenses(productId, skuId);
 			if (!licensesRes.success) {
 				throw new Error(licensesRes.message);
@@ -70,6 +76,8 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 				}
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoadingorFetch(false);
 		}
 	};
 
@@ -79,6 +87,7 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 				'Want to delete? You will lost all licenses for this sku'
 			);
 			if (deleteConfirm) {
+				setIsLoadingorDelete({ status: true, id: licenseId });
 				const deleteLicenseRes = await Products.deleteLicense(licenseId);
 				if (!deleteLicenseRes.success) {
 					throw new Error(deleteLicenseRes.message);
@@ -99,6 +108,8 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 				}
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoadingorDelete({ status: false, id: '' });
 		}
 	};
 
@@ -182,6 +193,13 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 								onClick={addLicense}
 								disabled={isLoading}
 							>
+								{isLoading && (
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>
+								)}
 								<Check2Circle /> Submit
 							</Button>
 						</InputGroup>
@@ -209,13 +227,35 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 								className='delLBtn'
 								onClick={() => deleteLicense(license._id)}
 							>
-								<Archive />
+								{isLoadingForDelete.status &&
+								isLoadingForDelete.id === license._id ? (
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>
+								) : (
+									<Archive />
+								)}
 							</span>
 						</ListGroup.Item>
 					))
 				) : (
 					<ListGroup.Item>
-						<span>No License Keys Found</span>
+						<span>
+							{isLoadingForFetch ? (
+								<>
+									<span
+										className='spinner-border spinner-border-sm'
+										role='status'
+										aria-hidden='true'
+									></span>{' '}
+									<span>Loading...</span>
+								</>
+							) : (
+								'No License Keys Found'
+							)}
+						</span>
 					</ListGroup.Item>
 				)}
 			</ListGroup>

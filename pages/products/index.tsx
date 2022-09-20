@@ -25,6 +25,7 @@ interface Props {
 const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 	const { addToast } = useToasts();
 	const [userType, setUserType] = useState('customer');
+	const [sortText, setSortText] = useState('Sort by');
 	const router = useRouter();
 
 	const {
@@ -60,11 +61,18 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 				<Col md={4}>
 					<DropdownButton
 						variant='outline-secondary'
-						title='Sort By'
+						title={sortText}
 						id='input-group-dropdown-2'
 						className={styles.dropdownBtn}
 						onSelect={(e) => {
 							if (e) {
+								setSortText(
+									e === '-avgRating'
+										? 'Rating'
+										: e === '-createdAt'
+										? 'Latest'
+										: 'Sort By'
+								);
 								router.query.sort = e;
 								router.push(router);
 							} else {
@@ -78,6 +86,9 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 						</Dropdown.Item>
 						<Dropdown.Item href='#' eventKey='-createdAt'>
 							Latest
+						</Dropdown.Item>
+						<Dropdown.Item href='#' eventKey=''>
+							Reset
 						</Dropdown.Item>
 					</DropdownButton>
 					{userType === 'admin' && (

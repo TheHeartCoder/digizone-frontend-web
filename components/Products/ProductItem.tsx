@@ -17,9 +17,11 @@ interface IProductItemProps {
 const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 	const { addToast } = useToasts();
 	const [isLoading, setIsLoading] = React.useState(false);
+	const [uploading, setUploading] = React.useState(false);
 	const router = useRouter();
 	const deleteProduct = async () => {
 		try {
+			setIsLoading(true);
 			const deleteConfirm = confirm(
 				'Want to delete? You will lost all details, skus and licences for this product'
 			);
@@ -51,12 +53,14 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 				}
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	const uploadProductImage = async (e: any) => {
 		try {
-			setIsLoading(true);
+			setUploading(true);
 			const file = e.target.files[0];
 			const formData = new FormData();
 			formData.append('productImage', file);
@@ -89,9 +93,10 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
 		} finally {
-			setIsLoading(false);
+			setUploading(false);
 		}
 	};
+	
 
 	return (
 		// eslint-disable-next-line react/jsx-key
@@ -101,7 +106,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 					onClick={() => router.push(`/products/${product?._id}`)}
 					variant='top'
 					src={
-						isLoading
+						uploading
 							? 'https://www.ebi.ac.uk/training/progressbar.gif'
 							: product?.image
 					}
@@ -119,19 +124,21 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 					<Card.Text>
 						<span className='priceText'>
 							<span className='priceText'>
-								{product?.skuDetails && product?.skuDetails?.length > 1
-									? `₹${Math.min.apply(
-											Math,
-											product?.skuDetails.map(
-												(sku: { price: number }) => sku.price
-											)
-									  )} - ₹${Math.max.apply(
-											Math,
-											product?.skuDetails.map(
-												(sku: { price: number }) => sku.price
-											)
-									  )}`
-									: `₹${product?.skuDetails?.[0]?.price || '000'}`}{' '}
+								{product?.skuDetails
+									? product?.skuDetails?.length > 1
+										? `₹${Math.min.apply(
+												Math,
+												product?.skuDetails.map(
+													(sku: { price: number }) => sku.price
+												)
+										  )} - ₹${Math.max.apply(
+												Math,
+												product?.skuDetails.map(
+													(sku: { price: number }) => sku.price
+												)
+										  )}`
+										: `₹${product?.skuDetails?.[0]?.price || '000'}`
+									: '₹000'}{' '}
 							</span>
 						</span>
 					</Card.Text>

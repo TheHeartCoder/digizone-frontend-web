@@ -102,7 +102,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 									product?.skuDetails.map((sku: { price: number }) => sku.price)
 							  )}`
 							: `₹${product?.skuDetails?.[0]?.price || '000'}`}{' '} */}
-						₹{displaySku?.price} {''}
+						₹{displaySku?.price || '000'} {''}
 						<Badge bg='warning' text='dark'>
 							{displaySku?.lifetime
 								? 'Lifetime'
@@ -146,6 +146,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							value={quantity}
 							size={5}
 							onChange={(value) => setQuantity(Number(value))}
+							disabled={!displaySku?.price}
 						/>
 						{/* <Form.Select
 							aria-label='Default select example'
@@ -157,7 +158,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							<option value='3'>Three</option>
 						</Form.Select> */}
 						{/* {user?.type !== 'admin' && ( */}
-						<Button variant='primary' className='cartBtn' onClick={handleCart}>
+						<Button variant='primary' className='cartBtn' onClick={handleCart} disabled={!displaySku?.price}>
 							<BagCheckFill className='cartIcon' />
 							{cartItems.find((item: any) => item.skuId === displaySku._id)
 								? 'Update cart'

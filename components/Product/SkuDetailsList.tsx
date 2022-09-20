@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Badge, Button, Table } from 'react-bootstrap';
+import { Badge, Button, Spinner, Table } from 'react-bootstrap';
 import { Archive, Eye, Pen } from 'react-bootstrap-icons';
 import { useToasts } from 'react-toast-notifications';
 import { getFormatedStringFromDays } from '../../helper/utils';
@@ -21,6 +21,10 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 	const [skuDetailsFormShow, setSkuDetailsFormShow] = React.useState(false);
 	const [skuIdForUpdate, setSkuIdForUpdate] = React.useState('');
 	const [licensesListFor, setLicensesListFor] = React.useState('');
+	const [isLoadingForDelete, setIsLoadingForDelete] = React.useState({
+		status: false,
+		id: '',
+	});
 
 	const { addToast } = useToasts();
 	const deleteHandler = async (skuId: string) => {
@@ -29,6 +33,7 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 				'Want to delete? You will lost all licenses for this sku'
 			);
 			if (deleteConfirm) {
+				setIsLoadingForDelete({ status: true, id: skuId });
 				const deleteSkuRes = await Products.deleteSku(productId, skuId);
 				if (!deleteSkuRes.success) {
 					throw new Error(deleteSkuRes.message);
@@ -55,6 +60,8 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 				}
 			}
 			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoadingForDelete({ status: false, id: '' });
 		}
 	};
 
@@ -119,7 +126,16 @@ const SkuDetailsList: FC<ISkuDetailsListProps> = ({
 												variant='outline-dark'
 												onClick={() => deleteHandler(skuDetail._id)}
 											>
-												<Archive />
+												{isLoadingForDelete.status &&
+												isLoadingForDelete.id === skuDetail._id ? (
+													<span
+														className='spinner-border spinner-border-sm'
+														role='status'
+														aria-hidden='true'
+													></span>
+												) : (
+													<Archive />
+												)}
 											</Button>
 										</td>
 									</tr>

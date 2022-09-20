@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FC, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { Badge } from 'react-bootstrap';
 import { Button, Card, CloseButton, Image, Offcanvas } from 'react-bootstrap';
 import { Trash } from 'react-bootstrap-icons';
+import { useToasts } from 'react-toast-notifications';
 import { Context } from '../context';
 import { getFormatedStringFromDays } from '../helper/utils';
 import { Orders } from '../services/order.service';
@@ -14,10 +15,13 @@ interface IProps {
 }
 const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 	const handleClose = () => setShow(false);
+	const { addToast } = useToasts();
 	const router = useRouter();
 	const { cartItems, cartDispatch } = useContext(Context);
+	const [isLoading, setIsLoading] = React.useState(false);
 	const handleCheckout = async () => {
 		try {
+			setIsLoading(true);
 			if (cartItems.length > 0) {
 				const sessionRes = await Orders.checkoutSession(cartItems);
 				if (!sessionRes.success) {
@@ -25,8 +29,22 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 				}
 				router.push(sessionRes.result);
 			}
-		} catch (error) {
-			console.log(error);
+		} catch (error: any) {
+			if (error.response) {
+				if (Array.isArray(error.response?.data?.message)) {
+					return error.response.data.message.forEach((message: any) => {
+						addToast(message, { appearance: 'error', autoDismiss: true });
+					});
+				} else {
+					return addToast(error.response.data.message, {
+						appearance: 'error',
+						autoDismiss: true,
+					});
+				}
+			}
+			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -41,6 +59,7 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 					<Button
 						variant='primary'
 						style={{ width: '100%' }}
+						disabled={isLoading}
 						onClick={
 							() => handleCheckout()
 							// 	{
@@ -49,6 +68,13 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 							// }
 						}
 					>
+						{isLoading && (
+							<span
+								className='spinner-border spinner-border-sm'
+								role='status'
+								aria-hidden='true'
+							></span>
+						)}
 						Checkout
 					</Button>
 				</Offcanvas.Body>

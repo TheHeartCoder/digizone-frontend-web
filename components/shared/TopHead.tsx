@@ -15,12 +15,19 @@ const TopHead = () => {
 	const [show, setShow] = React.useState(false);
 	const [searchText, setSearchText] = React.useState('');
 
+	const [baseType, setBaseType] = React.useState('Applications');
+
 	const {
 		state: { user },
 		cartItems,
 	} = useContext(Context);
 
 	const router = useRouter();
+
+	const search = () => {
+		setSearchText('');
+		router.push(`/products?search=${searchText}`);
+	};
 
 	return (
 		<>
@@ -42,14 +49,12 @@ const TopHead = () => {
 							placeholder='Search the product here...'
 							value={searchText}
 							onChange={(e) => setSearchText(e.target.value)}
+							onKeyPress={(e) => e.key === 'Enter' && search()}
 						/>
 						<Button
 							variant='outline-success'
 							id='button-addon2'
-							onClick={() => {
-								setSearchText('');
-								router.push(`/products?search=${searchText}`);
-							}}
+							onClick={() => search}
 						>
 							Search
 						</Button>
@@ -88,17 +93,21 @@ const TopHead = () => {
 				<Navbar.Collapse id='responsive-navbar-nav'>
 					<Nav className='me-auto'>
 						<Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
-						<NavDropdown title='Applications' id='collasible-nav-dropdown'>
-							<NavDropdown.Item
-								onClick={() => router.push('/products?baseType=Computer')}
-							>
+						<NavDropdown
+							title={baseType}
+							id='collasible-nav-dropdown'
+							onSelect={(e) => {
+								setBaseType(e as string);
+								e === 'Applications'
+									? router.push('/products')
+									: router.push(`/products?baseType=${e}`);
+							}}
+						>
+							<NavDropdown.Item eventKey='Computer' onClick={() => {}}>
 								Computer
 							</NavDropdown.Item>
-							<NavDropdown.Item
-								onClick={() => router.push('/products?baseType=Mobile')}
-							>
-								Mobile
-							</NavDropdown.Item>
+							<NavDropdown.Item eventKey='Mobile'>Mobile</NavDropdown.Item>
+							<NavDropdown.Item eventKey='Applications'>All</NavDropdown.Item>
 						</NavDropdown>
 					</Nav>
 					<Nav>

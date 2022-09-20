@@ -47,6 +47,7 @@ const UpdateProduct: NextPage<ProductProps> = ({
 	const [updateRequirementIndex, setUpdateRequirementIndex] =
 		React.useState(-1);
 	const [updateHightlightIndex, setUpdateHightlightIndex] = React.useState(-1);
+	const [isLoading, setIsLoading] = React.useState(false);
 
 	useEffect(() => {
 		if (product && product.productName) {
@@ -112,16 +113,28 @@ const UpdateProduct: NextPage<ProductProps> = ({
 	const handlerSubmitForm = async (
 		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
+		try {
+			setIsLoading(true);
+			productIdForUpdate
+				? await Products.updateProduct(productIdForUpdate, productForm)
+				: await Products.saveProduct(productForm);
+			addToast('Product saved successfully', {
+				appearance: 'success',
+				autoDismiss: true,
+			});
+			setProductForm(initialForm);
+		} catch (error: any) {
+			if (error.response) {
+				return addToast(error.response.data.message, {
+					appearance: 'error',
+					autoDismiss: true,
+				});
+			}
+			addToast(error.message, { appearance: 'error', autoDismiss: true });
+		} finally {
+			setIsLoading(false);
+		}
 		e.preventDefault();
-
-		productIdForUpdate
-			? await Products.updateProduct(productIdForUpdate, productForm)
-			: await Products.saveProduct(productForm);
-		addToast('Product saved successfully', {
-			type: 'success',
-			autoDismiss: true,
-		});
-		setProductForm(initialForm);
 	};
 
 	return (
@@ -432,7 +445,19 @@ const UpdateProduct: NextPage<ProductProps> = ({
 					>
 						Cancel
 					</Button>{' '}
-					<Button variant='primary' type='submit' onClick={handlerSubmitForm}>
+					<Button
+						variant='primary'
+						type='submit'
+						onClick={handlerSubmitForm}
+						disabled={isLoading}
+					>
+						{isLoading && (
+							<span
+								className='spinner-border spinner-border-sm'
+								role='status'
+								aria-hidden='true'
+							></span>
+						)}
 						Submit
 					</Button>
 				</Col>{' '}

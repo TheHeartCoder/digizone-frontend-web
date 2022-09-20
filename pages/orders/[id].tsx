@@ -57,17 +57,25 @@ const Order: NextPage<OrderProps> = ({ order }) => {
 														</p>
 													</p>
 												</div>
-												<Link href={''}>
+												{/* <Link href={''}>
 													<Button variant='link'>
 														Issue with this product? Then Contact US...
 													</Button>
-												</Link>
+												</Link> */}
 											</td>
 											<td>
 												{item.license || ' Not Found '}{' '}
-												<Button variant='light' size='sm'>
-													<Clipboard />
-												</Button>
+												{item.license && (
+													<Button
+														variant='light'
+														size='sm'
+														onClick={() => {
+															navigator.clipboard.writeText(item.license);
+														}}
+													>
+														<Clipboard />
+													</Button>
+												)}
 											</td>
 										</tr>
 									))}

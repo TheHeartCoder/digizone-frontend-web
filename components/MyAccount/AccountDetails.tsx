@@ -26,6 +26,10 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 		try {
 			const { name, oldPassword, newPassword, confirmPassword } = accountForm;
 
+			if(!newPassword || !confirmPassword || !oldPassword) {
+				throw new Error('Invalid password');
+			}
+
 			if (newPassword && newPassword.length < 6) {
 				throw new Error('Password is too short. Minimum 6 characters');
 			}
@@ -137,6 +141,13 @@ const AccountDetails: FC<IAccountDetailsProps> = ({
 							onClick={updateUserAccount}
 							disabled={isLoading}
 						>
+							{isLoading && (
+								<span
+									className='spinner-border spinner-border-sm'
+									role='status'
+									aria-hidden='true'
+								></span>
+							)}
 							Update
 						</Button>
 					</Form.Group>

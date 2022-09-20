@@ -5,6 +5,9 @@ import styles from '../../styles/Product.module.css';
 
 const ProductFilter = () => {
 	const router = useRouter();
+	const [filterCatText, setFilterCatText] = React.useState('Category');
+	const [filterPlatformText, setFilterPlatformText] =
+		React.useState('Platform');
 
 	return (
 		<Card>
@@ -13,11 +16,12 @@ const ProductFilter = () => {
 				<ListGroup.Item>
 					<DropdownButton
 						variant='outline-secondary'
-						title='Category'
+						title={filterCatText}
 						id='input-group-dropdown-1'
 						className={styles.dropdownFilterBtn}
 						onSelect={(e) => {
 							if (e) {
+								setFilterCatText(e.includes('Application') ? 'Applications' : 'OS');
 								router.query.category = e;
 								router.push(router);
 							} else {
@@ -40,11 +44,12 @@ const ProductFilter = () => {
 				<ListGroup.Item>
 					<DropdownButton
 						variant='outline-secondary'
-						title='Platform'
+						title={filterPlatformText}
 						id='input-group-dropdown-1'
 						className={styles.dropdownFilterBtn}
 						onSelect={(e) => {
 							if (e) {
+								setFilterPlatformText(e);
 								router.query.platformType = e;
 								router.push(router);
 							} else {
