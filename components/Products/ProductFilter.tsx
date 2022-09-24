@@ -21,7 +21,10 @@ const ProductFilter = () => {
 						className={styles.dropdownFilterBtn}
 						onSelect={(e) => {
 							if (e) {
-								setFilterCatText(e.includes('Application') ? 'Applications' : 'OS');
+								setFilterCatText(
+									e.includes('Application') ? 'Applications' : 'OS'
+								);
+								delete router.query.offset;
 								router.query.category = e;
 								router.push(router);
 							} else {
@@ -50,6 +53,7 @@ const ProductFilter = () => {
 						onSelect={(e) => {
 							if (e) {
 								setFilterPlatformText(e);
+								delete router.query.offset;
 								router.query.platformType = e;
 								router.push(router);
 							} else {

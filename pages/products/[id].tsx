@@ -116,6 +116,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 								<li key={key}>{highlight}</li>
 							))}
 					</ul>
+
 					<div>
 						{product?.skuDetails &&
 							product?.skuDetails?.length > 0 &&
@@ -158,7 +159,12 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							<option value='3'>Three</option>
 						</Form.Select> */}
 						{/* {user?.type !== 'admin' && ( */}
-						<Button variant='primary' className='cartBtn' onClick={handleCart} disabled={!displaySku?.price}>
+						<Button
+							variant='primary'
+							className='cartBtn'
+							onClick={handleCart}
+							disabled={!displaySku?.price}
+						>
 							<BagCheckFill className='cartIcon' />
 							{cartItems.find((item: any) => item.skuId === displaySku._id)
 								? 'Update cart'
@@ -194,16 +200,39 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 										Reviews
 									</Nav.Link>
 								</Nav.Item>
-								<Nav.Item>
-									<Nav.Link eventKey='fourth' href='#'>
-										Product SKUs
-									</Nav.Link>
-								</Nav.Item>
+								{user?.type === 'admin' && (
+									<Nav.Item>
+										<Nav.Link eventKey='fourth' href='#'>
+											Product SKUs
+										</Nav.Link>
+									</Nav.Item>
+								)}
 							</Nav>
 						</Col>
 						<Col sm={9}>
 							<Tab.Content>
-								<Tab.Pane eventKey='first'>{product?.description}</Tab.Pane>
+								<Tab.Pane eventKey='first'>
+									{product?.description} <br />
+									<a
+										target='_blank'
+										href={product?.productUrl}
+										rel='noreferrer'
+										style={{ textDecoration: 'none', float: 'right' }}
+									>
+										Get more info....
+									</a>
+									<br />
+									<br />
+									<a
+										className='btn btn-primary text-center'
+										target='_blank'
+										href={product?.downloadUrl}
+										rel='noreferrer'
+										style={{ textDecoration: 'none', float: 'right' }}
+									>
+										Download this
+									</a>
+								</Tab.Pane>
 								<Tab.Pane eventKey='second'>
 									<Table responsive>
 										<tbody>

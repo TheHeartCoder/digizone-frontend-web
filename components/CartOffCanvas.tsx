@@ -30,19 +30,19 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 				router.push(sessionRes.result);
 			}
 		} catch (error: any) {
-			if (error.response) {
-				if (Array.isArray(error.response?.data?.message)) {
-					return error.response.data.message.forEach((message: any) => {
-						addToast(message, { appearance: 'error', autoDismiss: true });
-					});
-				} else {
-					return addToast(error.response.data.message, {
-						appearance: 'error',
-						autoDismiss: true,
-					});
-				}
-			}
-			addToast(error.message, { appearance: 'error', autoDismiss: true });
+			// if (error.response) {
+			// 	if (Array.isArray(error.response?.data?.message)) {
+			// 		return error.response.data.message.forEach((message: any) => {
+			// 			addToast(message, { appearance: 'error', autoDismiss: true });
+			// 		});
+			// 	} else {
+			// 		return addToast(error.response.data.message, {
+			// 			appearance: 'error',
+			// 			autoDismiss: true,
+			// 		});
+			// 	}
+			// }
+			addToast('Something went wrong. Please try again. !', { appearance: 'error', autoDismiss: true });
 		} finally {
 			setIsLoading(false);
 		}
@@ -70,7 +70,7 @@ const CartOffCanvas: FC<IProps> = ({ show, setShow }: IProps) => {
 					>
 						{isLoading && (
 							<span
-								className='spinner-border spinner-border-sm'
+								className='spinner-border spinner-border-sm mr-2'
 								role='status'
 								aria-hidden='true'
 							></span>

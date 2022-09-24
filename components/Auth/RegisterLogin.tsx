@@ -69,7 +69,6 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 			if (!success) throw new Error(message);
 			setOtpForm({ ...otpForm, email: email });
 			setOtpTime(true);
-			setAuthForm(initalForm);
 			addToast(message, { appearance: 'success', autoDismiss: true });
 		} catch (error: any) {
 			if (error.response) {
@@ -308,7 +307,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 							>
 								{isLoading && (
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>
@@ -327,7 +326,7 @@ const RegisterLogin: FC<IRegisterLoginProps> = ({
 							>
 								{isLoading && (
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>

@@ -53,7 +53,6 @@ const UpdateProduct: NextPage<ProductProps> = ({
 		if (product && product.productName) {
 			setProductForm({ ...initialForm, ...product });
 		}
-		console.log(product);
 	}, [product]);
 
 	const hanldleHightlightAdd = () => {

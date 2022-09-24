@@ -73,6 +73,7 @@ const AllProducts: NextPage<Props> = ({ products, metadata }) => {
 										? 'Latest'
 										: 'Sort By'
 								);
+								delete router.query.offset;
 								router.query.sort = e;
 								router.push(router);
 							} else {

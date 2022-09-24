@@ -179,7 +179,7 @@ const ProductItem: FC<IProductItemProps> = ({ userType, product }) => {
 							>
 								{isLoading && (
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>

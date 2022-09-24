@@ -12,14 +12,14 @@ import {
 	Table,
 } from 'react-bootstrap';
 import { Clipboard } from 'react-bootstrap-icons';
+import { useToasts } from 'react-toast-notifications';
 
 interface OrderProps {
 	order: any;
 }
 
 const Order: NextPage<OrderProps> = ({ order }) => {
-	console.log(order);
-
+	const { addToast } = useToasts();
 	return (
 		<>
 			<Row>
@@ -71,6 +71,10 @@ const Order: NextPage<OrderProps> = ({ order }) => {
 														size='sm'
 														onClick={() => {
 															navigator.clipboard.writeText(item.license);
+															addToast('License key copied successfully', {
+																appearance: 'success',
+																autoDismiss: true,
+															});
 														}}
 													>
 														<Clipboard />

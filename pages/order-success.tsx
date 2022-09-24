@@ -11,9 +11,9 @@ const OrderSuccess = () => {
 	} = useContext(Context);
 	const { cartDispatch } = useContext(Context);
 	useEffect(() => {
-		if (!user || !user.email) {
-			router.push('/');
-		}
+		// if (!user || !user.email) {
+		// 	router.push('/');
+		// }
 		cartDispatch({ type: 'CLEAR_CART', payload: {} });
 	}, [router, user, cartDispatch]);
 
@@ -28,9 +28,9 @@ const OrderSuccess = () => {
 					</p>
 					<hr />
 					<p className='lead'>
-						<Link href={`/orders`}>
+						<Link href={`/products`}>
 							<a className='btn btn-primary btn-sm' role='button'>
-								View This Order
+								Shop More
 							</a>
 						</Link>
 					</p>

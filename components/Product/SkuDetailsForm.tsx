@@ -36,7 +36,6 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 	skuIdForUpdate,
 	setSkuIdForUpdate,
 }) => {
-	console.log(productId);
 	const { addToast } = useToasts();
 	const [isLoading, setIsLoading] = React.useState(false);
 	const [skuForm, setSkuFrom] = React.useState(intialState);
@@ -51,7 +50,6 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 			const sku = allSkuDetails.find(
 				(sku: { _id: string }) => sku._id === skuIdForUpdate
 			);
-			console.log(sku.validity);
 			const periodTimes = getFormatedStringFromDays(sku?.validity);
 			setSkuFrom({
 				...intialState,

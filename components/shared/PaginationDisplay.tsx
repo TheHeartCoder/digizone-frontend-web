@@ -42,7 +42,11 @@ const PaginationDisplay: FC<IPaginationProps> = ({ metadata }) => {
 							fontSize: '13px',
 						}}
 					>
-						Sowing {metadata?.limit} product of {metadata?.total}{' '}
+						Sowing{' '}
+						{metadata?.total > metadata?.limit
+							? metadata?.limit
+							: metadata?.total}{' '}
+						product of {metadata?.total}{' '}
 					</div>{' '}
 				</div>
 			</div>

@@ -13,8 +13,6 @@ interface Props {
 	products: Record<string, any>;
 }
 const Home: NextPage<Props> = ({ products }) => {
-	console.log('products :: ', products);
-
 	return (
 		<>
 			<h3 className={styles.productCats}>Latest Products</h3>

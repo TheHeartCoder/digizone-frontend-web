@@ -46,8 +46,6 @@ const AllOrders = () => {
 		return new Date(date).toLocaleString();
 	};
 
-	console.log(orders);
-
 	return (
 		<>
 			<Row>
@@ -65,7 +63,7 @@ const AllOrders = () => {
 					<Dropdown.Item href='#' eventKey='pending'>
 						Pending
 					</Dropdown.Item>
-					<Dropdown.Item href='#' eventKey='complete'>
+					<Dropdown.Item href='#' eventKey='completed'>
 						Complete
 					</Dropdown.Item>
 				</DropdownButton>
@@ -84,7 +82,9 @@ const AllOrders = () => {
 					{orders.length > 0 ? (
 						orders.map((order: any) => (
 							<tr key={order._id}>
-								<td>{order.orderId}</td>
+								<Link href={`/orders/${order._id}`}>
+									<td style={{ color: 'green', cursor: 'pointer' }}>{order.orderId}</td>
+								</Link>
 								<td>{dateTOLocal(order.orderDate)}</td>
 								<td>
 									<Badge>{order.orderStatus.toUpperCase()}</Badge>

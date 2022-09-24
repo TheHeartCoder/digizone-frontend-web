@@ -195,7 +195,7 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 							>
 								{isLoading && (
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>
@@ -230,7 +230,7 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 								{isLoadingForDelete.status &&
 								isLoadingForDelete.id === license._id ? (
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>
@@ -246,7 +246,7 @@ const SkuDetailsLicense: FC<ISkuDetailsLicenseProps> = ({
 							{isLoadingForFetch ? (
 								<>
 									<span
-										className='spinner-border spinner-border-sm'
+										className='spinner-border spinner-border-sm mr-2'
 										role='status'
 										aria-hidden='true'
 									></span>{' '}
