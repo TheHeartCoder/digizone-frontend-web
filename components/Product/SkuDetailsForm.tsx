@@ -93,6 +93,7 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 				throw new Error(skuDetailsRes.message);
 			}
 			setSkuDetailsFormShow(false);
+			setSkuIdForUpdate('');
 			setAllSkuDetails(skuDetailsRes.result?.skuDetails);
 		} catch (error: any) {
 			if (error.response) {
