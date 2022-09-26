@@ -72,7 +72,6 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 		});
 		setShow(true);
 	};
-
 	return (
 		<>
 			<Row className='firstRow'>
@@ -90,7 +89,7 @@ const Product: NextPage<ProductProps> = ({ product, relatedProducts }) => {
 							starCount={5}
 							value={product?.avgRating || 0}
 						/>
-						({product?.feedbackDetails?.info?.length || 0} reviews)
+						({product?.feedbackDetails?.length || 0} reviews)
 					</div>
 					<p className='productPrice'>
 						{/* {product?.skuDetails && product?.skuDetails?.length > 1

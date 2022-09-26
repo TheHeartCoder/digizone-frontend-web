@@ -51,7 +51,9 @@ const Order: NextPage<OrderProps> = ({ order }) => {
 														alt=''
 													/>
 													<p style={{ marginLeft: '5px' }}>
-														{item.productName || 'Demo Product'}
+														<Link href={`/products/${item.productId}`}>
+															<a style={{ textDecoration: 'none'}}>{item.productName || 'Demo Product'}</a>
+														</Link>
 														<p style={{ fontWeight: 'bold' }}>
 															{item.quantity} X ₹{item.price}
 														</p>

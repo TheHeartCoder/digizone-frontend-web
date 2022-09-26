@@ -40,7 +40,7 @@ const ReviewSection: FC<IProps> = ({ reviews, productId }) => {
 			}
 
 			const newReviewResponse = await Products.addReview(productId, reviewForm);
-			if (!newReviewResponse.success) {
+			if (newReviewResponse.success) {
 				addToast(newReviewResponse.message, {
 					appearance: 'success',
 					autoDismiss: true,
@@ -72,12 +72,10 @@ const ReviewSection: FC<IProps> = ({ reviews, productId }) => {
 		try {
 			setIsLoading(true);
 			const delProdRes = await Products.deleteReview(productId, id);
-			if (!delProdRes.success) {
-				addToast(delProdRes.message, {
-					appearance: 'success',
-					autoDismiss: true,
-				});
-			}
+			addToast(delProdRes.message, {
+				appearance: 'success',
+				autoDismiss: true,
+			});
 			setAllReviews(delProdRes.result.feedbackDetails);
 			setFilteredReviews(delProdRes.result.feedbackDetails);
 			setReviewFrom(intialState);
@@ -134,6 +132,7 @@ const ReviewSection: FC<IProps> = ({ reviews, productId }) => {
 									<Form.Control
 										as='textarea'
 										rows={3}
+										value={reviewForm.review}
 										onChange={(e) =>
 											setReviewFrom({ ...reviewForm, review: e.target.value })
 										}

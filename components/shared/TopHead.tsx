@@ -25,7 +25,6 @@ const TopHead = () => {
 	const router = useRouter();
 
 	const search = () => {
-		setSearchText('');
 		router.push(`/products?search=${searchText}`);
 	};
 
@@ -54,7 +53,7 @@ const TopHead = () => {
 						<Button
 							variant='outline-success'
 							id='button-addon2'
-							onClick={() => search}
+							onClick={() => search()}
 						>
 							Search
 						</Button>
