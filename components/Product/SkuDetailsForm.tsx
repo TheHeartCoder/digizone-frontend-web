@@ -78,7 +78,7 @@ const SkuDetailsForm: FC<ISkuDetailsFormProps> = ({
 				skuForm.validity =
 					skuForm.validityType === 'months'
 						? skuForm.validity * 30 // convert to days to store
-						: skuForm.validity * 365;
+						: skuForm.validity * 365;``
 			// convert to days to store
 			else skuForm.validity = Number.MAX_SAFE_INTEGER;
 			setIsLoading(true);

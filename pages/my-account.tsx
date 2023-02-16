@@ -90,38 +90,6 @@ const MyAccount = () => {
 						<Tab.Pane eventKey='second'>
 							<AllOrders />
 						</Tab.Pane>
-						<Tab.Pane eventKey='third'>
-							<div>
-								<Button variant='outline-info' className='addReview'>
-									Add review
-								</Button>
-								<div className='reviewInputZone'>
-									<Form>
-										<Form.Group className='mb-3' controlId='formBasicEmail'>
-											<Form.Label>Your Rating</Form.Label>
-											<br />
-											<StarRatingComponent
-												name='rate2'
-												editing={true}
-												starCount={5}
-												value={0}
-											/>
-										</Form.Group>
-										<Form.Group className='mb-3' controlId='formBasicPassword'>
-											<Form.Label>Your Review</Form.Label>
-											<Form.Control as='textarea' rows={3} />
-										</Form.Group>
-										<Form.Group
-											className='mb-3'
-											controlId='formBasicCheckbox'
-										></Form.Group>
-										<Button variant='primary' type='submit'>
-											Submit
-										</Button>
-									</Form>
-								</div>
-							</div>
-						</Tab.Pane>
 					</Tab.Content>
 				</Col>
 			</Row>
